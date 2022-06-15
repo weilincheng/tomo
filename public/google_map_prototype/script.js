@@ -55,5 +55,10 @@ function initMap() {
   });
 }
 
+const script = document.createElement("script");
+script.src =
+  "https://maps.googleapis.com/maps/api/js?key=AIzaSyBpE92CZ9GMcOVTRBhfn5Kqhoytsltum5I&map_ids=d91850b214eae5c9&callback=initMap";
+script.async = true;
+document.head.appendChild(script);
 const socket = io(`https://${window.location.host}`);
 window.initMap = initMap;

@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const port = process.env.port || 8080;
 const http = require("http");
 const server = http.createServer(app);
@@ -16,6 +17,7 @@ app.set("json spaces", 2);
 app.set("socketio", io);
 
 app.use(express.static("public"));
+app.use(cors());
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });

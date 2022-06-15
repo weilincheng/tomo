@@ -1,11 +1,11 @@
-const initMap = () => {
+function initMap() {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   const markersList = new Map();
   const map = new google.maps.Map(document.getElementById("map"), {
     center: appWorksSchool,
     zoom: 18,
+    mapId: "d91850b214eae5c9",
   });
-  const infoWindow = new google.maps.InfoWindow();
 
   const updateMarker = (id, pos) => {
     const marker = markersList.get(id);
@@ -53,7 +53,7 @@ const initMap = () => {
       createMarker(id, pos);
     }
   });
-};
+}
 
 const socket = io(`https://${window.location.host}`);
 window.initMap = initMap;

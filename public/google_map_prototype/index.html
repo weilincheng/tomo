@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tomo Map</title>
     <link rel="stylesheet" href="style.css" />
-    <script type="module" src="./script.js"></script>
   </head>
   <body>
     <div id="navbar"></div>
@@ -18,9 +17,8 @@
       </div>
     </div>
     <div id="footer"></div>
-    <script
-      async
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAm9PxwCwbThcGSz7eQTvBkg12J-4Wy1K4&callback=initMap"
-    ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="module" src="./script.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

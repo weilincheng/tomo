@@ -1,7 +1,7 @@
 function initMap() {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   const markersList = new Map();
-  const map = new google.maps.Map(document.getElementById("map"), {
+  const map = new google.maps.Map($("#map")[0], {
     center: appWorksSchool,
     zoom: 18,
     mapId: "d91850b214eae5c9",
@@ -37,8 +37,8 @@ function initMap() {
 
     navigator.geolocation.watchPosition((position) => {
       const pos = {
-        lat: position.coords.latitude + (Math.random() - 0.5) * 0.001,
-        lng: position.coords.longitude + (Math.random() - 0.5) * 0.001,
+        lat: position.coords.latitude + (Math.random() - 0.5) * 0.0005,
+        lng: position.coords.longitude + (Math.random() - 0.5) * 0.0005,
       };
       updateMarker(socket.id, pos);
       socket.emit("update position", { pos, id: socket.id });
@@ -55,10 +55,10 @@ function initMap() {
   });
 }
 
-const script = document.createElement("script");
-script.src =
-  "https://maps.googleapis.com/maps/api/js?key=AIzaSyBpE92CZ9GMcOVTRBhfn5Kqhoytsltum5I&map_ids=d91850b214eae5c9&callback=initMap";
-script.async = true;
-document.head.appendChild(script);
-const socket = io(`https://${window.location.host}`);
+const script = $("<script></script>", {
+  src: "https://maps.googleapis.com/maps/api/js?key=AIzaSyBpE92CZ9GMcOVTRBhfn5Kqhoytsltum5I&map_ids=d91850b214eae5c9&callback=initMap",
+  async: true,
+});
+script.appendTo("head");
+const socket = io(`http://${window.location.host}`);
 window.initMap = initMap;

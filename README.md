@@ -49,28 +49,99 @@ v1
 
 - **Success Response: 200**
 
-|     Field      |  Type  | Description                           |
-| :------------: | :----: | :------------------------------------ |
-|  access_token  | String | Access token from server.             |
-| access_expired | Number | Access token expired time in seconds. |
+|       Field       |  Type  | Description                           |
+| :---------------: | :----: | :------------------------------------ |
+|   access_token    | String | Access token from server.             |
+| access_expiration | Number | Access token expired time in seconds. |
 
 ```
 {
-  "data": {
-    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6joiYXJ0aHVIjoxNjEzNTY3MzA0fQ.6EPCOfBGynidAfpVqlvbHGWHCJ5LZLtKvPaQ",
-    "access_expired": "1d",
-    "user": {
-      "id": 1,
-      "name": "test",
-      "email": "test@test.com",
-      "location":"Taiwan",
-      "website":"weilin.com",
-    }
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6joiYXJ0aHVIjoxNjEzNTY3MzA0fQ.6EPCOfBGynidAfpVqlvbHGWHCJ5LZLtKvPaQ",
+  "access_expiration": "1d",
+  "user": {
+    "id": 1,
+    "name": "test",
+    "email": "test@test.com",
+    "location":"Taiwan",
+    "website":"weilin.com",
   }
 }
 ```
 
 - **Email Already Exists: 403**
+
+| Field |  Type  | Description    |
+| :---: | :----: | :------------- |
+| error | String | Error message. |
+
+- **Client Error Response: 400**
+
+| Field |  Type  | Description    |
+| :---: | :----: | :------------- |
+| error | String | Error message. |
+
+- **Server Error Response: 500**
+
+| Field |  Type  | Description    |
+| :---: | :----: | :------------- |
+| error | String | Error message. |
+
+---
+
+### User Sign In API
+
+- **End point**: `/user/signin`
+
+- **Method**: `POST`
+
+- **Request Headers:**
+  | Field | Type | Description |
+  | :---: | :---: | :---: |
+  | Content-Type | String | Only accept `application/json`. |
+
+* **Request Body**
+
+  |  Field   |  Type  |             Description              |
+  | :------: | :----: | :----------------------------------: |
+  | provider | String | Required. Only accepts `native` now. |
+  |  email   | String |               Required               |
+  | password | String |               Required               |
+
+- **Request Body Example:**
+
+```
+{
+  "name":"test",
+  "email":"test@test.com",
+  "password":"test",
+  "location":"Taiwan",
+  "website":"weilin.com"
+}
+```
+
+- **Success Response: 200**
+
+|     Field      |     Type      | Description                           |
+| :------------: | :-----------: | :------------------------------------ |
+|  access_token  |    String     | Access token from server.             |
+| access_expired |    Number     | Access token expired time in seconds. |
+|      user      | `User Object` | User information                      |
+
+- **Success Response Example:**
+
+```
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6joiYXJ0aHVIjoxNjEzNTY3MzA0fQ.6EPCOfBGynidAfpVqlvbHGWHCJ5LZLtKvPaQ",
+  "access_expired": 3600,
+  "user": {
+    "id": 11245642,
+    "name": "test",
+    "email": "test@test.com",
+  }
+}
+```
+
+- **Sign In Failed: 403**
 
 | Field |  Type  | Description    |
 | :---: | :----: | :------------- |

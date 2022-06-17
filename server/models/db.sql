@@ -7,11 +7,11 @@ CREATE TABLE `users`(
     `name` VARCHAR(747) NOT NULL,
     `email` VARCHAR(255) UNIQUE NOT NULL,
     `password` VARCHAR(255) NOT NULL,
-    `created_at` DATE NOT NULL,
-    `location` VARCHAR(255) NOT NULL,
-    `website` VARCHAR(2048) NOT NULL,
-    `profile_image` VARCHAR(255) NOT NULL,
-    `background_image` VARCHAR(255) NOT NULL
+    `created_at` DATETIME DEFAULT CURRENT_DATETIME,
+    `location` VARCHAR(255),
+    `website` VARCHAR(2048), 
+    `profile_image` VARCHAR(255), 
+    `background_image` VARCHAR(255),
 );
 DROP TABLE IF EXISTS `relationships`;
 CREATE TABLE `relationships`(

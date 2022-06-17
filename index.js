@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { GOOGLE_API_KEY, SOCKET_HOST } = process.env;
 const express = require("express");
 const user = require("./server/routes/user_route");
 const app = express();
@@ -20,7 +21,10 @@ app.use("/static", express.static(__dirname + "/public"));
 app.use(cors());
 app.set("view engine", "ejs");
 app.get("/", (req, res) => {
-  res.render("pages/index.ejs", { google_api_key: process.env.GOOGLE_API_KEY });
+  res.render("pages/index.ejs", {
+    google_api_key: GOOGLE_API_KEY,
+    socket_host: SOCKET_HOST,
+  });
 });
 
 app.get("/signin", (req, res) => {

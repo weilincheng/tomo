@@ -58,12 +58,13 @@ const initMap = () => {
 };
 
 const google_api_key = $("#map-script").attr("google_api_key");
+const socket_host = $("#map-script").attr("socket_host");
 const script = $("<script></script>", {
   src: `https://maps.googleapis.com/maps/api/js?key=${google_api_key}&map_ids=d91850b214eae5c9&callback=initMap`,
   async: true,
 });
 script.appendTo("head");
-const socket = io(`http://${window.location.host}`);
+const socket = io(socket_host);
 const markersList = new Map();
 window.initMap = initMap;
 

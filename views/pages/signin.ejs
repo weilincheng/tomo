@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <div class="sign-in-form">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" class="form-control" />
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        class="form-control"
+      />
+      <button type="button" id="signin-button" class="btn btn-dark">
+        Sign In
+      </button>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="../../static/js/signin.js"></script>
+  </body>
+</html>

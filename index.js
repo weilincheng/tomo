@@ -16,11 +16,15 @@ const io = new Server(server, {
 app.use(express.json());
 app.set("json spaces", 2);
 app.set("socketio", io);
-
-app.use(express.static("public"));
+app.use("/static", express.static(__dirname + "/public"));
 app.use(cors());
+app.set("view engine", "ejs");
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.render("index.ejs", { google_api_key: process.env.GOOGLE_API_KEY });
+});
+
+app.get("/signin", (req, res) => {
+  res.render("signin.ejs");
 });
 
 app.use(`/api/${API_VERSION}`, user);

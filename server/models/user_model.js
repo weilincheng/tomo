@@ -4,10 +4,13 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-const generateToken = (id, name, email) => {
-  return jwt.sign({ id, name, email }, TOKEN_SECRET, {
+const generateToken = (id, name, email, location, website) => {
+  return jwt.sign({ id, name, email, location, website }, TOKEN_SECRET, {
     expiresIn: TOKEN_EXPIRATION,
   });
+};
+const verifyToken = (access_token) => {
+  return jwt.verify(access_token, TOKEN_SECRET);
 };
 
 const signUp = async (name, email, password, location, website) => {
@@ -16,7 +19,13 @@ const signUp = async (name, email, password, location, website) => {
   const sqlBindings = [name, email, hash, location, website];
   try {
     const [result] = await pool.query(sql, sqlBindings);
-    const access_token = generateToken(result.insertId, name, email);
+    const access_token = generateToken(
+      result.insertId,
+      name,
+      email,
+      location,
+      website
+    );
     return {
       access_token,
       access_expiration: TOKEN_EXPIRATION,
@@ -48,7 +57,13 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
       status: 403,
     };
   } else {
-    const access_token = generateToken(id, name, signInEmail);
+    const access_token = generateToken(
+      id,
+      name,
+      signInEmail,
+      location,
+      website
+    );
     return {
       access_token,
       access_expiration: TOKEN_EXPIRATION,
@@ -63,4 +78,13 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
   }
 };
 
-module.exports = { signUp, nativeSignIn };
+const profile = (access_token) => {
+  try {
+    const { id, name, email, location, website } = verifyToken(access_token);
+    return { id, name, email, location, website };
+  } catch (error) {
+    return { status: 403, error: "Invalid Token" };
+  }
+};
+
+module.exports = { signUp, nativeSignIn, profile };

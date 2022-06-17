@@ -65,4 +65,20 @@ const signIn = async (req, res) => {
   res.status(200).json(result);
 };
 
-module.exports = { signUp, signIn };
+const profile = async (req, res) => {
+  const { authorization } = req.headers;
+  if (!authorization) {
+    res.status(401).json({ error: "No token" });
+    return;
+  }
+  const token = authorization.split(" ")[1];
+  const result = await User.profile(token);
+  if (result.error) {
+    res.status(result.status).json({ error: result.error });
+    return;
+  }
+  res.status(200).json(result);
+  return;
+};
+
+module.exports = { signUp, signIn, profile };

@@ -33,7 +33,7 @@ v1
   |  email   | String |  Required   |
   | password | String |  Required   |
   | location | String |  Optional   |
-  | webiste  | String |  Optional   |
+  | website  | String |  Optional   |
 
 - **Request Body Example:**
 
@@ -160,3 +160,49 @@ v1
 | error | String | Error message. |
 
 ---
+
+### User Profile API
+
+- **End Point:** `/user/profile`
+
+- **Method:** `GET`
+
+- **Request Headers:**
+
+|     Field     |  Type  |                                      Description                                       |
+| :-----------: | :----: | :------------------------------------------------------------------------------------: |
+| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
+
+- **Success Response: 200**
+
+| Field |     Type      | Description |
+| :---: | :-----------: | :---------- |
+| data  | `User Object` | User info.  |
+
+- **Success Response Example:**
+
+```
+{
+  "id": 11245642,
+  "name": "test",
+  "email": "test@test.com",
+}
+```
+
+- **Client Error (No token) Response: 401**
+
+| Field |  Type  | Description    |
+| :---: | :----: | :------------- |
+| error | String | Error message. |
+
+- **Client Error (Wrong token) Response: 403**
+
+| Field |  Type  | Description    |
+| :---: | :----: | :------------- |
+| error | String | Error message. |
+
+- **Server Error Response: 500**
+
+| Field |  Type  | Description    |
+| :---: | :----: | :------------- |
+| error | String | Error message. |

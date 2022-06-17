@@ -1,8 +1,9 @@
 require("dotenv").config();
 const express = require("express");
+const user = require("./server/routes/user_route");
 const app = express();
 const cors = require("cors");
-const port = process.env.port || 8080;
+const { PORT, API_VERSION } = process.env;
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -22,8 +23,10 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-server.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+app.use(`/api/${API_VERSION}`, user);
+
+server.listen(PORT, () => {
+  console.log(`Example app listening on http://localhost:${PORT}`);
 });
 
 io.on("connection", (socket) => {

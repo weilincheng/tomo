@@ -42,6 +42,7 @@ const nativeSignIn = async (email, password) => {
 
 const signIn = async (req, res) => {
   const { provider, email, password } = req.body;
+  console.log(req.body);
   if (!provider || !password || !email) {
     res.status(400).json({ error: "provider, password, email are required" });
     return;

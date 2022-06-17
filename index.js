@@ -20,11 +20,15 @@ app.use("/static", express.static(__dirname + "/public"));
 app.use(cors());
 app.set("view engine", "ejs");
 app.get("/", (req, res) => {
-  res.render("index.ejs", { google_api_key: process.env.GOOGLE_API_KEY });
+  res.render("pages/index.ejs", { google_api_key: process.env.GOOGLE_API_KEY });
 });
 
 app.get("/signin", (req, res) => {
-  res.render("signin.ejs");
+  res.render("pages/signin.ejs");
+});
+
+app.get("/profile", (req, res) => {
+  res.render("pages/profile.ejs");
 });
 
 app.use(`/api/${API_VERSION}`, user);

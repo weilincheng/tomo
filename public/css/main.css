@@ -4,30 +4,17 @@
   height: 90%;
 }
 
-#map {
+/* #map {
   width: 80%;
   height: 100%;
-}
+} */
 
-#user-list {
+#signin-signup-form {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  width: 20%;
-  height: 100%;
+  justify-content: space-between;
+  width: 100%;
   text-align: center;
-}
-
-#navbar {
-  width: 100%;
-  height: 30px;
-  background-color: aqua;
-}
-
-#footer {
-  width: 100%;
-  height: 30px;
-  background-color: aqua;
 }
 
 html {
@@ -45,11 +32,21 @@ html {
 body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  height: 100vh;
 }
 
 .signin-form {
   margin: auto;
   margin-top: 5%;
   width: 50%;
+}
+
+.signup-form {
+  margin: auto;
+  margin-top: 5%;
+  width: 50%;
+}
+
+#sidebar {
+  text-align: center;
 }

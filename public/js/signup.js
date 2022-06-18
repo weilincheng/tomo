@@ -1,10 +1,12 @@
-const signIn = async () => {
+const signUp = async () => {
   const data = {
-    provider: "native",
+    name: $("#name").val(),
     email: $("#email").val(),
     password: $("#password").val(),
+    location: $("#location").val(),
+    website: $("#website").val(),
   };
-  const result = await fetch("/api/v1/user/signin", {
+  const result = await fetch("/api/v1/user/signup", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -14,9 +16,9 @@ const signIn = async () => {
   return result;
 };
 
-$("#signin-button").click(async (event) => {
+$("#signup-button").click(async (event) => {
   event.preventDefault();
-  const result = await signIn();
+  const result = await signUp();
   const resultJson = await result.json();
   if (resultJson.error) {
     alert(resultJson.error);

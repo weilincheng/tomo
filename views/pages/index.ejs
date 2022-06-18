@@ -1,37 +1,49 @@
 <%- include("../partials/header") -%>
-<div id="navbar"></div>
-<div id="content-container">
-  <div id="map"></div>
-  <div id="user-list">
-    <div class="d-grid gap-2 col-8 mx-auto">
-      <h1>Join Today</h1>
-      <button class="btn btn-outline-primary text-nowrap" type="button">
-        Sign Up With Google
-      </button>
-      <button
-        id="signup"
-        class="btn btn-outline-primary text-nowrap"
-        type="button"
-      >
-        Sign Up With Email
-      </button>
+<div class="container-fluid h-75">
+  <div class="row justify-content-center h-100">
+    <div class="col-1"><%- include("../partials/sidebar") -%></div>
+    <div class="col-9 d-flex justify-content-center">
+      <div class="h-100 w-100" id="map"></div>
     </div>
-    <div class="d-grid gap-2 col-8 mx-auto">
-      <h5>Already have an account?</h5>
-      <button id="signin" class="btn btn-primary text-nowrap" type="button">
-        Sign In
-      </button>
+    <div class="col-2 d-flex justify-content-center">
+      <div id="user-list">
+        <div class="d-grid gap-2 col-8 mx-auto">
+          <p class="fs-1">Join Today</p>
+          <button
+            class="btn btn-outline-primary text-nowrap rounded-pill"
+            type="button"
+          >
+            Sign Up With Google
+          </button>
+          <button
+            id="signup"
+            class="btn btn-outline-primary text-nowrap rounded-pill"
+            type="button"
+          >
+            Sign Up With Email
+          </button>
+        </div>
+        <div class="d-grid gap-2 col-8 mx-auto">
+          <p class="fs-6">Already have an account?</p>
+          <button
+            id="signin"
+            class="btn btn-primary text-nowrap rounded-pill"
+            type="button"
+          >
+            Sign In
+          </button>
+        </div>
+      </div>
     </div>
   </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script
+    id="map-script"
+    type="module"
+    src="../../static/js/index.js"
+    google_api_key="<%= google_api_key%>"
+    socket_host="<%= socket_host%>"
+  ></script>
+  <script src="/socket.io/socket.io.js"></script>
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script
-  id="map-script"
-  type="module"
-  src="../../static/js/index.js"
-  google_api_key="<%= google_api_key%>"
-  socket_host="<%= socket_host%>"
-></script>
-<script src="/socket.io/socket.io.js"></script>
-
 <%- include("../partials/footer") -%>

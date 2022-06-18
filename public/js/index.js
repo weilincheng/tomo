@@ -71,3 +71,6 @@ window.initMap = initMap;
 $("#signin").click(() => {
   window.location.href = "/signin";
 });
+$("#signup").click(() => {
+  window.location.href = "/signup";
+});

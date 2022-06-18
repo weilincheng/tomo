@@ -31,6 +31,10 @@ app.get("/signin", (req, res) => {
   res.render("pages/signin.ejs");
 });
 
+app.get("/signup", (req, res) => {
+  res.render("pages/signup.ejs");
+});
+
 app.get("/profile", (req, res) => {
   res.render("pages/profile.ejs");
 });

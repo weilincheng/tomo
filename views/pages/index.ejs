@@ -1,38 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <%- include('../partials/head'); %>
-  </head>
-  <body>
-    <div id="navbar"></div>
-    <div id="content-container">
-      <div id="map"></div>
-      <div id="user-list">
-        <div class="d-grid gap-2 col-8 mx-auto">
-          <h1>Join Today</h1>
-          <button class="btn btn-outline-primary text-nowrap" type="button">
-            Sign Up With Google
-          </button>
-          <button class="btn btn-outline-primary text-nowrap" type="button">
-            Sign Up With Email
-          </button>
-        </div>
-        <div class="d-grid gap-2 col-8 mx-auto">
-          <h5>Already have an account?</h5>
-          <button id="signin" class="btn btn-primary text-nowrap" type="button">
-            Sign In
-          </button>
-        </div>
-      </div>
+<%- include("../partials/header") -%>
+<div id="navbar"></div>
+<div id="content-container">
+  <div id="map"></div>
+  <div id="user-list">
+    <div class="d-grid gap-2 col-8 mx-auto">
+      <h1>Join Today</h1>
+      <button class="btn btn-outline-primary text-nowrap" type="button">
+        Sign Up With Google
+      </button>
+      <button
+        id="signup"
+        class="btn btn-outline-primary text-nowrap"
+        type="button"
+      >
+        Sign Up With Email
+      </button>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script
-      id="map-script"
-      type="module"
-      src="../../static/js/index.js"
-      google_api_key="<%= google_api_key%>"
-      socket_host="<%= socket_host%>"
-    ></script>
-    <script src="/socket.io/socket.io.js"></script>
-  </body>
-</html>
+    <div class="d-grid gap-2 col-8 mx-auto">
+      <h5>Already have an account?</h5>
+      <button id="signin" class="btn btn-primary text-nowrap" type="button">
+        Sign In
+      </button>
+    </div>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script
+  id="map-script"
+  type="module"
+  src="../../static/js/index.js"
+  google_api_key="<%= google_api_key%>"
+  socket_host="<%= socket_host%>"
+></script>
+<script src="/socket.io/socket.io.js"></script>
+
+<%- include("../partials/footer") -%>

@@ -47,12 +47,18 @@ server.listen(PORT, () => {
 
 io.on("connection", (socket) => {
   socket.on("update position", (data) => {
-    const { id, pos } = data;
+    const { id, pos, name, location, website } = data;
     console.log(
       `Server: new position ${JSON.stringify(
         pos
-      )} received from ${JSON.stringify(id)}`
+      )} received from ${JSON.stringify(id)} ${JSON.stringify(name)}`
     );
-    socket.broadcast.emit("update position", { id, pos });
+    socket.broadcast.emit("update position", {
+      id,
+      pos,
+      name,
+      location,
+      website,
+    });
   });
 });

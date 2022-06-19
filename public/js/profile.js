@@ -4,7 +4,6 @@ const getUserInfo = async (userId) => {
   });
   const resultJson = await result.json();
   if (resultJson.error) {
-    console.log(resultJson.error);
     alert(resultJson.error);
     return (window.location = "/");
   }

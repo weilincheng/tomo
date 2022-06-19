@@ -35,8 +35,8 @@ app.get("/signup", (req, res) => {
   res.render("pages/signup.ejs");
 });
 
-app.get("/profile", (req, res) => {
-  res.render("pages/profile.ejs");
+app.get("/user/:userId", (req, res) => {
+  res.render("pages/profile.ejs", { userId: req.params.userId });
 });
 
 app.use(`/api/${API_VERSION}`, user);
@@ -48,11 +48,6 @@ server.listen(PORT, () => {
 io.on("connection", (socket) => {
   socket.on("update position", (data) => {
     const { id, pos, name, location, website } = data;
-    console.log(
-      `Server: new position ${JSON.stringify(
-        pos
-      )} received from ${JSON.stringify(id)} ${JSON.stringify(name)}`
-    );
     socket.broadcast.emit("update position", {
       id,
       pos,
@@ -63,7 +58,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnecting", () => {
-    console.log(`Server: ${socket.id} disconnected`);
     io.emit("remove position", { socketId: socket.id });
   });
 });

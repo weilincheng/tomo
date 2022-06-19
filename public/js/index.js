@@ -25,7 +25,6 @@ const removeMarker = (socketId) => {
   const marker = markersList.get(socketId);
   marker.setMap(null);
   markersList.delete(socketId);
-  console.log(`marker ${marker} removed`);
 };
 
 const initMap = () => {
@@ -71,7 +70,6 @@ const initMap = () => {
   }
   socket.on("update position", (data) => {
     const { id, pos, name, location, website } = data;
-    console.log(`new position ${JSON.stringify(pos)} received from ${id}`);
     if (markersList.has(id)) {
       updateMarker(id, pos);
     } else {
@@ -85,7 +83,6 @@ const initMap = () => {
   });
   socket.on("remove position", (data) => {
     const { socketId } = data;
-    console.log(`remove position for socket_id ${socketId}`);
     removeUserCard(socketId);
     removeMarker(socketId);
   });

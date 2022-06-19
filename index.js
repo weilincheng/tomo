@@ -61,4 +61,9 @@ io.on("connection", (socket) => {
       website,
     });
   });
+
+  socket.on("disconnecting", () => {
+    console.log(`Server: ${socket.id} disconnected`);
+    io.emit("remove position", { socketId: socket.id });
+  });
 });

@@ -21,6 +21,13 @@ const createMarker = (map, id, pos, name) => {
   createUserCard(id, name, pos);
 };
 
+const removeMarker = (socketId) => {
+  const marker = markersList.get(socketId);
+  marker.setMap(null);
+  markersList.delete(socketId);
+  console.log(`marker ${marker} removed`);
+};
+
 const initMap = () => {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   const map = new google.maps.Map($("#map")[0], {
@@ -69,10 +76,18 @@ const initMap = () => {
       updateMarker(id, pos);
     } else {
       createMarker(map, id, pos, name);
-      const card = createUserCard(id, name, pos);
-      appendUserCard(card);
-      updateCardTitleText(id, name, location, website);
+      if ($("#signin-signup-form").length === 0) {
+        const card = createUserCard(id, name, pos);
+        appendUserCard(card);
+        updateCardTitleText(id, name, location, website);
+      }
     }
+  });
+  socket.on("remove position", (data) => {
+    const { socketId } = data;
+    console.log(`remove position for socket_id ${socketId}`);
+    removeUserCard(socketId);
+    removeMarker(socketId);
   });
 };
 
@@ -133,6 +148,10 @@ const appendUserCard = (card) => {
 const updateCardTitleText = (id, name, location, website) => {
   $("#card-title-" + id).text(name);
   $("#card-text-" + id).text(location + " " + website);
+};
+
+const removeUserCard = (id) => {
+  $(`#user-card-${id}`).remove();
 };
 
 checkAccessToken();

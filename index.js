@@ -47,9 +47,10 @@ server.listen(PORT, () => {
 
 io.on("connection", (socket) => {
   socket.on("update position", (data) => {
-    const { id, pos, name, location, website } = data;
+    const { socketId, userId, pos, name, location, website } = data;
     socket.broadcast.emit("update position", {
-      id,
+      socketId,
+      userId,
       pos,
       name,
       location,

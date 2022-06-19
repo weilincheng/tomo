@@ -87,4 +87,17 @@ const profile = (access_token) => {
   }
 };
 
-module.exports = { signUp, nativeSignIn, profile };
+const getUserInfo = async (userId) => {
+  const sql = `SELECT * FROM users WHERE id = ?`;
+  const sqlBindings = [userId];
+  const [result] = await pool.query(sql, sqlBindings);
+  if (result.length === 0) {
+    return {
+      error: "User id is invalid",
+      status: 403,
+    };
+  }
+  return result[0];
+};
+
+module.exports = { signUp, nativeSignIn, profile, getUserInfo };

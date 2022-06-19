@@ -2,30 +2,29 @@ const randomVariation = () => {
   return (Math.random() - 0.5) * 0.0005;
 };
 
-const updateMarker = (id, pos) => {
-  const marker = markersList.get(id);
+const updateMarker = (socketId, pos) => {
+  const marker = markersList.get(socketId);
   marker.setPosition(pos);
 };
 
-const createMarker = (map, id, pos, name) => {
+const createMarker = (map, socketId, pos, name) => {
   const marker = new google.maps.Marker({
     position: pos,
     map: map,
     label: {
       color: "blue",
       fontWeight: "bold",
-      text: name,
+      text: name ? name : "annonymous",
     },
   });
-  markersList.set(id, marker);
-  createUserCard(id, name, pos);
+  markersList.set(socketId, marker);
+  createUserCard(socketId, name, pos);
 };
 
 const removeMarker = (socketId) => {
   const marker = markersList.get(socketId);
   marker.setMap(null);
   markersList.delete(socketId);
-  console.log(`marker ${marker} removed`);
 };
 
 const initMap = () => {
@@ -40,13 +39,15 @@ const initMap = () => {
     const name = localStorage.getItem("name");
     const location = localStorage.getItem("location");
     const website = localStorage.getItem("website");
+    const userId = localStorage.getItem("userId");
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       const pos = { lat: latitude, lng: longitude };
       createMarker(map, socket.id, pos, "You are here");
       socket.emit("update position", {
         pos,
-        id: socket.id,
+        socketId: socket.id,
+        userId,
         name,
         location,
         website,
@@ -62,7 +63,8 @@ const initMap = () => {
       updateMarker(socket.id, pos);
       socket.emit("update position", {
         pos,
-        id: socket.id,
+        socketId: socket.id,
+        userId,
         name,
         location,
         website,
@@ -70,22 +72,21 @@ const initMap = () => {
     });
   }
   socket.on("update position", (data) => {
-    const { id, pos, name, location, website } = data;
-    console.log(`new position ${JSON.stringify(pos)} received from ${id}`);
-    if (markersList.has(id)) {
-      updateMarker(id, pos);
+    const { socketId, userId, pos, name, location, website } = data;
+    if (markersList.has(socketId)) {
+      updateMarker(socketId, pos);
     } else {
-      createMarker(map, id, pos, name);
+      createMarker(map, socketId, pos, name);
       if ($("#signin-signup-form").length === 0) {
-        const card = createUserCard(id, name, pos);
+        const card = createUserCard(socketId, name, pos);
         appendUserCard(card);
-        updateCardTitleText(id, name, location, website);
+        updateCardTitleText(socketId, name, location, website);
+        updateUserCardLink(socketId, userId);
       }
     }
   });
   socket.on("remove position", (data) => {
     const { socketId } = data;
-    console.log(`remove position for socket_id ${socketId}`);
     removeUserCard(socketId);
     removeMarker(socketId);
   });
@@ -105,11 +106,14 @@ const checkAccessToken = async () => {
       alert(result.error);
       return (window.location = "/");
     }
-    const { name, location, website } = resultJson;
+    const { name, location, website, id } = resultJson;
     localStorage.setItem("name", name);
     localStorage.setItem("location", location);
     localStorage.setItem("website", website);
+    localStorage.setItem("userId", id);
     removeSignInSignUpForm();
+    appendRightColTitle(name);
+    updateProfileIconLink(id);
   }
 };
 
@@ -117,9 +121,9 @@ const removeSignInSignUpForm = () => {
   $("#signin-signup-form").remove();
 };
 
-const createUserCard = (id) => {
+const createUserCard = (socketId) => {
   const card = $('<div class="card mb-3" style="max-width: 540px;">');
-  card.attr("id", `user-card-${id}`);
+  card.attr("id", `user-card-${socketId}`);
   const cardRow = $('<div class="row g-0">');
   const cardColImage = $('<div class="col-md-4">');
   const cardImage = $(
@@ -130,10 +134,10 @@ const createUserCard = (id) => {
   const cardColBody = $('<div class="col-md-8">');
   const cardBody = $('<div class="card-body">');
   const cardTitle = $('<h5 class="card-title"></h5>');
-  cardTitle.attr("id", `card-title-${id}`);
+  cardTitle.attr("id", `card-title-${socketId}`);
   cardBody.append(cardTitle);
   const cardText = $('<p class="card-text"></p>');
-  cardText.attr("id", `card-text-${id}`);
+  cardText.attr("id", `card-text-${socketId}`);
   cardBody.append(cardText);
   cardColBody.append(cardBody);
   cardRow.append(cardColBody);
@@ -145,13 +149,35 @@ const appendUserCard = (card) => {
   $("#right-col").append(card);
 };
 
-const updateCardTitleText = (id, name, location, website) => {
-  $("#card-title-" + id).text(name);
-  $("#card-text-" + id).text(location + " " + website);
+const updateCardTitleText = (socketId, name, location, website) => {
+  $("#card-title-" + socketId).text(name ? name : "annonymous");
+  $("#card-text-" + socketId).text(
+    `${location ? location : ""} ${website ? website : ""}`
+  );
 };
 
-const removeUserCard = (id) => {
-  $(`#user-card-${id}`).remove();
+const appendRightColTitle = (name) => {
+  const title = $('<p class="fs-3"></p>');
+  title.text(`Welcome, ${name}!`);
+  const text = $('<p class="fs-6"></p>');
+  text.text(`Let's see who is nearby!`);
+  $("#right-col").append(title);
+  $("#right-col").append(text);
+};
+
+const removeUserCard = (socketId) => {
+  $(`#user-card-${socketId}`).remove();
+};
+
+const updateProfileIconLink = (userId) => {
+  $("#nav-profile-link").attr("href", `/user/${userId}`);
+};
+
+const updateUserCardLink = (socketId, userId) => {
+  console.log(`card-title-${socketId}`);
+  $("#card-title-" + socketId).wrap(
+    `<a href="/user/${userId}" target="_blank" rel="noopener noreferrer"></a>`
+  );
 };
 
 checkAccessToken();

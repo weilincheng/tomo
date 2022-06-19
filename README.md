@@ -206,3 +206,21 @@ v1
 | Field |  Type  | Description    |
 | :---: | :----: | :------------- |
 | error | String | Error message. |
+
+### User Id API
+
+- **End Point:** `/user/:userId`
+
+- **Method:** `GET`
+
+- **Query Parameters:** `userId`
+
+- **Success Response Example:**
+
+```
+{
+  "id": 11245642,
+  "name": "test",
+  "email": "test@test.com",
+}
+```

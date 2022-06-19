@@ -82,4 +82,19 @@ const profile = async (req, res) => {
   return;
 };
 
-module.exports = { signUp, signIn, profile };
+const getUserInfo = async (req, res) => {
+  const { userId } = req.params;
+  if (!userId || !validator.isInt(userId, { min: 1 })) {
+    res.status(403).json({ error: "User id is invalid" });
+    return;
+  }
+  const result = await User.getUserInfo(userId);
+  if (result.error) {
+    res.status(result.status).json({ error: result.error });
+    return;
+  }
+  res.status(200).json(result);
+  return;
+};
+
+module.exports = { signUp, signIn, getUserInfo, profile };

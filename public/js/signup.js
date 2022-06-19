@@ -26,5 +26,5 @@ $("#signup-button").click(async (event) => {
   }
   const { access_token } = resultJson;
   localStorage.setItem("access_token", access_token);
-  return (location = "/profile");
+  return (window.location = "/");
 });

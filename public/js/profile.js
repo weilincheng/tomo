@@ -1,18 +1,10 @@
-const getUserInfo = async () => {
-  const access_token = localStorage.getItem("access_token");
-  if (!access_token) {
-    alert("You are not logged in");
-    return (window.location = "/");
-  }
-  const result = await fetch("/api/v1/user/profile", {
+const getUserInfo = async (userId) => {
+  const result = await fetch(`/api/v1/user/${userId}`, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-    },
   });
   const resultJson = await result.json();
   if (resultJson.error) {
-    alert(result.error);
+    alert(resultJson.error);
     return (window.location = "/");
   }
   const { name, location, website } = resultJson;
@@ -25,4 +17,6 @@ const updateUserInfo = async (name, location, website) => {
   $("#website").attr("href", `https://${website}`).text(website);
 };
 
-getUserInfo();
+const userId = $("#profile-script").attr("userId");
+
+getUserInfo(userId);

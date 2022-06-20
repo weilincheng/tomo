@@ -78,9 +78,9 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
   }
 };
 
-const profile = (access_token) => {
+const profile = (accessToken) => {
   try {
-    const { id, name, email, location, website } = verifyToken(access_token);
+    const { id, name, email, location, website } = verifyToken(accessToken);
     return { id, name, email, location, website };
   } catch (error) {
     return { status: 403, error: "Invalid Token" };
@@ -100,4 +100,4 @@ const getUserInfo = async (userId) => {
   return result[0];
 };
 
-module.exports = { signUp, nativeSignIn, profile, getUserInfo };
+module.exports = { signUp, nativeSignIn, profile, getUserInfo, verifyToken };

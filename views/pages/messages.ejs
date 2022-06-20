@@ -1,0 +1,18 @@
+<%- include("../partials/header") -%>
+<div class="row h-75 w-100">
+  <div class="col-1 h-100"><%- include("../partials/sidebar") -%></div>
+  <div class="col-8 h-100 border border-light d-flex">
+    <ul id="messages"></ul>
+    <div class="row align-self-end w-100">
+      <div class="col-11 d-flex justify-content-center align-items-center">
+        <input class="form-control" id="input" autocomplete="off" />
+      </div>
+      <div class="col-1 d-flex justify-content-center align-items-center">
+        <button class="btn btn-primary">Send</button>
+      </div>
+    </div>
+  </div>
+  <div class="col-3 h-100 border border-light"></div>
+</div>
+<script src="../../static/js/messages.js"></script>
+<%- include("../partials/footer") -%>

@@ -127,7 +127,7 @@ const createUserCard = (socketId) => {
   const cardRow = $('<div class="row g-0">');
   const cardColImage = $('<div class="col-md-4">');
   const cardImage = $(
-    '<img class="img-fluid rounded-start" src="https://via.placeholder.com/150" alt="Card image">'
+    '<img class="img-fluid rounded-circle" src="https://via.placeholder.com/150" alt="Card image">'
   );
   cardColImage.append(cardImage);
   cardRow.append(cardColImage);

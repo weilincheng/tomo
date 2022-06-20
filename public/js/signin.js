@@ -23,6 +23,6 @@ $("#signin-button").click(async (event) => {
     return;
   }
   const { access_token } = resultJson;
-  localStorage.setItem("access_token", access_token);
+  localStorage.setItem("accessToken", access_token);
   return (window.location = "/");
 });

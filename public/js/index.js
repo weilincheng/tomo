@@ -31,7 +31,7 @@ const initMap = () => {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   const map = new google.maps.Map($("#map")[0], {
     center: appWorksSchool,
-    zoom: 13,
+    zoom: 15,
     mapId: "d91850b214eae5c9",
   });
 
@@ -93,12 +93,12 @@ const initMap = () => {
 };
 
 const checkAccessToken = async () => {
-  const access_token = localStorage.getItem("access_token");
-  if (access_token) {
+  const accessToken = localStorage.getItem("accessToken");
+  if (accessToken) {
     const result = await fetch("/api/v1/user/profile", {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${access_token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     const resultJson = await result.json();
@@ -119,65 +119,6 @@ const checkAccessToken = async () => {
 
 const removeSignInSignUpForm = () => {
   $("#signin-signup-form").remove();
-};
-
-const createUserCard = (socketId) => {
-  const card = $('<div class="card mb-3" style="max-width: 540px;">');
-  card.attr("id", `user-card-${socketId}`);
-  const cardRow = $('<div class="row g-0">');
-  const cardColImage = $('<div class="col-md-4">');
-  const cardImage = $(
-    '<img class="img-fluid rounded-circle" src="https://via.placeholder.com/150" alt="Card image">'
-  );
-  cardColImage.append(cardImage);
-  cardRow.append(cardColImage);
-  const cardColBody = $('<div class="col-md-8">');
-  const cardBody = $('<div class="card-body">');
-  const cardTitle = $('<h5 class="card-title"></h5>');
-  cardTitle.attr("id", `card-title-${socketId}`);
-  cardBody.append(cardTitle);
-  const cardText = $('<p class="card-text"></p>');
-  cardText.attr("id", `card-text-${socketId}`);
-  cardBody.append(cardText);
-  cardColBody.append(cardBody);
-  cardRow.append(cardColBody);
-  card.append(cardRow);
-  return card;
-};
-
-const appendUserCard = (card) => {
-  $("#right-col").append(card);
-};
-
-const updateCardTitleText = (socketId, name, location, website) => {
-  $("#card-title-" + socketId).text(name ? name : "annonymous");
-  $("#card-text-" + socketId).text(
-    `${location ? location : ""} ${website ? website : ""}`
-  );
-};
-
-const appendRightColTitle = (name) => {
-  const title = $('<p class="fs-3"></p>');
-  title.text(`Welcome, ${name}!`);
-  const text = $('<p class="fs-6"></p>');
-  text.text(`Let's see who is nearby!`);
-  $("#right-col").append(title);
-  $("#right-col").append(text);
-};
-
-const removeUserCard = (socketId) => {
-  $(`#user-card-${socketId}`).remove();
-};
-
-const updateProfileIconLink = (userId) => {
-  $("#nav-profile-link").attr("href", `/user/${userId}`);
-};
-
-const updateUserCardLink = (socketId, userId) => {
-  console.log(`card-title-${socketId}`);
-  $("#card-title-" + socketId).wrap(
-    `<a href="/user/${userId}" target="_blank" rel="noopener noreferrer"></a>`
-  );
 };
 
 checkAccessToken();

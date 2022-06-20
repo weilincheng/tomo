@@ -1,9 +1,11 @@
 <%- include("../partials/header") -%>
 <div class="row h-75 w-100">
   <div class="col-1 h-100"><%- include("../partials/sidebar") -%></div>
-  <div class="col-8 h-100 border border-light d-flex">
-    <ul id="messages"></ul>
-    <div class="row align-self-end w-100">
+  <div
+    class="col-8 h-100 border border-light d-flex flex-column justify-content-between"
+  >
+    <div id="messages-session" class="w-100"></div>
+    <div class="row w-100">
       <div class="col-11 d-flex justify-content-center align-items-center">
         <input class="form-control" id="input" autocomplete="off" />
       </div>

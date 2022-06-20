@@ -1,25 +1,41 @@
-const getMessages = async (accessToken, userId) => {
-  const result = await fetch(`/api/v1/message/${userId}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+const renderMessagesHistory = async (
+  accessToken,
+  currentUserId,
+  targetUserId
+) => {
+  const result = await fetch(
+    `/api/v1/message/?currentUserId=${currentUserId}&targetUserId=${targetUserId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
   const resultJson = await result.json();
   console.log(resultJson);
   for (let i = 0; i < resultJson.length; i++) {
-    const {
+    const { sender_user_id, receiver_user_id, created_at, type, content } =
+      resultJson[i];
+    const message = createMessage(
       sender_user_id,
       receiver_user_id,
       created_at,
       type,
       content,
-    } = resultJson[i];
-    createMessage(sender_user_id, receiver_user_id, created_at, type, content);
+      $("#messages-session")
+    );
+    if (sender_user_id === parseInt(currentUserId)) {
+      $("#messages-session").prepend(
+        message.addClass("d-flex align-items-end flex-column")
+      );
+    } else {
+      $("#messages-session").prepend(
+        message.addClass("d-flex align-items-start flex-column")
+      );
+    }
+  }
 };
-
-const accessToken = localStorage.getItem("accessToken");
-const userId = localStorage.getItem("userId");
 
 const checkAccessToken = async () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -44,10 +60,42 @@ const checkAccessToken = async () => {
   }
 };
 
+const createMessage = (
+  senderUserId,
+  receiverUserId,
+  createdAt,
+  type,
+  content,
+  target
+) => {
+  const date = new Date(createdAt);
+  const [month, day, year, hour, minutes, seconds] = [
+    date.getMonth() + 1,
+    date.getDate(),
+    date.getFullYear(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+  ];
+  const message = $("<div></div>");
+  const messageContent = $(
+    "<p class='btn btn-light fs-4 rounded-pill mb-0'></p>"
+  ).text(content);
+  const messageTime = $("<p class='fs-6 fw-lighter px-3'></p>").text(
+    `${month}/${day}/${year} ${hour}:${minutes}:${seconds}`
+  );
+  message.append(messageContent);
+  message.append(messageTime);
+  return message;
+};
+
+const accessToken = localStorage.getItem("accessToken");
 if (!accessToken) {
   alert("Please sign in!");
   window.location.href = "/";
 }
 
 checkAccessToken();
-getMessages(accessToken, userId);
+const currentUserId = localStorage.getItem("userId");
+const targetUserId = 1;
+renderMessagesHistory(accessToken, currentUserId, targetUserId);

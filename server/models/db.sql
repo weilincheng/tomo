@@ -7,7 +7,7 @@ CREATE TABLE `users`(
     `name` VARCHAR(747) NOT NULL,
     `email` VARCHAR(255) UNIQUE NOT NULL,
     `password` VARCHAR(255) NOT NULL,
-    `created_at` DATETIME DEFAULT CURRENT_DATETIME,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `location` VARCHAR(255),
     `website` VARCHAR(2048), 
     `profile_image` VARCHAR(255), 
@@ -18,7 +18,7 @@ CREATE TABLE `relationships`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `follower_user_id` INT UNSIGNED NOT NULL,
     `followed_user_id` INT UNSIGNED NOT NULL,
-    `created_at` DATETIME DEFAULT CURRENT_DATETIME,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(`follower_user_id`) REFERENCES `users`(`id`),
     FOREIGN KEY(`followed_user_id`) REFERENCES `users`(`id`)
 );
@@ -27,7 +27,7 @@ CREATE TABLE `tweets`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `text` VARCHAR(280) NOT NULL,
     `user_id` INT UNSIGNED NOT NULL,
-    `created_at` DATETIME DEFAULT CURRENT_DATETIME,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(`user_id`) REFERENCES `users`(`id`)
 );
 DROP TABLE IF EXISTS `tweets_images`;
@@ -55,7 +55,7 @@ CREATE TABLE `messages`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `sender_user_id` INT UNSIGNED NOT NULL,
     `receiver_user_id` INT UNSIGNED NOT NULL,
-    `created_at` DATETIME DEFAULT CURRENT_DATETIME,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(`sender_user_id`) REFERENCES `users`(`id`),
     FOREIGN KEY(`receiver_user_id`) REFERENCES `users`(`id`)
 );

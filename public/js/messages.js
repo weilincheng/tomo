@@ -13,7 +13,6 @@ const renderMessagesHistory = async (
     }
   );
   const resultJson = await result.json();
-  console.log(resultJson);
   for (let i = 0; i < resultJson.length; i++) {
     const { sender_user_id, receiver_user_id, created_at, type, content } =
       resultJson[i];
@@ -25,15 +24,7 @@ const renderMessagesHistory = async (
       content,
       $("#messages-session")
     );
-    if (sender_user_id === parseInt(currentUserId)) {
-      $("#messages-session").prepend(
-        message.addClass("d-flex align-items-end flex-column")
-      );
-    } else {
-      $("#messages-session").prepend(
-        message.addClass("d-flex align-items-start flex-column")
-      );
-    }
+    prependMessage(message, sender_user_id);
   }
 };
 
@@ -89,6 +80,30 @@ const createMessage = (
   return message;
 };
 
+const prependMessage = (message, sender_user_id) => {
+  if (sender_user_id === parseInt(currentUserId)) {
+    $("#messages-session").prepend(
+      message.addClass("d-flex align-items-end flex-column")
+    );
+  } else {
+    $("#messages-session").prepend(
+      message.addClass("d-flex align-items-start flex-column")
+    );
+  }
+};
+
+const appendMessage = (message, sender_user_id) => {
+  if (sender_user_id === parseInt(currentUserId)) {
+    $("#messages-session").append(
+      message.addClass("d-flex align-items-end flex-column")
+    );
+  } else {
+    $("#messages-session").append(
+      message.addClass("d-flex align-items-start flex-column")
+    );
+  }
+};
+
 const accessToken = localStorage.getItem("accessToken");
 if (!accessToken) {
   alert("Please sign in!");
@@ -96,6 +111,20 @@ if (!accessToken) {
 }
 
 checkAccessToken();
-const currentUserId = localStorage.getItem("userId");
+const currentUserId = parseInt(localStorage.getItem("userId"));
 const targetUserId = 1;
 renderMessagesHistory(accessToken, currentUserId, targetUserId);
+
+$("#send-message-button").click(() => {
+  const content = $("#message-content-input").val();
+  const currentDate = new Date();
+  const message = createMessage(
+    currentUserId,
+    targetUserId,
+    currentDate,
+    "text",
+    content
+  );
+  appendMessage(message, currentUserId);
+  $("#message-content-input").val("");
+});

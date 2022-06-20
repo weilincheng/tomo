@@ -224,3 +224,17 @@ v1
   "email": "test@test.com",
 }
 ```
+
+### Message API
+
+- **End Point:** `/message?currentUserId='<currentUserId>'&targetUserId='<targetUserId>'`
+
+- **Method:** `GET`
+
+- **Query Strings:** `currentUserId`, `targetUserId`
+
+- **Request Headers:**
+
+|     Field     |  Type  |                                      Description                                       |
+| :-----------: | :----: | :------------------------------------------------------------------------------------: |
+| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |

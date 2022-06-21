@@ -28,6 +28,69 @@ const renderMessagesHistory = async (
   }
 };
 
+const renderSenderUser = async (accessToken, currentUserId) => {
+  const result = await fetch(`/api/v1/message/${currentUserId}/all`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const resultJson = await result.json();
+  const { senderUserIdList } = resultJson;
+  for (let i = 0; i < senderUserIdList.length; i++) {
+    const senderUserId = senderUserIdList[i].sender_user_id;
+    const senderUserName = senderUserIdList[i].name;
+    const senderUserProfileImage = senderUserIdList[i].profile_image;
+    const senderUserLastMessage = senderUserIdList[i].content;
+    renderSenderUserCard(
+      currentUserId,
+      accessToken,
+      senderUserId,
+      senderUserName,
+      senderUserProfileImage,
+      senderUserLastMessage
+    );
+  }
+};
+
+const renderSenderUserCard = (
+  currentUserId,
+  accessToken,
+  senderUserId,
+  senderUserName,
+  senderUserProfileImage,
+  senderUserLastMessage
+) => {
+  const card = $('<div class="row w-100"></div>');
+  card.attr("id", `senderUserCard-UserId-${senderUserId}`);
+  const name = $('<p class="col-3"></p>').text(senderUserName);
+  const lastMessage = $('<p class="col-9"></p>').text(senderUserLastMessage);
+  card.append(name);
+  card.append(lastMessage);
+  $("#user-messages-session").append(card);
+  card.click(() => {
+    const targetUserId = card.attr("id").split("-")[2];
+    $("#messages-session").empty();
+    renderMessagesHistory(accessToken, currentUserId, targetUserId);
+    const sendMessageButton = $("#send-message-button");
+    sendMessageButton.off();
+    sendMessageButton.click(() => {
+      const content = $("#message-content-input").val();
+      const currentDate = new Date();
+      const message = createMessage(
+        currentUserId,
+        targetUserId,
+        currentDate,
+        "text",
+        content
+      );
+      appendMessage(message, currentUserId);
+      $("#message-content-input").val("");
+      saveMessages(currentUserId, targetUserId, "text", content);
+    });
+  });
+};
+
 const checkAccessToken = async () => {
   const accessToken = localStorage.getItem("accessToken");
   if (accessToken) {
@@ -65,7 +128,7 @@ const createMessage = (
     date.getDate(),
     date.getFullYear(),
     date.getHours(),
-    date.getMinutes(),
+    date.getMinutes() >= 10 ? date.getMinutes() : "0" + date.getMinutes(),
     date.getSeconds(),
   ];
   const message = $("<div></div>");
@@ -104,6 +167,24 @@ const appendMessage = (message, sender_user_id) => {
   }
 };
 
+const saveMessages = async (currentUserId, targetUserId, type, content) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (accessToken) {
+    const body = JSON.stringify({ type, content });
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    };
+    const result = await fetch(
+      `/api/v1/message/${currentUserId}/${targetUserId}`,
+      { method: "POST", headers, body }
+    );
+    if (result.error) {
+      alert(result.error);
+    }
+  }
+};
+
 const accessToken = localStorage.getItem("accessToken");
 if (!accessToken) {
   alert("Please sign in!");
@@ -112,19 +193,6 @@ if (!accessToken) {
 
 checkAccessToken();
 const currentUserId = parseInt(localStorage.getItem("userId"));
-const targetUserId = 1;
-renderMessagesHistory(accessToken, currentUserId, targetUserId);
-
-$("#send-message-button").click(() => {
-  const content = $("#message-content-input").val();
-  const currentDate = new Date();
-  const message = createMessage(
-    currentUserId,
-    targetUserId,
-    currentDate,
-    "text",
-    content
-  );
-  appendMessage(message, currentUserId);
-  $("#message-content-input").val("");
-});
+renderSenderUser(accessToken, currentUserId);
+// const targetUserId = 1;
+// renderMessagesHistory(accessToken, currentUserId, targetUserId);

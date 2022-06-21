@@ -5,7 +5,7 @@ const validator = require("validator");
 
 const getMessages = async (req, res) => {
   const { authorization } = req.headers;
-  const { currentUserId, targetUserId } = req.query;
+  const { currentUserId, targetUserId } = req.params;
   if (!authorization) {
     res.status(401).json({ error: "No token" });
     return;
@@ -14,7 +14,7 @@ const getMessages = async (req, res) => {
     !currentUserId ||
     !targetUserId ||
     !validator.isInt(currentUserId, { min: 1 }) ||
-    !validator.isInt(targetUserId, { min: 1 }) ||
+    !(validator.isInt(targetUserId, { min: 1 }) || targetUserId === "all") ||
     currentUserId === targetUserId
   ) {
     res.status(403).json({ error: "User id is invalid" });

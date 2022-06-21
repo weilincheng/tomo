@@ -225,16 +225,44 @@ v1
 }
 ```
 
-### Message API
+### Get Message API
 
-- **End Point:** `/message?currentUserId='<currentUserId>'&targetUserId='<targetUserId>'`
+- **End Point:** `/message/:currentUserId/:targetUserId`
 
 - **Method:** `GET`
 
-- **Query Strings:** `currentUserId`, `targetUserId`
+- **Query Parameters :** `currentUserId`, `targetUserId`
+
+  - currentUserId can only be an int
+  - targetUserId can be an int or `all`
+  - This end point returns all the user id that sends message to current user id when targetUserId is set to `all`
+  - This end point returns all the messages between current user id and target user id when targetUserId is set to an int
 
 - **Request Headers:**
 
 |     Field     |  Type  |                                      Description                                       |
 | :-----------: | :----: | :------------------------------------------------------------------------------------: |
 | Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
+
+### Save Message API
+
+- **End Point:** `/message/:currentUserId/:targetUserId`
+
+- **Method:** `POST`
+
+- **Query Parameters :** `currentUserId`, `targetUserId`
+
+- **Request Headers:**
+
+|     Field     |  Type  |                                      Description                                       |
+| :-----------: | :----: | :------------------------------------------------------------------------------------: |
+| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
+
+- **Request Body Example:**
+
+```
+{
+  "type": "text",
+  "content": "Hello!"
+}
+```

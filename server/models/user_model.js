@@ -3,15 +3,7 @@ const { pool } = require("./mysql_connection");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-
-const generateToken = (id, name, email, location, website) => {
-  return jwt.sign({ id, name, email, location, website }, TOKEN_SECRET, {
-    expiresIn: TOKEN_EXPIRATION,
-  });
-};
-const verifyToken = (access_token) => {
-  return jwt.verify(access_token, TOKEN_SECRET);
-};
+const { generateToken, verifyToken } = require("../../utilities/utilities");
 
 const signUp = async (name, email, password, location, website) => {
   const sql = `INSERT INTO users (name, email, password, location, website) VALUES (?, ?, ?, ?, ?)`;

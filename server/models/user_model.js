@@ -1,6 +1,5 @@
-const { TOKEN_SECRET, TOKEN_EXPIRATION } = process.env;
+const { TOKEN_EXPIRATION } = process.env;
 const { pool } = require("./mysql_connection");
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { generateToken, verifyToken } = require("../../utilities/utilities");
@@ -92,4 +91,26 @@ const getUserInfo = async (userId) => {
   return result[0];
 };
 
-module.exports = { signUp, nativeSignIn, profile, getUserInfo, verifyToken };
+const getUserPosts = async (userId) => {
+  const sql = `SELECT * FROM posts WHERE user_id = ?`;
+  const sqlBindings = [userId];
+  const sqlCondition = `ORDER BY created_at DESC LIMIT 20`;
+  const [result] = await pool.query(`${sql} ${sqlCondition}`, sqlBindings);
+  return result;
+};
+
+const addPost = async (userId, text) => {
+  const sql = `INSERT INTO posts (user_id, text) VALUES (?, ?)`;
+  const sqlBindings = [userId, text];
+  const [result] = await pool.query(sql, sqlBindings);
+  return result;
+};
+
+module.exports = {
+  signUp,
+  nativeSignIn,
+  profile,
+  getUserInfo,
+  getUserPosts,
+  addPost,
+};

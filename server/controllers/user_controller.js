@@ -96,4 +96,27 @@ const getUserInfo = async (req, res) => {
   return;
 };
 
-module.exports = { signUp, signIn, getUserInfo, profile };
+const getUserPosts = async (req, res) => {
+  const { userId } = req.body;
+  const result = await User.getUserPosts(userId);
+  res.status(200).json(result);
+  return;
+};
+
+const addPost = async (req, res) => {
+  const { content } = req.body;
+  const userId = req.userId;
+  const result = await User.addPost(userId, content);
+  const postId = result.insertId;
+  res.status(200).json({ status: "success", postId });
+  return;
+};
+
+module.exports = {
+  signUp,
+  signIn,
+  getUserInfo,
+  profile,
+  getUserPosts,
+  addPost,
+};

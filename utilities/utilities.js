@@ -26,12 +26,14 @@ const authUser = () => {
       return;
     }
     const accessToken = authorization.split(" ")[1];
-    if (!currentUserId) {
-      next();
-    }
     try {
       const { id } = await verifyToken(accessToken);
-      if (id !== parseInt(currentUserId)) {
+      req.userId = id;
+      if (!currentUserId) {
+        next();
+        return;
+      }
+      if (currentUserId && id !== parseInt(currentUserId)) {
         res.status(403).json({ error: "You are not authorized" });
         return;
       }

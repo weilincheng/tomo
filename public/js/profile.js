@@ -17,6 +17,19 @@ const updateUserInfo = async (name, location, website) => {
   $("#website").attr("href", `https://${website}`).text(website);
 };
 
+const renderUserPosts = async (userId) => {
+  getUserPosts(userId);
+};
+
+const getUserPosts = async (userId) => {
+  const result = await fetch(`/api/v1/user/${userId}/posts`, {
+    method: "GET",
+  });
+  const resultJson = await result.json();
+  console.log(resultJson);
+};
+
 const userId = $("#profile-script").attr("userId");
 
 getUserInfo(userId);
+renderUserPosts(userId);

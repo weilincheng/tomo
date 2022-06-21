@@ -8,59 +8,48 @@
 <div class="row">
   <div class="col-1"><%- include("../partials/sidebar") -%></div>
   <div class="col-8 d-flex justify-content-center">
-    <div class="container py-5 h-100 w-100">
-      <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col col-lg-9 col-xl-7">
-          <div class="card">
-            <div
-              class="rounded-top text-white d-flex flex-row"
-              style="background-color: lightblue; height: 210px"
+    <div class="container-fluid h-100 d-flex flex-column">
+      <div class="card">
+        <div
+          class="rounded-top text-white d-flex flex-row"
+          style="background-color: lightblue; height: 210px"
+        >
+          <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px">
+            <img
+              src="https://via.placeholder.com/150"
+              alt="Generic placeholder image"
+              class="img-fluid img-thumbnail rounded-circle mt-4 mb-2"
+              style="width: 150px; z-index: 1"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-dark"
+              data-mdb-ripple-color="dark"
+              style="z-index: 1"
             >
-              <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px">
-                <img
-                  src="https://via.placeholder.com/150"
-                  alt="Generic placeholder image"
-                  class="img-fluid img-thumbnail rounded-circle mt-4 mb-2"
-                  style="width: 150px; z-index: 1"
-                />
-                <button
-                  type="button"
-                  class="btn btn-outline-dark"
-                  data-mdb-ripple-color="dark"
-                  style="z-index: 1"
-                >
-                  Edit profile
-                </button>
-              </div>
-              <div class="ms-3" style="margin-top: 80px">
-                <p class="fs-4" id="name"></p>
-                <p class="fs-6" id="location"></p>
-                <a class="fs-6" id="website" href=""></a>
-              </div>
+              Edit profile
+            </button>
+          </div>
+          <div class="ms-3" style="margin-top: 80px">
+            <p class="fs-4" id="name"></p>
+            <p class="fs-6" id="location"></p>
+            <a class="fs-6" id="website" href=""></a>
+          </div>
+        </div>
+        <div class="p-4 text-black" style="background-color: #f8f9fa">
+          <div class="d-flex justify-content-end text-center py-1">
+            <div class="px-3">
+              <p class="mb-1 h5">1026</p>
+              <p class="small text-muted mb-0">Followers</p>
             </div>
-            <div class="p-4 text-black" style="background-color: #f8f9fa">
-              <div class="d-flex justify-content-end text-center py-1">
-                <div class="px-3">
-                  <p class="mb-1 h5">1026</p>
-                  <p class="small text-muted mb-0">Followers</p>
-                </div>
-                <div>
-                  <p class="mb-1 h5">478</p>
-                  <p class="small text-muted mb-0">Following</p>
-                </div>
-              </div>
-            </div>
-            <div class="card-body p-4 text-black">
-              <div class="mb-5">
-                <p class="lead fw-normal mb-1">About</p>
-                <div class="p-4" style="background-color: #f8f9fa">
-                  <p class="font-italic mb-1">Web Developer</p>
-                </div>
-              </div>
+            <div>
+              <p class="mb-1 h5">478</p>
+              <p class="small text-muted mb-0">Following</p>
             </div>
           </div>
         </div>
       </div>
+      <div id="posts-section"></div>
     </div>
   </div>
   <div class="col-3"></div>

@@ -4,7 +4,7 @@ const renderMessagesHistory = async (
   targetUserId
 ) => {
   const result = await fetch(
-    `/api/v1/message/?currentUserId=${currentUserId}&targetUserId=${targetUserId}`,
+    `/api/v1/message/${currentUserId}/${targetUserId}`,
     {
       method: "GET",
       headers: {

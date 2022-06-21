@@ -31,7 +31,7 @@ const initMap = () => {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   const map = new google.maps.Map($("#map")[0], {
     center: appWorksSchool,
-    zoom: 15,
+    zoom: 13,
     mapId: "d91850b214eae5c9",
   });
 

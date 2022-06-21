@@ -61,12 +61,22 @@ const renderSenderUserCard = (
   senderUserProfileImage,
   senderUserLastMessage
 ) => {
-  const card = $('<div class="row w-100"></div>');
+  const card = $('<div class="row w-100 mb-2"></div>');
   card.attr("id", `senderUserCard-UserId-${senderUserId}`);
-  const name = $('<p class="col-3"></p>').text(senderUserName);
-  const lastMessage = $('<p class="col-9"></p>').text(senderUserLastMessage);
-  card.append(name);
-  card.append(lastMessage);
+  const profileImage = $(
+    '<div class="col-3 d-flex align-items-center"><img class="rounded-pill img-fluid" src="https://via.placeholder.com/80"></div>'
+  );
+  const nameMessageCol = $(
+    '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
+  );
+  const name = $('<p class="fs-5 my-0 px-2"></p>').text(senderUserName);
+  const lastMessage = $('<p class="fs-6 text-secondary my-0 px-2"></p>').text(
+    senderUserLastMessage
+  );
+  nameMessageCol.append(name);
+  nameMessageCol.append(lastMessage);
+  card.append(profileImage);
+  card.append(nameMessageCol);
   $("#user-messages-session").append(card);
   card.click(() => {
     const targetUserId = card.attr("id").split("-")[2];

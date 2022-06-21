@@ -19,10 +19,10 @@ const getMessages = async (req, res) => {
     const seenSenderUserId = new Set();
     const senderUserIdList = [];
     for (let i = 0; i < result.length; i++) {
-      const senderUserId = result[i].sender_user_id;
-      if (!seenSenderUserId.has(senderUserId)) {
-        seenSenderUserId.add(senderUserId);
-        senderUserIdList.push(senderUserId);
+      const { sender_user_id, name, profile_image, content } = result[i];
+      if (!seenSenderUserId.has(sender_user_id)) {
+        seenSenderUserId.add(sender_user_id);
+        senderUserIdList.push({ sender_user_id, name, profile_image, content });
       }
     }
     res.status(200).json({ senderUserIdList });

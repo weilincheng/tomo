@@ -225,6 +225,52 @@ v1
 }
 ```
 
+### Add User Posts API
+
+- **End Point:** `/user/posts`
+
+- **Method:** `POST`
+
+- **Request Headers:**
+
+|     Field     |  Type  |                                      Description                                       |
+| :-----------: | :----: | :------------------------------------------------------------------------------------: |
+| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
+
+- **Request Body Example:**
+
+```
+{
+  "content": "Hello!"
+}
+```
+
+### Get User Posts API
+
+- **End Point:** `/user/posts`
+
+- **Method:** `GET`
+
+- **Request Body Example:**
+
+```
+{
+  "userId": 1
+}
+```
+
+- **Success Response Example:**
+
+```
+{
+  "id": 11245642,
+  "user_id": 12,
+  "text": "A hard day's night",
+  "created_at": "2022-06-21T07:03:37.000Z",
+  "post_images" : ["image1.jpg", "image2.jpg"]
+}
+```
+
 ### Get Message API
 
 - **End Point:** `/message/:currentUserId/:targetUserId`

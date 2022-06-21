@@ -22,20 +22,20 @@ CREATE TABLE `relationships`(
     FOREIGN KEY(`follower_user_id`) REFERENCES `users`(`id`),
     FOREIGN KEY(`followed_user_id`) REFERENCES `users`(`id`)
 );
-DROP TABLE IF EXISTS `tweets`;
-CREATE TABLE `tweets`(
+DROP TABLE IF EXISTS `posts`;
+CREATE TABLE `posts`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `text` VARCHAR(280) NOT NULL,
     `user_id` INT UNSIGNED NOT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(`user_id`) REFERENCES `users`(`id`)
 );
-DROP TABLE IF EXISTS `tweets_images`;
-CREATE TABLE `tweets_images`(
+DROP TABLE IF EXISTS `post_images`;
+CREATE TABLE `post_images`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `tweet_id` BIGINT UNSIGNED NOT NULL,
+    `post_id` BIGINT UNSIGNED NOT NULL,
     `image` VARCHAR(255) NOT NULL,
-    FOREIGN KEY(`tweet_id`) REFERENCES `tweets`(`id`)
+    FOREIGN KEY(`post_id`) REFERENCES `posts`(`id`)
 );
 DROP TABLE IF EXISTS `interests`;
 CREATE TABLE `interests`(

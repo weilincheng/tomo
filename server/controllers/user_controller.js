@@ -112,6 +112,28 @@ const addPost = async (req, res) => {
   return;
 };
 
+const addRelationship = async (req, res) => {
+  const { targetUserId } = req.params;
+  if (!targetUserId || !validator.isInt(targetUserId, { min: 1 })) {
+    res.status(403).json({ error: "Target user id is invalid" });
+    return;
+  }
+  const result = await User.addRelationship(req.userId, targetUserId);
+  res.status(200).json(result);
+  return;
+};
+
+const removeRelationship = async (req, res) => {
+  const { targetUserId } = req.params;
+  if (!targetUserId || !validator.isInt(targetUserId, { min: 1 })) {
+    res.status(403).json({ error: "Target user id is invalid" });
+    return;
+  }
+  const result = await User.removeRelationship(req.userId, targetUserId);
+  res.status(200).json(result);
+  return;
+};
+
 module.exports = {
   signUp,
   signIn,
@@ -119,4 +141,6 @@ module.exports = {
   profile,
   getUserPosts,
   addPost,
+  addRelationship,
+  removeRelationship,
 };

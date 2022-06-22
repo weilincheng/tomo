@@ -263,6 +263,36 @@ v1
 }
 ```
 
+### Add User Follower API
+
+- **End Point:** `/user/follow/:targetUserId`
+
+- **Method:** `POST`
+
+- **Request Headers:**
+
+|     Field     |  Type  |                                      Description                                       |
+| :-----------: | :----: | :------------------------------------------------------------------------------------: |
+| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
+
+### Remove User Follower API
+
+- **End Point:** `/user/follow/:targetUserId`
+
+- **Method:** `DELETE`
+
+- **Request Headers:**
+
+|     Field     |  Type  |                                      Description                                       |
+| :-----------: | :----: | :------------------------------------------------------------------------------------: |
+| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
+
+### Get User Follower / Following API
+
+- **End Point:** `/user/follow/:targetUserId`
+
+- **Method:** `GET`
+
 ### Get Message API
 
 - **End Point:** `/message/:currentUserId/:targetUserId`

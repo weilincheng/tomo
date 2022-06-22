@@ -5,10 +5,10 @@
   id="profile-script"
   userId="<%= userId%>"
 ></script>
-<div class="row">
+<div class="row w-100">
   <div class="col-1"><%- include("../partials/sidebar") -%></div>
   <div class="col-8 d-flex justify-content-center">
-    <div class="container-fluid h-100 d-flex flex-column">
+    <div class="w-100 h-100 d-flex flex-column">
       <div
         class="rounded-top text-white d-flex flex-row"
         style="background-color: lightblue; height: 210px"
@@ -37,19 +37,25 @@
       </div>
       <div class="p-4 text-black" style="background-color: #f8f9fa">
         <div class="d-flex justify-content-end text-center py-1">
-          <div class="px-3">
-            <p class="mb-1 h5">1026</p>
-            <p class="small text-muted mb-0">Followers</p>
+          <div id="followers-link" class="btn px-3 d-flex text-center">
+            <p id="followers-count" class="mx-1 fs-6"></p>
+            <p class="text-secondary">Followers</p>
           </div>
-          <div>
-            <p class="mb-1 h5">478</p>
-            <p class="small text-muted mb-0">Following</p>
+          <div id="following-link" class="btn px-3 d-flex text-center">
+            <p id="following-count" class="mx-1 fs-6"></p>
+            <p class="text-secondary">Following</p>
           </div>
         </div>
       </div>
       <div id="posts-section"></div>
     </div>
   </div>
-  <div class="col-3"></div>
+  <div id="follow-list-section" class="col-3 invisible">
+    <div
+      id="follow-list-title"
+      class="border-bottom text-center fs-3 mb-1"
+    ></div>
+    <div id="follow-list-details" class="d-flex flex-column"></div>
+  </div>
 </div>
 <%- include("../partials/footer") -%>

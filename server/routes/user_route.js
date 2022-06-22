@@ -16,8 +16,8 @@ router.route("/user/signup").post(catchAsyncError(signUp));
 router.route("/user/signin").post(catchAsyncError(signIn));
 router.route("/user/profile").get(catchAsyncError(profile));
 router
-  .route("/user/follow:targetUserId")
-  .get(authUser(), catchAsyncError(getRelationships));
+  .route("/user/follow/:targetUserId")
+  .get(catchAsyncError(getRelationships));
 router
   .route("/user/follow/:targetUserId")
   .post(authUser(), catchAsyncError(addRelationship));

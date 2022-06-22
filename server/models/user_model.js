@@ -106,6 +106,21 @@ const addPost = async (userId, text) => {
   return result;
 };
 
+const getRelationships = async (targetUserId, type) => {
+  let sql = "";
+  let sqlCondition = "";
+  if (type === "following") {
+    sql = `SELECT DISTINCT followed_user_id FROM relationships`;
+    sqlCondition = `WHERE follower_user_id = ?`;
+  } else if (type === "followers") {
+    sql = `SELECT DISTINCT follower_user_id FROM relationships`;
+    sqlCondition = `WHERE followed_user_id = ?`;
+  }
+  const sqlBindings = [targetUserId];
+  const [result] = await pool.query(`${sql} ${sqlCondition}`, sqlBindings);
+  return result;
+};
+
 const addRelationship = async (followerUserid, followedUserId) => {
   const sql = `INSERT INTO relationships (follower_user_id, followed_user_id) VALUES (?, ?)`;
   const sqlBindings = [followerUserid, followedUserId];
@@ -127,6 +142,7 @@ module.exports = {
   getUserInfo,
   getUserPosts,
   addPost,
+  getRelationships,
   addRelationship,
   removeRelationship,
 };

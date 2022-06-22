@@ -2,6 +2,13 @@ require("dotenv").config();
 const User = require("../models/user_model");
 const validator = require("validator");
 
+const checkUserIdExist = (targetUserId, req, res) => {
+  if (!targetUserId || !validator.isInt(targetUserId, { min: 1 })) {
+    res.status(403).json({ error: "Target user id is invalid" });
+    return;
+  }
+};
+
 const signUp = async (req, res) => {
   const { name, email, password, location, website } = req.body;
   if (!name || !password || !email) {
@@ -112,12 +119,18 @@ const addPost = async (req, res) => {
   return;
 };
 
+const getRelationships = async (req, res) => {
+  const { targetUserId } = req.params;
+  checkUserIdExist(targetUserId, req, res);
+  const following = await User.getRelationships(targetUserId, "following");
+  const followers = await User.getRelationships(targetUserId, "followers");
+  res.status(200).json({ following, followers });
+  return;
+};
+
 const addRelationship = async (req, res) => {
   const { targetUserId } = req.params;
-  if (!targetUserId || !validator.isInt(targetUserId, { min: 1 })) {
-    res.status(403).json({ error: "Target user id is invalid" });
-    return;
-  }
+  checkUserIdExist(targetUserId, req, res);
   const result = await User.addRelationship(req.userId, targetUserId);
   res.status(200).json(result);
   return;
@@ -125,10 +138,7 @@ const addRelationship = async (req, res) => {
 
 const removeRelationship = async (req, res) => {
   const { targetUserId } = req.params;
-  if (!targetUserId || !validator.isInt(targetUserId, { min: 1 })) {
-    res.status(403).json({ error: "Target user id is invalid" });
-    return;
-  }
+  checkUserIdExist(targetUserId, req, res);
   const result = await User.removeRelationship(req.userId, targetUserId);
   res.status(200).json(result);
   return;
@@ -141,6 +151,7 @@ module.exports = {
   profile,
   getUserPosts,
   addPost,
+  getRelationships,
   addRelationship,
   removeRelationship,
 };

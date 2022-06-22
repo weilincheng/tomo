@@ -227,7 +227,7 @@ v1
 
 ### Add User Posts API
 
-- **End Point:** `/user/posts`
+- **End Point:** `/user/:userId/posts`
 
 - **Method:** `POST`
 
@@ -247,17 +247,9 @@ v1
 
 ### Get User Posts API
 
-- **End Point:** `/user/posts`
+- **End Point:** `/user/:userId/posts`
 
 - **Method:** `GET`
-
-- **Request Body Example:**
-
-```
-{
-  "userId": 1
-}
-```
 
 - **Success Response Example:**
 

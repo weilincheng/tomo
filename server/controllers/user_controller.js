@@ -97,7 +97,7 @@ const getUserInfo = async (req, res) => {
 };
 
 const getUserPosts = async (req, res) => {
-  const { userId } = req.body;
+  const { userId } = req.params;
   const result = await User.getUserPosts(userId);
   res.status(200).json(result);
   return;
@@ -105,7 +105,7 @@ const getUserPosts = async (req, res) => {
 
 const addPost = async (req, res) => {
   const { content } = req.body;
-  const userId = req.userId;
+  const { userId } = req.params;
   const result = await User.addPost(userId, content);
   const postId = result.insertId;
   res.status(200).json({ status: "success", postId });

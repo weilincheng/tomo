@@ -110,11 +110,11 @@ const getRelationships = async (targetUserId, type) => {
   let sql = "";
   let sqlCondition = "";
   if (type === "following") {
-    sql = `SELECT DISTINCT followed_user_id FROM relationships`;
-    sqlCondition = `WHERE follower_user_id = ?`;
+    sql = `SELECT DISTINCT r.followed_user_id, u.name, u.profile_image FROM relationships AS r INNER JOIN users AS u ON r.followed_user_id = u.id`;
+    sqlCondition = `WHERE follower_user_id = ? `;
   } else if (type === "followers") {
-    sql = `SELECT DISTINCT follower_user_id FROM relationships`;
-    sqlCondition = `WHERE followed_user_id = ?`;
+    sql = `SELECT DISTINCT r.follower_user_id, u.name, u.profile_image FROM relationships AS r INNER JOIN users AS u ON r.follower_user_id = u.id`;
+    sqlCondition = `WHERE followed_user_id = ? `;
   }
   const sqlBindings = [targetUserId];
   const [result] = await pool.query(`${sql} ${sqlCondition}`, sqlBindings);

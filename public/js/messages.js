@@ -16,6 +16,9 @@ const renderMessagesHistory = async (
   for (let i = 0; i < resultJson.length; i++) {
     const { sender_user_id, receiver_user_id, created_at, type, content } =
       resultJson[i];
+    if (type === "placeholder") {
+      continue;
+    }
     const message = createMessage(
       sender_user_id,
       receiver_user_id,
@@ -26,6 +29,11 @@ const renderMessagesHistory = async (
     );
     prependMessage(message, sender_user_id);
   }
+  const messageSession = $("#messages-session");
+  messageSession.animate(
+    { scrollTop: messageSession.prop("scrollHeight") },
+    1000
+  );
 };
 
 const renderSenderUser = async (accessToken, currentUserId) => {
@@ -36,19 +44,20 @@ const renderSenderUser = async (accessToken, currentUserId) => {
     },
   });
   const resultJson = await result.json();
-  const { senderUserIdList } = resultJson;
-  for (let i = 0; i < senderUserIdList.length; i++) {
-    const senderUserId = senderUserIdList[i].sender_user_id;
-    const senderUserName = senderUserIdList[i].name;
-    const senderUserProfileImage = senderUserIdList[i].profile_image;
-    const senderUserLastMessage = senderUserIdList[i].content;
+  const { messageUserIdList } = resultJson;
+  for (let i = 0; i < messageUserIdList.length; i++) {
+    const senderUserId = messageUserIdList[i].sender_user_id;
+    const receiverUserId = messageUserIdList[i].receiver_user_id;
+    const senderUserName = messageUserIdList[i].nickname;
+    const senderUserProfileImage = messageUserIdList[i].profile_image;
+    const senderUserLastMessage = messageUserIdList[i].content;
     renderSenderUserCard(
       currentUserId,
       accessToken,
-      senderUserId,
+      senderUserId === parseInt(currentUserId) ? receiverUserId : senderUserId,
       senderUserName,
       senderUserProfileImage,
-      senderUserLastMessage
+      senderUserId === parseInt(currentUserId) ? "" : senderUserLastMessage
     );
   }
 };
@@ -61,7 +70,12 @@ const renderSenderUserCard = (
   senderUserProfileImage,
   senderUserLastMessage
 ) => {
-  const card = $('<div class="row w-100 mb-2"></div>');
+  // if (senderUserId === parseInt(currentUserId)) {
+  //   senderUserId = senderUserLastMessage.split("-")[1];
+  //   senderUserName = senderUserLastMessage.split("-")[0];
+  //   senderUserLastMessage = " ";
+  // }
+  const card = $('<div class="border-bottom row w-100 mb-2 "></div>');
   card.attr("id", `senderUserCard-UserId-${senderUserId}`);
   const profileImage = $(
     '<div class="col-3 d-flex align-items-center"><img class="rounded-pill img-fluid" src="https://via.placeholder.com/80"></div>'
@@ -74,14 +88,17 @@ const renderSenderUserCard = (
     senderUserLastMessage
   );
   nameMessageCol.append(name);
-  nameMessageCol.append(lastMessage);
+  // nameMessageCol.append(lastMessage);
   card.append(profileImage);
   card.append(nameMessageCol);
   $("#user-messages-session").append(card);
   card.click(() => {
     const targetUserId = card.attr("id").split("-")[2];
+    // const receiverSocketId = card.attr("socket-id");
+    $("#messages-session").attr("target-user-id", targetUserId);
     $("#messages-session").empty();
     renderMessagesHistory(accessToken, currentUserId, targetUserId);
+
     const sendMessageButton = $("#send-message-button");
     sendMessageButton.off();
     sendMessageButton.click(() => {
@@ -96,8 +113,34 @@ const renderSenderUserCard = (
       );
       appendMessage(message, currentUserId);
       $("#message-content-input").val("");
+      emitPrivateMessage(
+        localStorage.getItem("name"),
+        currentUserId,
+        targetUserId,
+        $(`#senderUserCard-UserId-${targetUserId}`).attr("socket-id"),
+        content,
+        currentDate
+      );
       saveMessages(currentUserId, targetUserId, "text", content);
     });
+  });
+};
+
+const emitPrivateMessage = (
+  currentUserName,
+  currentUserId,
+  targetUserId,
+  receiverSocketId,
+  content,
+  currentDate
+) => {
+  socket.emit("private message", {
+    currentUserName,
+    currentUserId,
+    targetUserId,
+    content,
+    to: receiverSocketId,
+    currentDate,
   });
 };
 
@@ -115,8 +158,8 @@ const checkAccessToken = async () => {
       alert(result.error);
       return (window.location = "/");
     }
-    const { name, location, website, id } = resultJson;
-    localStorage.setItem("name", name);
+    const { nickname, location, website, id } = resultJson;
+    localStorage.setItem("name", nickname);
     localStorage.setItem("location", location);
     localStorage.setItem("website", website);
     localStorage.setItem("userId", id);
@@ -166,15 +209,20 @@ const prependMessage = (message, sender_user_id) => {
 };
 
 const appendMessage = (message, sender_user_id) => {
+  const messageSession = $("#messages-session");
   if (sender_user_id === parseInt(currentUserId)) {
-    $("#messages-session").append(
+    messageSession.append(
       message.addClass("d-flex align-items-end flex-column")
     );
   } else {
-    $("#messages-session").append(
+    messageSession.append(
       message.addClass("d-flex align-items-start flex-column")
     );
   }
+  messageSession.animate(
+    { scrollTop: messageSession.prop("scrollHeight") },
+    1000
+  );
 };
 
 const saveMessages = async (currentUserId, targetUserId, type, content) => {
@@ -195,6 +243,11 @@ const saveMessages = async (currentUserId, targetUserId, type, content) => {
   }
 };
 
+const updateSocketId = (targetUserId, socketId) => {
+  const userCard = $(`#senderUserCard-UserId-${targetUserId}`);
+  userCard.attr("socket-id", socketId);
+};
+
 const accessToken = localStorage.getItem("accessToken");
 if (!accessToken) {
   alert("Please sign in!");
@@ -203,6 +256,56 @@ if (!accessToken) {
 
 checkAccessToken();
 const currentUserId = parseInt(localStorage.getItem("userId"));
+const currentUserName = localStorage.getItem("name");
 renderSenderUser(accessToken, currentUserId);
-// const targetUserId = 1;
-// renderMessagesHistory(accessToken, currentUserId, targetUserId);
+
+const socket_host = $("#message-script").attr("socket_host");
+const socket = io(socket_host, { autoConnect: false });
+socket.auth = { currentUserName, currentUserId };
+socket.connect();
+
+socket.on("users", (users) => {
+  users.forEach((user) => {
+    const { userId, socketId } = user;
+    updateSocketId(userId, socketId);
+  });
+});
+
+socket.on(
+  "private message",
+  ({
+    currentUserName,
+    currentUserId,
+    targetUserId,
+    content,
+    from,
+    currentDate,
+  }) => {
+    const targetSocketId = $(`#senderUserCard-UserId-${currentUserId}`).attr(
+      "socket-id"
+    );
+    if ($("#senderUserCard-UserId-" + currentUserId).length === 0) {
+      renderSenderUserCard(
+        targetUserId,
+        accessToken,
+        currentUserId,
+        currentUserName
+      );
+    }
+    if (from === targetSocketId) {
+      const message = createMessage(
+        parseInt(currentUserId),
+        parseInt(targetUserId),
+        currentDate,
+        "text",
+        content
+      );
+      if (
+        parseInt($("#messages-session").attr("target-user-id")) ===
+        parseInt(currentUserId)
+      ) {
+        appendMessage(message, currentUserId);
+      }
+    }
+  }
+);

@@ -16,16 +16,37 @@ const getMessages = async (req, res) => {
   }
   const result = await Message.getMessages(currentUserId, targetUserId);
   if (targetUserId === "all") {
-    const seenSenderUserId = new Set();
-    const senderUserIdList = [];
+    const messageUserId = new Set();
+    const messageUserIdList = [];
     for (let i = 0; i < result.length; i++) {
-      const { sender_user_id, name, profile_image, content } = result[i];
-      if (!seenSenderUserId.has(sender_user_id)) {
-        seenSenderUserId.add(sender_user_id);
-        senderUserIdList.push({ sender_user_id, name, profile_image, content });
+      const {
+        sender_user_id,
+        receiver_user_id,
+        nickname,
+        profile_image,
+        content,
+      } = result[i];
+      if (
+        messageUserId.has(sender_user_id) ||
+        messageUserId.has(receiver_user_id)
+      ) {
+        continue;
       }
+      messageUserId.add(
+        sender_user_id === parseInt(currentUserId)
+          ? receiver_user_id
+          : sender_user_id
+      );
+
+      messageUserIdList.push({
+        sender_user_id,
+        receiver_user_id,
+        nickname,
+        profile_image,
+        content,
+      });
     }
-    res.status(200).json({ senderUserIdList });
+    res.status(200).json({ messageUserIdList: messageUserIdList });
   } else {
     res.status(200).json(result);
   }
@@ -35,7 +56,7 @@ const getMessages = async (req, res) => {
 const saveMessages = async (req, res) => {
   const { currentUserId, targetUserId } = req.params;
   const { content, type } = req.body;
-  if (!content || !type) {
+  if (!type || (type != "placeholder" && !content)) {
     res.status(400).json({ error: "content and type are required" });
     return;
   }

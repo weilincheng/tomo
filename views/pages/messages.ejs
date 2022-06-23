@@ -25,5 +25,10 @@
     <div id="user-messages-session" class="w-100 overflow-auto"></div>
   </div>
 </div>
-<script src="../../static/js/messages.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script
+  id="message-script"
+  src="../../static/js/messages.js"
+  socket_host="<%= socket_host%>"
+></script>
 <%- include("../partials/footer") -%>

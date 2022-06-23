@@ -34,7 +34,7 @@ const signUp = async (req, res) => {
     access_expiration: result.access_expiration,
     user: {
       id: result.id,
-      name,
+      nickname: name,
       email,
       location,
       website,

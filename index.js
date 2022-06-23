@@ -41,7 +41,9 @@ app.get("/user/:userId", (req, res) => {
 });
 
 app.get("/messages", (req, res) => {
-  res.render("pages/messages.ejs");
+  res.render("pages/messages.ejs", {
+    socket_host: SOCKET_HOST,
+  });
 });
 
 app.use(`/api/${API_VERSION}`, [user, message]);
@@ -63,6 +65,33 @@ server.listen(PORT, () => {
 });
 
 io.on("connection", (socket) => {
+  const { currentUserName, currentUserId } = socket.handshake.auth;
+  socket.userName = currentUserName;
+  socket.userId = currentUserId;
+  const users = [];
+  for (let [id, socket] of io.of("/").sockets) {
+    if (!socket.userName) continue;
+    users.push({
+      userId: socket.userId,
+      socketId: id,
+      userName: socket.userName,
+    });
+  }
+  io.emit("users", users);
+
+  socket.on(
+    "private message",
+    ({ currentUserId, targetUserId, content, to, currentDate }) => {
+      socket.to(to).emit("private message", {
+        currentUserId,
+        targetUserId,
+        content,
+        from: socket.id,
+        currentDate,
+      });
+    }
+  );
+
   socket.on("update position", (data) => {
     const { socketId, userId, pos, name, location, website } = data;
     socket.broadcast.emit("update position", {

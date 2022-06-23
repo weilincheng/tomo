@@ -94,15 +94,19 @@ const renderSenderUserCard = (
   $("#user-messages-session").append(card);
   card.click(() => {
     const targetUserId = card.attr("id").split("-")[2];
-    // const receiverSocketId = card.attr("socket-id");
     $("#messages-session").attr("target-user-id", targetUserId);
     $("#messages-session").empty();
     renderMessagesHistory(accessToken, currentUserId, targetUserId);
 
     const sendMessageButton = $("#send-message-button");
-    sendMessageButton.off();
+    const messageInput = $("#message-content-input");
+    sendMessageButton.show();
+    messageInput.show();
     sendMessageButton.click(() => {
       const content = $("#message-content-input").val();
+      if (content === "") {
+        return;
+      }
       const currentDate = new Date();
       const message = createMessage(
         currentUserId,
@@ -210,7 +214,7 @@ const prependMessage = (message, sender_user_id) => {
 
 const appendMessage = (message, sender_user_id) => {
   const messageSession = $("#messages-session");
-  if (sender_user_id === parseInt(currentUserId)) {
+  if (parseInt(sender_user_id) === parseInt(currentUserId)) {
     messageSession.append(
       message.addClass("d-flex align-items-end flex-column")
     );
@@ -257,6 +261,10 @@ if (!accessToken) {
 checkAccessToken();
 const currentUserId = parseInt(localStorage.getItem("userId"));
 const currentUserName = localStorage.getItem("name");
+const sendMessageButton = $("#send-message-button");
+const messageInput = $("#message-content-input");
+sendMessageButton.hide();
+messageInput.hide();
 renderSenderUser(accessToken, currentUserId);
 
 const socket_host = $("#message-script").attr("socket_host");
@@ -274,37 +282,40 @@ socket.on("users", (users) => {
 socket.on(
   "private message",
   ({
-    currentUserName,
-    currentUserId,
-    targetUserId,
+    currentUserName: senderUserName,
+    currentUserId: senderUserId,
+    targetUserId: receiverUserId,
     content,
     from,
     currentDate,
   }) => {
-    const targetSocketId = $(`#senderUserCard-UserId-${currentUserId}`).attr(
+    const targetSocketId = $(`#senderUserCard-UserId-${senderUserId}`).attr(
       "socket-id"
     );
-    if ($("#senderUserCard-UserId-" + currentUserId).length === 0) {
+    if ($("#senderUserCard-UserId-" + senderUserId).length === 0) {
       renderSenderUserCard(
-        targetUserId,
+        receiverUserId,
         accessToken,
-        currentUserId,
-        currentUserName
+        senderUserId,
+        senderUserName,
+        null,
+        content
       );
+      updateSocketId(senderUserId, from);
     }
     if (from === targetSocketId) {
       const message = createMessage(
-        parseInt(currentUserId),
-        parseInt(targetUserId),
+        parseInt(senderUserId),
+        parseInt(receiverUserId),
         currentDate,
         "text",
         content
       );
       if (
         parseInt($("#messages-session").attr("target-user-id")) ===
-        parseInt(currentUserId)
+        parseInt(senderUserId)
       ) {
-        appendMessage(message, currentUserId);
+        appendMessage(message, senderUserId);
       }
     }
   }

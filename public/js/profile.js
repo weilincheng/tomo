@@ -155,7 +155,6 @@ const getUserPosts = async (userId) => {
   return resultJson;
 };
 
-const userId = $("#profile-script").attr("userId");
 const renderFollowList = async (userId, type) => {
   const result = await fetch(`/api/v1/user/follow/${userId}`, {
     method: "GET",
@@ -214,6 +213,7 @@ const attachClickListeners = () => {
   const followingLink = $("#following-link");
   const sendMessageLink = $("#send-message-link");
   const loggedInUserId = localStorage.getItem("userId");
+
   followersLink.click(() => {
     $("#follow-list-details").empty();
     $("#follow-list-section").removeClass("invisible");
@@ -232,8 +232,13 @@ const attachClickListeners = () => {
   });
 };
 
+const userId = $("#profile-script").attr("userId");
 updateUserInfo();
 
 $(document).ready(() => {
+  $("#send-message-link").hide();
+  if (userId !== localStorage.getItem("userId")) {
+    $("#send-message-link").show();
+  }
   attachClickListeners();
 });

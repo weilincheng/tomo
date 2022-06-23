@@ -66,7 +66,6 @@ server.listen(PORT, () => {
 
 io.on("connection", (socket) => {
   const { currentUserName, currentUserId } = socket.handshake.auth;
-  const currentSocketId = socket.id;
   socket.userName = currentUserName;
   socket.userId = currentUserId;
   const users = [];

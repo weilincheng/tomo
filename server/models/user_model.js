@@ -5,7 +5,7 @@ const saltRounds = 10;
 const { generateToken, verifyToken } = require("../../utilities/utilities");
 
 const signUp = async (name, email, password, location, website) => {
-  const sql = `INSERT INTO users (name, email, password, location, website) VALUES (?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO users (nickname, email, password, location, website) VALUES (?, ?, ?, ?, ?)`;
   const hash = await bcrypt.hash(password, saltRounds);
   const sqlBindings = [name, email, hash, location, website];
   try {
@@ -40,7 +40,7 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
       status: 403,
     };
   }
-  const { id, name, email, password, location, website } = result[0];
+  const { id, nickname, email, password, location, website } = result[0];
   const match = await bcrypt.compare(signInPassword, password);
   if (!match) {
     return {
@@ -50,7 +50,7 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
   } else {
     const access_token = generateToken(
       id,
-      name,
+      nickname,
       signInEmail,
       location,
       website
@@ -60,7 +60,7 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
       access_expiration: TOKEN_EXPIRATION,
       user: {
         id,
-        name,
+        nickname,
         email,
         location,
         website,
@@ -71,8 +71,8 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
 
 const profile = (accessToken) => {
   try {
-    const { id, name, email, location, website } = verifyToken(accessToken);
-    return { id, name, email, location, website };
+    const { id, nickname, email, location, website } = verifyToken(accessToken);
+    return { id, nickname, email, location, website };
   } catch (error) {
     return { status: 403, error: "Invalid Token" };
   }
@@ -110,10 +110,10 @@ const getRelationships = async (targetUserId, type) => {
   let sql = "";
   let sqlCondition = "";
   if (type === "following") {
-    sql = `SELECT DISTINCT r.followed_user_id, u.name, u.profile_image FROM relationships AS r INNER JOIN users AS u ON r.followed_user_id = u.id`;
+    sql = `SELECT DISTINCT r.followed_user_id, u.nickname, u.profile_image FROM relationships AS r INNER JOIN users AS u ON r.followed_user_id = u.id`;
     sqlCondition = `WHERE follower_user_id = ? `;
   } else if (type === "followers") {
-    sql = `SELECT DISTINCT r.follower_user_id, u.name, u.profile_image FROM relationships AS r INNER JOIN users AS u ON r.follower_user_id = u.id`;
+    sql = `SELECT DISTINCT r.follower_user_id, u.nickname, u.profile_image FROM relationships AS r INNER JOIN users AS u ON r.follower_user_id = u.id`;
     sqlCondition = `WHERE followed_user_id = ? `;
   }
   const sqlBindings = [targetUserId];

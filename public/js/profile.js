@@ -7,29 +7,28 @@ const getUserInfo = async (userId) => {
     alert(resultJson.error);
     return (window.location = "/");
   }
-  const { name, location, website } = resultJson;
+  const { nickname, location, website } = resultJson;
   const userFollowInfo = await fetch(`/api/v1/user/follow/${userId}`, {
     method: "GET",
   });
   const userFollowInfoJson = await userFollowInfo.json();
   const { following, followers } = userFollowInfoJson;
 
-  return { name, location, website, following, followers };
+  return { nickname, location, website, following, followers };
 };
 
 const updateUserInfo = async () => {
-  const { name, location, website, following, followers } = await getUserInfo(
-    userId
-  );
-  $("#name").text(name);
+  const { nickname, location, website, following, followers } =
+    await getUserInfo(userId);
+  $("#name").text(nickname);
   $("#location").text(location);
   $("#website").attr("href", `https://${website}`).text(website);
   $("#followers-count").text(followers.length);
   $("#following-count").text(following.length);
-  // console.log(followers);
   const loggedInUserId = localStorage.getItem("userId");
   updateProfileIconLink(loggedInUserId);
   updateEditFollowButton(userId, loggedInUserId, followers);
+  renderUserPosts(userId);
 };
 
 const updateEditFollowButton = (
@@ -133,8 +132,8 @@ const renderUserPosts = async (userId) => {
     const dateConetnt = $('<p class="text-secondary my-0 px-2"></p>').text(
       dateString
     );
-    const name = $("#name").text();
-    const userName = $('<p class="fs-5 my-0 px-2"></p>').text(`${name}`);
+    const nickname = $("#name").text();
+    const userName = $('<p class="fs-5 my-0 px-2"></p>').text(nickname);
     const postText = $('<p class="fs-6 text-secondary my-0 px-2"></p>').text(
       text
     );
@@ -164,7 +163,7 @@ const renderFollowList = async (userId, type) => {
   const resultJson = await result.json();
   const followList = resultJson[type];
   for (let i = 0; i < followList.length; i++) {
-    const { follower_user_id, followed_user_id, name, profile_image } =
+    const { follower_user_id, followed_user_id, nickname, profile_image } =
       followList[i];
     const follow = $('<a class="row w-100 mb-2"></a>');
     follow.attr(
@@ -177,16 +176,44 @@ const renderFollowList = async (userId, type) => {
     const followInfoCol = $(
       '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
     );
-    const followName = $('<p class="fs-5 my-0 px-2"></p>').text(name);
+    const followName = $('<p class="fs-5 my-0 px-2"></p>').text(nickname);
     followInfoCol.append(followName);
     follow.append(profileImage);
     follow.append(followInfoCol);
     $("#follow-list-details").append(follow);
   }
 };
+
+const sendPlaceholderMessage = (
+  senderUserId,
+  receiverUserId,
+  receiverUserName
+) => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    return;
+  }
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${accessToken}`,
+  };
+  const body = JSON.stringify({
+    type: "placeholder",
+    content: `${receiverUserName}-${receiverUserId}`,
+  });
+  const result = fetch(`/api/v1/message/${senderUserId}/${receiverUserId}`, {
+    method: "POST",
+    headers,
+    body,
+  });
+  return (window.location = "/messages");
+};
+
 const attachClickListeners = () => {
   const followersLink = $("#followers-link");
   const followingLink = $("#following-link");
+  const sendMessageLink = $("#send-message-link");
+  const loggedInUserId = localStorage.getItem("userId");
   followersLink.click(() => {
     $("#follow-list-details").empty();
     $("#follow-list-section").removeClass("invisible");
@@ -199,10 +226,14 @@ const attachClickListeners = () => {
     $("#follow-list-title").text("Following");
     renderFollowList(userId, "following");
   });
+  sendMessageLink.click(() => {
+    const userName = $("#name").text();
+    sendPlaceholderMessage(loggedInUserId, userId, userName);
+  });
 };
 
 updateUserInfo();
-renderUserPosts(userId);
+
 $(document).ready(() => {
   attachClickListeners();
 });

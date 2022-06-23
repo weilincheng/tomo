@@ -7,8 +7,8 @@ const catchAsyncError = (callback) => {
   };
 };
 
-const generateToken = (id, name, email, location, website) => {
-  return jwt.sign({ id, name, email, location, website }, TOKEN_SECRET, {
+const generateToken = (id, nickname, email, location, website) => {
+  return jwt.sign({ id, nickname, email, location, website }, TOKEN_SECRET, {
     expiresIn: TOKEN_EXPIRATION,
   });
 };

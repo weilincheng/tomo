@@ -16,6 +16,9 @@ const renderMessagesHistory = async (
   for (let i = 0; i < resultJson.length; i++) {
     const { sender_user_id, receiver_user_id, created_at, type, content } =
       resultJson[i];
+    if (type === "placeholder") {
+      continue;
+    }
     const message = createMessage(
       sender_user_id,
       receiver_user_id,
@@ -41,19 +44,21 @@ const renderSenderUser = async (accessToken, currentUserId) => {
     },
   });
   const resultJson = await result.json();
-  const { senderUserIdList } = resultJson;
-  for (let i = 0; i < senderUserIdList.length; i++) {
-    const senderUserId = senderUserIdList[i].sender_user_id;
-    const senderUserName = senderUserIdList[i].name;
-    const senderUserProfileImage = senderUserIdList[i].profile_image;
-    const senderUserLastMessage = senderUserIdList[i].content;
+  console.log(resultJson);
+  const { messageUserIdList } = resultJson;
+  for (let i = 0; i < messageUserIdList.length; i++) {
+    const senderUserId = messageUserIdList[i].sender_user_id;
+    const receiverUserId = messageUserIdList[i].receiver_user_id;
+    const senderUserName = messageUserIdList[i].nickname;
+    const senderUserProfileImage = messageUserIdList[i].profile_image;
+    const senderUserLastMessage = messageUserIdList[i].content;
     renderSenderUserCard(
       currentUserId,
       accessToken,
-      senderUserId,
+      senderUserId === parseInt(currentUserId) ? receiverUserId : senderUserId,
       senderUserName,
       senderUserProfileImage,
-      senderUserLastMessage
+      senderUserId === parseInt(currentUserId) ? "" : senderUserLastMessage
     );
   }
 };
@@ -66,7 +71,12 @@ const renderSenderUserCard = (
   senderUserProfileImage,
   senderUserLastMessage
 ) => {
-  const card = $('<div class="row w-100 mb-2"></div>');
+  // if (senderUserId === parseInt(currentUserId)) {
+  //   senderUserId = senderUserLastMessage.split("-")[1];
+  //   senderUserName = senderUserLastMessage.split("-")[0];
+  //   senderUserLastMessage = " ";
+  // }
+  const card = $('<div class="border-bottom row w-100 mb-2 "></div>');
   card.attr("id", `senderUserCard-UserId-${senderUserId}`);
   const profileImage = $(
     '<div class="col-3 d-flex align-items-center"><img class="rounded-pill img-fluid" src="https://via.placeholder.com/80"></div>'
@@ -79,14 +89,14 @@ const renderSenderUserCard = (
     senderUserLastMessage
   );
   nameMessageCol.append(name);
-  nameMessageCol.append(lastMessage);
+  // nameMessageCol.append(lastMessage);
   card.append(profileImage);
   card.append(nameMessageCol);
   $("#user-messages-session").append(card);
   card.click(() => {
     const targetUserId = card.attr("id").split("-")[2];
-    const receiverSocketId = card.attr("socket-id");
-    $("#messages-session").attr("target-socket-id", receiverSocketId);
+    // const receiverSocketId = card.attr("socket-id");
+    $("#messages-session").attr("target-user-id", targetUserId);
     $("#messages-session").empty();
     renderMessagesHistory(accessToken, currentUserId, targetUserId);
 
@@ -102,24 +112,30 @@ const renderSenderUserCard = (
         "text",
         content
       );
-      console.log(receiverSocketId);
       appendMessage(message, currentUserId);
       $("#message-content-input").val("");
-      if (receiverSocketId) {
-        emitPrivateMessage(
-          currentUserId,
-          targetUserId,
-          receiverSocketId,
-          content,
-          currentDate
-        );
-      }
+      // if (receiverSocketId) {
+      console.log(
+        "Emit private message",
+        targetUserId,
+        $(`#senderUserCard-UserId-${targetUserId}`).attr("socket-id")
+      );
+      emitPrivateMessage(
+        localStorage.getItem("name"),
+        currentUserId,
+        targetUserId,
+        $(`#senderUserCard-UserId-${targetUserId}`).attr("socket-id"),
+        content,
+        currentDate
+      );
+      // }
       saveMessages(currentUserId, targetUserId, "text", content);
     });
   });
 };
 
 const emitPrivateMessage = (
+  currentUserName,
   currentUserId,
   targetUserId,
   receiverSocketId,
@@ -127,6 +143,7 @@ const emitPrivateMessage = (
   currentDate
 ) => {
   socket.emit("private message", {
+    currentUserName,
     currentUserId,
     targetUserId,
     content,
@@ -149,8 +166,8 @@ const checkAccessToken = async () => {
       alert(result.error);
       return (window.location = "/");
     }
-    const { name, location, website, id } = resultJson;
-    localStorage.setItem("name", name);
+    const { nickname, location, website, id } = resultJson;
+    localStorage.setItem("name", nickname);
     localStorage.setItem("location", location);
     localStorage.setItem("website", website);
     localStorage.setItem("userId", id);
@@ -256,18 +273,33 @@ socket.auth = { currentUserName, currentUserId };
 socket.connect();
 
 socket.on("users", (users) => {
-  console.log("received users", users);
   users.forEach((user) => {
-    updateSocketId(user.userId, user.socketId);
+    const { userId, socketId } = user;
+    updateSocketId(userId, socketId);
   });
 });
 
 socket.on(
   "private message",
-  ({ currentUserId, targetUserId, content, from, currentDate }) => {
-    console.log(currentUserId, targetUserId, content, from, currentDate);
-    const targetSocketId = $("#messages-session").attr("target-socket-id");
-    console.log(targetSocketId);
+  ({
+    currentUserName,
+    currentUserId,
+    targetUserId,
+    content,
+    from,
+    currentDate,
+  }) => {
+    const targetSocketId = $(`#senderUserCard-UserId-${currentUserId}`).attr(
+      "socket-id"
+    );
+    if ($("#senderUserCard-UserId-" + currentUserId).length === 0) {
+      renderSenderUserCard(
+        targetUserId,
+        accessToken,
+        currentUserId,
+        currentUserName
+      );
+    }
     if (from === targetSocketId) {
       const message = createMessage(
         parseInt(currentUserId),
@@ -276,7 +308,12 @@ socket.on(
         "text",
         content
       );
-      appendMessage(message, currentUserId);
+      if (
+        parseInt($("#messages-session").attr("target-user-id")) ===
+        parseInt(currentUserId)
+      ) {
+        appendMessage(message, currentUserId);
+      }
     }
   }
 );

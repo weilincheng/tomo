@@ -26,8 +26,90 @@ const updateUserInfo = async () => {
   $("#website").attr("href", `https://${website}`).text(website);
   $("#followers-count").text(followers.length);
   $("#following-count").text(following.length);
+  // console.log(followers);
   const loggedInUserId = localStorage.getItem("userId");
   updateProfileIconLink(loggedInUserId);
+  updateEditFollowButton(userId, loggedInUserId, followers);
+};
+
+const updateEditFollowButton = (
+  profileUserId,
+  loggedInUserId,
+  profileUserFollowers
+) => {
+  $("#follow-button").hide();
+  $("#following-button").hide();
+  $("#edit-profile-button").hide();
+  if (profileUserId === loggedInUserId) {
+    $("#edit-profile-button").show();
+  } else {
+    let isFollowing = false;
+    for (let follower of profileUserFollowers) {
+      if (parseInt(follower.follower_user_id) === parseInt(loggedInUserId)) {
+        isFollowing = true;
+      }
+    }
+    if (isFollowing) {
+      $("#following-button").show();
+    } else {
+      $("#follow-button").show();
+    }
+  }
+  attachFollowingButtonEvent(profileUserId);
+  attachFolloButtonEvent(profileUserId);
+};
+
+const attachFollowingButtonEvent = (targetUserId) => {
+  const followingButton = $("#following-button");
+  followingButton.hover(
+    () => {
+      followingButton.text("Unfollow");
+    },
+    () => {
+      followingButton.text("Following");
+    }
+  );
+
+  followingButton.click(async () => {
+    const headers = {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    };
+    const result = await fetch(`/api/v1/user/follow/${targetUserId}`, {
+      method: "DELETE",
+      headers,
+    });
+    const resultJson = await result.json();
+    if (resultJson.error) {
+      alert(resultJson.error);
+    } else {
+      const currentFollowersCount = $("#followers-count").text();
+      $("#followers-count").text(parseInt(currentFollowersCount) - 1);
+      $("#follow-button").show();
+      $("#following-button").hide();
+    }
+  });
+};
+
+const attachFolloButtonEvent = (targetUserId) => {
+  const followButton = $("#follow-button");
+  followButton.click(async () => {
+    const headers = {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    };
+    const result = await fetch(`/api/v1/user/follow/${targetUserId}`, {
+      method: "POST",
+      headers,
+    });
+    const resultJson = await result.json();
+    if (resultJson.error) {
+      alert(resultJson.error);
+    } else {
+      const currentFollowersCount = $("#followers-count").text();
+      $("#followers-count").text(parseInt(currentFollowersCount) + 1);
+      $("#follow-button").hide();
+      $("#following-button").show();
+    }
+  });
 };
 
 const renderUserPosts = async (userId) => {

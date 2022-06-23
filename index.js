@@ -78,11 +78,20 @@ io.on("connection", (socket) => {
     });
   }
   io.emit("users", users);
+  console.log(users);
 
   socket.on(
     "private message",
-    ({ currentUserId, targetUserId, content, to, currentDate }) => {
+    ({
+      currentUserName,
+      currentUserId,
+      targetUserId,
+      content,
+      to,
+      currentDate,
+    }) => {
       socket.to(to).emit("private message", {
+        currentUserName,
         currentUserId,
         targetUserId,
         content,

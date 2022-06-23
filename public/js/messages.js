@@ -44,7 +44,6 @@ const renderSenderUser = async (accessToken, currentUserId) => {
     },
   });
   const resultJson = await result.json();
-  console.log(resultJson);
   const { messageUserIdList } = resultJson;
   for (let i = 0; i < messageUserIdList.length; i++) {
     const senderUserId = messageUserIdList[i].sender_user_id;
@@ -114,12 +113,6 @@ const renderSenderUserCard = (
       );
       appendMessage(message, currentUserId);
       $("#message-content-input").val("");
-      // if (receiverSocketId) {
-      console.log(
-        "Emit private message",
-        targetUserId,
-        $(`#senderUserCard-UserId-${targetUserId}`).attr("socket-id")
-      );
       emitPrivateMessage(
         localStorage.getItem("name"),
         currentUserId,
@@ -128,7 +121,6 @@ const renderSenderUserCard = (
         content,
         currentDate
       );
-      // }
       saveMessages(currentUserId, targetUserId, "text", content);
     });
   });

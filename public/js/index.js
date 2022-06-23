@@ -108,7 +108,6 @@ const checkAccessToken = async () => {
       return;
     }
     const { nickname, location, website, id } = resultJson;
-    console.log(resultJson);
     localStorage.setItem("name", nickname);
     localStorage.setItem("location", location);
     localStorage.setItem("website", website);

@@ -77,7 +77,6 @@ io.on("connection", (socket) => {
       userName: socket.userName,
     });
   }
-  console.log("emitting", users);
   io.emit("users", users);
 
   socket.on(

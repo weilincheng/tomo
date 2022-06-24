@@ -211,6 +211,7 @@ const sendPlaceholderMessage = (
 const attachClickListeners = () => {
   const followersLink = $("#followers-link");
   const followingLink = $("#following-link");
+  const editProfileButton = $("#edit-profile-button");
   const sendMessageLink = $("#send-message-link");
   const loggedInUserId = localStorage.getItem("userId");
 
@@ -229,6 +230,10 @@ const attachClickListeners = () => {
   sendMessageLink.click(() => {
     const userName = $("#name").text();
     sendPlaceholderMessage(loggedInUserId, userId, userName);
+  });
+
+  editProfileButton.click(() => {
+    return (window.location = `/user/edit`);
   });
 };
 

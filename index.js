@@ -36,6 +36,10 @@ app.get("/signup", (req, res) => {
   res.render("pages/signup.ejs");
 });
 
+app.get("/user/edit", (req, res) => {
+  res.render("pages/edit_profile.ejs");
+});
+
 app.get("/user/:userId", (req, res) => {
   res.render("pages/profile.ejs", { userId: req.params.userId });
 });

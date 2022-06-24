@@ -4,13 +4,22 @@ const {
   signIn,
   profile,
   getUserInfo,
+  updateUserInfo,
   getUserPosts,
   addPost,
   getRelationships,
   addRelationship,
   removeRelationship,
 } = require("../controllers/user_controller");
-const { catchAsyncError, authUser } = require("../../utilities/utilities");
+const {
+  catchAsyncError,
+  authUser,
+  multerUpload,
+} = require("../../utilities/utilities");
+const cpUpload = multerUpload.fields([
+  { name: "profile-image", maxCount: 1 },
+  { name: "background-image", maxCount: 1 },
+]);
 
 router.route("/user/signup").post(catchAsyncError(signUp));
 router.route("/user/signin").post(catchAsyncError(signIn));
@@ -24,8 +33,11 @@ router
 router
   .route("/user/follow/:targetUserId")
   .delete(authUser(), catchAsyncError(removeRelationship));
+router.route("/user/:userId").get(catchAsyncError(getUserInfo));
+router
+  .route("/user/:userId")
+  .put(authUser(), cpUpload, catchAsyncError(updateUserInfo));
 router.route("/user/:userId/posts").get(catchAsyncError(getUserPosts));
 router.route("/user/:userId/posts").post(authUser(), catchAsyncError(addPost));
-router.route("/user/:userId").get(catchAsyncError(getUserInfo));
 
 module.exports = router;

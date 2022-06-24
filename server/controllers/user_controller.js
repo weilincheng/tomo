@@ -1,6 +1,7 @@
 require("dotenv").config();
 const User = require("../models/user_model");
 const validator = require("validator");
+const { s3Upload } = require("../../utilities/utilities");
 
 const checkUserIdExist = (targetUserId, req, res) => {
   if (!targetUserId || !validator.isInt(targetUserId, { min: 1 })) {
@@ -103,6 +104,35 @@ const getUserInfo = async (req, res) => {
   return;
 };
 
+const updateUserInfo = async (req, res) => {
+  const { userId } = req.params;
+  if (userId != req.userId) {
+    res.status(403).json({ error: "You are not authorized" });
+  }
+  const { "profile-image": profileImage, "background-image": backgroundImage } =
+    req.files;
+  const { nickname, bio, location, website } = req.body;
+  let profileImageName, backgroundImageName;
+  if (profileImage) {
+    const result = await s3Upload(profileImage);
+    profileImageName = result;
+  }
+  if (backgroundImage) {
+    const result = await s3Upload(backgroundImage);
+    backgroundImageName = result;
+  }
+  User.updateUserInfo(
+    userId,
+    nickname,
+    bio,
+    location,
+    website,
+    profileImageName,
+    backgroundImageName
+  );
+  return res.status(200).json({ status: "Save successfully" });
+};
+
 const getUserPosts = async (req, res) => {
   const { userId } = req.params;
   const result = await User.getUserPosts(userId);
@@ -148,6 +178,7 @@ module.exports = {
   signUp,
   signIn,
   getUserInfo,
+  updateUserInfo,
   profile,
   getUserPosts,
   addPost,

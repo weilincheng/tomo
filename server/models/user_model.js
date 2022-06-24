@@ -91,6 +91,31 @@ const getUserInfo = async (userId) => {
   return result[0];
 };
 
+const updateUserInfo = async (
+  userId,
+  name,
+  bio,
+  location,
+  website,
+  profileImage,
+  backgroundImage
+) => {
+  let sql = `UPDATE users SET nickname = ?, bio = ?, location = ?, website = ? `;
+  let sqlBindings = [name, bio, location, website];
+  if (profileImage) {
+    sql += `, profile_image = ? `;
+    sqlBindings.push(profileImage);
+  }
+  if (backgroundImage) {
+    sql += `, background_image = ? `;
+    sqlBindings.push(backgroundImage);
+  }
+  sql += `WHERE id = ?`;
+  sqlBindings.push(userId);
+  const [result] = await pool.query(sql, sqlBindings);
+  return result;
+};
+
 const getUserPosts = async (userId) => {
   const sql = `SELECT * FROM posts WHERE user_id = ?`;
   const sqlBindings = [userId];
@@ -140,6 +165,7 @@ module.exports = {
   nativeSignIn,
   profile,
   getUserInfo,
+  updateUserInfo,
   getUserPosts,
   addPost,
   getRelationships,

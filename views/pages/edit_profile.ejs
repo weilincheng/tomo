@@ -1,0 +1,63 @@
+<%- include("../partials/header") -%>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="../../static/js/edit_profile.js"></script>
+
+<div class="row justify-content-center vh-75 w-100">
+  <div class="col-1"><%- include("../partials/sidebar") -%></div>
+  <div class="col-8 d-flex justify-content-center h-100">
+    <form class="w-75 h-100" enctype="multipart/form-data" id="profile-form">
+      <div class="mb-3">
+        <label for="profile-image" class="form-label">Profile Image</label>
+        <input
+          type="file"
+          class="col-auto form-control"
+          id="profile-image"
+          name="profile-image"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="background-image" class="form-label"
+          >Background Image</label
+        >
+        <input
+          type="file"
+          class="col-auto form-control"
+          id="background-image"
+          name="background-image"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="nickname" class="form-label">Nickname</label>
+        <input
+          type="text"
+          class="col-auto form-control"
+          id="nickname"
+          name="nickname"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="bio" class="form-label">Bio</label>
+        <input type="text" class="form-control" id="bio" name="bio" />
+      </div>
+      <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" class="form-control" id="location" name="location" />
+      </div>
+      <div class="mb-3">
+        <label for="website" class="form-label">Website</label>
+        <div class="input-group flex-nowrap">
+          <span class="input-group-text" id="addon-wrapping">http://</span>
+          <input type="text" class="form-control" id="website" name="website" />
+        </div>
+      </div>
+      <button id="save-button" type="button" class="btn btn-primary">
+        Save
+      </button>
+    </form>
+  </div>
+  <div
+    class="col-3 d-flex flex-column justify-content-start overflow-auto"
+  ></div>
+</div>
+
+<%- include("../partials/footer") -%>

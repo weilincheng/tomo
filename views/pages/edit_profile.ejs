@@ -7,7 +7,10 @@
   <div class="col-8 d-flex justify-content-center h-100">
     <form class="w-75 h-100" enctype="multipart/form-data" id="profile-form">
       <div class="mb-3">
-        <label for="profile-image" class="form-label">Profile Image</label>
+        <div class="d-flex flex-column">
+          <label for="profile-image" class="form-label">Profile Image</label>
+          <img class="w-50" id="profile-image-source" src="" alt="" />
+        </div>
         <input
           type="file"
           class="col-auto form-control"
@@ -16,9 +19,12 @@
         />
       </div>
       <div class="mb-3">
-        <label for="background-image" class="form-label"
-          >Background Image</label
-        >
+        <div class="d-flex flex-column">
+          <label for="background-image" class="form-label"
+            >Background Image</label
+          >
+          <img class="w-50" id="background-image-source" src="" alt="" />
+        </div>
         <input
           type="file"
           class="col-auto form-control"

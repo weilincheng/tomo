@@ -44,10 +44,23 @@ const renderUserProfile = async () => {
   const userId = localStorage.getItem("userId");
   const { nickname, location, website, bio, profileImage, backgroundImage } =
     await getUserInfo(userId);
+  const cloudFrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
   $("#nickname").val(nickname);
   $("#bio").val(bio);
   $("#location").val(location);
   $("#website").val(website);
+  $("#profile-image-source").attr(
+    "src",
+    profileImage
+      ? `${cloudFrontUrl}/${profileImage}`
+      : "https://via.placeholder.com/100"
+  );
+  $("#background-image-source").attr(
+    "src",
+    backgroundImage
+      ? `${cloudFrontUrl}/${backgroundImage}`
+      : "https://via.placeholder.com/100"
+  );
 };
 
 const sendPutFormData = async (formData) => {
@@ -65,6 +78,18 @@ const sendPutFormData = async (formData) => {
 };
 
 const attachClickEvent = () => {
+  $("#profile-image").on("change", (evt) => {
+    const [file] = evt.target.files;
+    if (file) {
+      $("#profile-image-source").attr("src", URL.createObjectURL(file));
+    }
+  });
+  $("#background-image").on("change", (evt) => {
+    const [file] = evt.target.files;
+    if (file) {
+      $("#background-image-source").attr("src", URL.createObjectURL(file));
+    }
+  });
   $("#save-button").click(() => {
     const formData = new FormData(document.getElementById("profile-form"));
     sendPutFormData(formData);

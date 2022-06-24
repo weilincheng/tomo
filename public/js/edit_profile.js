@@ -42,6 +42,7 @@ const renderUserProfile = async () => {
   }
   await verifyToken(accessToken);
   const userId = localStorage.getItem("userId");
+  updateProfileIconLink(userId);
   const { nickname, location, website, bio, profileImage, backgroundImage } =
     await getUserInfo(userId);
   const cloudFrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
@@ -97,6 +98,7 @@ const attachClickEvent = () => {
 };
 
 renderUserProfile();
+
 $(() => {
   attachClickEvent();
 });

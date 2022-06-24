@@ -189,9 +189,9 @@ const createMessage = (
     date.getSeconds(),
   ];
   const message = $("<div></div>");
-  const messageContent = $(
-    "<p class='btn btn-light fs-4 rounded-pill mb-0'></p>"
-  ).text(content);
+  const messageContent = $("<p class='btn fs-4 rounded-pill mb-0'></p>").text(
+    content
+  );
   const messageTime = $("<p class='fs-6 fw-lighter px-3'></p>").text(
     `${month}/${day}/${year} ${hour}:${minutes}:${seconds}`
   );
@@ -205,10 +205,12 @@ const prependMessage = (message, sender_user_id) => {
     $("#messages-session").prepend(
       message.addClass("d-flex align-items-end flex-column")
     );
+    message.children().first().addClass("btn-info");
   } else {
     $("#messages-session").prepend(
       message.addClass("d-flex align-items-start flex-column")
     );
+    message.children().first().addClass("btn-light");
   }
 };
 
@@ -218,10 +220,12 @@ const appendMessage = (message, sender_user_id) => {
     messageSession.append(
       message.addClass("d-flex align-items-end flex-column")
     );
+    message.children().first().addClass("btn-info");
   } else {
     messageSession.append(
       message.addClass("d-flex align-items-start flex-column")
     );
+    message.children().first().addClass("btn-light");
   }
   messageSession.animate(
     { scrollTop: messageSession.prop("scrollHeight") },

@@ -1,0 +1,51 @@
+<%- include("../partials/header") -%>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="../../static/js/new_post.js"></script>
+
+<div class="row justify-content-center vh-75 w-100">
+  <div class="col-1"><%- include("../partials/sidebar") -%></div>
+  <div class="col-8 d-flex justify-content-center h-100">
+    <form class="w-75 h-100" enctype="multipart/form-data" id="post-form">
+      <div class="mb-3">
+        <label for="post-content" class="form-label fs-3"
+          >What's happening?</label
+        >
+        <textarea
+          type="text"
+          class="col-auto form-control"
+          id="post-content"
+          name="post-content"
+          rows="4"
+          maxlength="280"
+        ></textarea>
+        <div class="text-end" id="the-count">
+          <span id="current">0</span>
+          <span id="maximum">/ 280</span>
+        </div>
+      </div>
+      <div class="mb-3">
+        <div class="d-flex flex-column">
+          <label for="post-images" class="form-label fs-3"
+            >Add some images?</label
+          >
+          <div class="flex" id="post-images-container"></div>
+        </div>
+        <input
+          type="file"
+          class="col-auto form-control"
+          id="post-images"
+          name="post-images"
+          multiple
+        />
+      </div>
+      <button id="post-button" type="button" class="btn btn-primary">
+        Post
+      </button>
+    </form>
+  </div>
+  <div
+    class="col-3 d-flex flex-column justify-content-start overflow-auto"
+  ></div>
+</div>
+
+<%- include("../partials/footer") -%>

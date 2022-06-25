@@ -131,6 +131,13 @@ const addPost = async (userId, text) => {
   return result;
 };
 
+const addPostImages = async (postId, postImages) => {
+  const sql = `INSERT INTO post_images (post_id, image) VALUES ?`;
+  const sqlBindings = [postImages.map((image) => [postId, image])];
+  const [result] = await pool.query(sql, sqlBindings);
+  return result;
+};
+
 const getRelationships = async (targetUserId, type) => {
   let sql = "";
   let sqlCondition = "";
@@ -168,6 +175,7 @@ module.exports = {
   updateUserInfo,
   getUserPosts,
   addPost,
+  addPostImages,
   getRelationships,
   addRelationship,
   removeRelationship,

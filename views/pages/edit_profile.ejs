@@ -39,21 +39,57 @@
           class="col-auto form-control"
           id="nickname"
           name="nickname"
+          maxlength="50"
         />
+      </div>
+      <div class="text-end" id="nickname-count">
+        <span id="nickname-current">0</span>
+        <span id="maximum">/ 50</span>
       </div>
       <div class="mb-3">
         <label for="bio" class="form-label">Bio</label>
-        <input type="text" class="form-control" id="bio" name="bio" />
+        <textarea
+          type="text"
+          class="form-control"
+          id="bio"
+          name="bio"
+          rows="2"
+          maxlength="160"
+        ></textarea>
+      </div>
+      <div class="text-end" id="bio-count">
+        <span id="bio-current">0</span>
+        <span id="maximum">/ 160</span>
       </div>
       <div class="mb-3">
         <label for="location" class="form-label">Location</label>
-        <input type="text" class="form-control" id="location" name="location" />
+        <input
+          type="text"
+          class="form-control"
+          id="location"
+          name="location"
+          maxlength="30"
+        />
+      </div>
+      <div class="text-end" id="location-count">
+        <span id="location-current">0</span>
+        <span id="maximum">/ 30</span>
       </div>
       <div class="mb-3">
         <label for="website" class="form-label">Website</label>
         <div class="input-group flex-nowrap">
           <span class="input-group-text" id="addon-wrapping">http://</span>
-          <input type="text" class="form-control" id="website" name="website" />
+          <input
+            type="text"
+            class="form-control"
+            id="website"
+            name="website"
+            maxlength="100"
+          />
+        </div>
+        <div class="text-end" id="website-count">
+          <span id="website-current">0</span>
+          <span id="maximum">/ 100</span>
         </div>
       </div>
       <button id="save-button" type="button" class="btn btn-primary">

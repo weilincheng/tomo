@@ -141,11 +141,14 @@ const getUserPosts = async (req, res) => {
 };
 
 const addPost = async (req, res) => {
-  const { content } = req.body;
+  const { "post-content": content } = req.body;
   const { userId } = req.params;
-  const result = await User.addPost(userId, content);
-  const postId = result.insertId;
-  res.status(200).json({ status: "success", postId });
+  const { "post-images": postImages } = req.files;
+  const fileNames = await s3Upload(postImages);
+  const postResult = await User.addPost(userId, content);
+  const postId = postResult.insertId;
+  const result = await User.addPostImages(postId, fileNames);
+  res.status(200).json(result);
   return;
 };
 

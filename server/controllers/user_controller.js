@@ -133,7 +133,7 @@ const updateUserInfo = async (req, res) => {
   return res.status(200).json({ status: "Save successfully" });
 };
 
-const getUserPosts = async (req, res) => {
+const getPosts = async (req, res) => {
   const { userId } = req.params;
   const result = await User.getUserPosts(userId);
   res.status(200).json(result);
@@ -183,7 +183,7 @@ module.exports = {
   getUserInfo,
   updateUserInfo,
   profile,
-  getUserPosts,
+  getPosts,
   addPost,
   getRelationships,
   addRelationship,

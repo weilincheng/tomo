@@ -5,7 +5,7 @@ const {
   profile,
   getUserInfo,
   updateUserInfo,
-  getUserPosts,
+  getPosts,
   addPost,
   getRelationships,
   addRelationship,
@@ -38,7 +38,7 @@ router.route("/user/:userId").get(catchAsyncError(getUserInfo));
 router
   .route("/user/:userId")
   .put(authUser(), cpUpload, catchAsyncError(updateUserInfo));
-router.route("/user/:userId/posts").get(catchAsyncError(getUserPosts));
+router.route("/user/:userId/posts").get(catchAsyncError(getPosts));
 router
   .route("/user/:userId/posts")
   .post(authUser(), cpUpload, catchAsyncError(addPost));

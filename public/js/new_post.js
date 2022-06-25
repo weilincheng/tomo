@@ -44,11 +44,11 @@ const attachImageEvent = () => {
 const attachPostEvent = () => {
   $("#post-button").click(() => {
     const formData = new FormData(document.getElementById("post-form"));
-    sendPutFormData(formData);
+    sendPostFormData(formData);
   });
 };
 
-const sendPostFromData = async (formData) => {
+const sendPostFormData = async (formData) => {
   const accessToken = localStorage.getItem("accessToken");
   const userId = localStorage.getItem("userId");
   const result = await fetch(`/api/v1/user/${userId}/posts`, {
@@ -59,7 +59,8 @@ const sendPostFromData = async (formData) => {
     body: formData,
   });
   const resultJson = await result.json();
-  alert(resultJson);
+  alert(resultJson.status);
+  window.location = "/user/newpost";
 };
 
 verifyToken(localStorage.getItem("accessToken"));

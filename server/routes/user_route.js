@@ -19,6 +19,7 @@ const {
 const cpUpload = multerUpload.fields([
   { name: "profile-image", maxCount: 1 },
   { name: "background-image", maxCount: 1 },
+  { name: "post-images", maxCount: 4 },
 ]);
 
 router.route("/user/signup").post(catchAsyncError(signUp));
@@ -38,6 +39,8 @@ router
   .route("/user/:userId")
   .put(authUser(), cpUpload, catchAsyncError(updateUserInfo));
 router.route("/user/:userId/posts").get(catchAsyncError(getUserPosts));
-router.route("/user/:userId/posts").post(authUser(), catchAsyncError(addPost));
+router
+  .route("/user/:userId/posts")
+  .post(authUser(), cpUpload, catchAsyncError(addPost));
 
 module.exports = router;

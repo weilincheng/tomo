@@ -124,7 +124,7 @@ const getUserPosts = async (userId) => {
   return result;
 };
 
-const addPost = async (userId, text, postImages) => {
+const addPost = async (userId, text) => {
   const sql = `INSERT INTO posts (user_id, text) VALUES (?, ?)`;
   const sqlBindings = [userId, text];
   const [result] = await pool.query(sql, sqlBindings);

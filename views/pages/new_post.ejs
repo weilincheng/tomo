@@ -5,7 +5,7 @@
 <div class="row justify-content-center vh-75 w-100">
   <div class="col-1"><%- include("../partials/sidebar") -%></div>
   <div class="col-8 d-flex justify-content-center h-100">
-    <form class="w-75 h-100" enctype="multipart/form-data" id="profile-form">
+    <form class="w-75 h-100" enctype="multipart/form-data" id="post-form">
       <div class="mb-3">
         <label for="post-content" class="form-label fs-3"
           >What's happening?</label
@@ -25,20 +25,20 @@
       </div>
       <div class="mb-3">
         <div class="d-flex flex-column">
-          <label for="profile-image" class="form-label fs-3"
+          <label for="post-images" class="form-label fs-3"
             >Add some images?</label
           >
-          <img class="w-50" id="profile-image-source" src="" alt="" />
+          <div class="flex" id="post-images-container"></div>
         </div>
         <input
           type="file"
           class="col-auto form-control"
-          id="profile-image"
-          name="profile-image"
+          id="post-images"
+          name="post-images"
           multiple
         />
       </div>
-      <button id="save-button" type="button" class="btn btn-primary">
+      <button id="post-button" type="button" class="btn btn-primary">
         Post
       </button>
     </form>

@@ -34,7 +34,6 @@ const getUserInfo = async (userId) => {
 };
 
 const updateUserInfo = async () => {
-  const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
   const {
     nickname,
     location,
@@ -45,23 +44,31 @@ const updateUserInfo = async () => {
     followers,
     bio,
   } = await getUserInfo(userId);
+  const placeholderImage = "https://via.placeholder.com/80";
   $("#name").text(nickname);
   $("#location").text(location);
   $("#website").attr("href", `https://${website}`).text(website);
   $("#followers-count").text(followers.length);
   $("#following-count").text(following.length);
-  $("#profile-image").attr("src", `${cloudfrontUrl}/${profileImage}`);
-  const backgroundImageUrl = `${cloudfrontUrl}/${backgroundImage}`;
-  $("#background-image").css(
-    "background-image",
-    "url(" + backgroundImageUrl + ")"
-  );
+  if (profileImage) {
+    $("#profile-image").attr("src", `${cloudfrontUrl}/${profileImage}`);
+  }
+  if (backgroundImage) {
+    const backgroundImageUrl = `${cloudfrontUrl}/${backgroundImage}`;
+    $("#background-image").css(
+      "background-image",
+      "url(" + backgroundImageUrl + ")"
+    );
+  }
   $("#bio").text(bio);
 
   const loggedInUserId = localStorage.getItem("userId");
   updateProfileIconLink(loggedInUserId);
   updateEditFollowButton(userId, loggedInUserId, followers);
-  renderUserPosts(userId, profileImage);
+  renderUserPosts(
+    userId,
+    profileImage ? `${cloudfrontUrl}/${profileImage}` : placeholderImage
+  );
 };
 
 const updateEditFollowButton = (
@@ -146,7 +153,6 @@ const attachFolloButtonEvent = (targetUserId) => {
 
 const renderUserPosts = async (userId, profileImage) => {
   const postsInfo = await getUserPosts(userId);
-  const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
   for (let i = 0; i < postsInfo.length; i++) {
     const { created_at, images, text, id } = postsInfo[i];
     const date = new Date(created_at);
@@ -159,7 +165,7 @@ const renderUserPosts = async (userId, profileImage) => {
     const profileImageDiv = $(
       '<div class="col-1 d-flex align-items-start"><img class="rounded-pill img-fluid" ></div>'
     );
-    profileImageDiv.children().attr("src", `${cloudfrontUrl}/${profileImage}`);
+    profileImageDiv.children().attr("src", `${profileImage}`);
     const namePostCol = $(
       '<div class="col-10 d-flex flex-column justify-content-center my-2 px-2"></div>'
     );
@@ -223,6 +229,9 @@ const renderFollowList = async (userId, type) => {
     const profileImage = $(
       '<div class="col-3 d-flex align-items-center"><img class="rounded-pill img-fluid" src="https://via.placeholder.com/80"></div>'
     );
+    if (profile_image) {
+      profileImage.children().attr("src", `${cloudfrontUrl}/${profile_image}`);
+    }
     const followInfoCol = $(
       '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
     );
@@ -289,6 +298,7 @@ const attachClickListeners = () => {
 };
 
 const userId = $("#profile-script").attr("userId");
+const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
 updateUserInfo();
 
 $(document).ready(() => {

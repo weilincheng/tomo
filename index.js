@@ -54,6 +54,10 @@ app.get("/messages", (req, res) => {
   });
 });
 
+app.get("/notifications", (req, res) => {
+  res.render("pages/notifications.ejs");
+});
+
 app.use(`/api/${API_VERSION}`, [user, message]);
 app.use(`/api/${API_VERSION}`, (req, res) => {
   res.status(404).json({ error: `End point does not exist` });

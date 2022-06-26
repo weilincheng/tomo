@@ -135,7 +135,7 @@ const updateUserInfo = async (req, res) => {
 
 const getPosts = async (req, res) => {
   const { userId } = req.params;
-  const result = await User.getUserPosts(userId);
+  const result = await User.getPosts(userId);
   res.status(200).json(result);
   return;
 };

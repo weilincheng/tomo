@@ -4,19 +4,19 @@ const getNotifications = async (userId) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    await conn.query(
-      "SELECT * FROM notifications AS n INNER JOIN notification_content as c ON n.id = c.notification_id WHERE receiver_id = ?",
+    const [result] = await conn.query(
+      "SELECT c.type, n.created_at, c.content, u.nickname AS sender_nickname, u.id AS sender_user_id, u.profile_image FROM notifications AS n INNER JOIN notification_content as c ON n.id = c.notification_id INNER JOIN users as u ON u.id = n.sender_user_Id WHERE receiver_user_id = ?",
       [userId]
     );
     await conn.query(
-      "UPDATE notifications SET read = 'true' WHERE receiver_id = ?",
+      "UPDATE `notifications` SET `read` = true WHERE receiver_user_id = ?",
       [userId]
     );
     await conn.query("COMMIT");
-    return true;
+    return result;
   } catch (error) {
     await conn.query("ROLLBACK");
-    return false;
+    return { error: "Something went wrong" };
   } finally {
     conn.release();
   }
@@ -31,7 +31,7 @@ const addNotification = async (
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    const notification = await conn.query(
+    const [notification] = await conn.query(
       "INSERT INTO notifications (receiver_user_id, sender_user_id ) VALUES (?, ?)",
       [receiver_user_id, sender_user_id]
     );
@@ -41,10 +41,10 @@ const addNotification = async (
       [notificationId, type, content]
     );
     await conn.query("COMMIT");
-    return true;
+    console.log("committed");
   } catch (error) {
+    console.log(error);
     await conn.query("ROLLBACK");
-    return false;
   } finally {
     conn.release();
   }

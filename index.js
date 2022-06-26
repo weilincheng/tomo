@@ -3,6 +3,7 @@ const { GOOGLE_API_KEY, SOCKET_HOST } = process.env;
 const express = require("express");
 const user = require("./server/routes/user_route");
 const message = require("./server/routes/message_route");
+const notifications = require("./server/routes/notifications_route");
 const app = express();
 const cors = require("cors");
 const { PORT, API_VERSION } = process.env;
@@ -58,7 +59,7 @@ app.get("/notifications", (req, res) => {
   res.render("pages/notifications.ejs");
 });
 
-app.use(`/api/${API_VERSION}`, [user, message]);
+app.use(`/api/${API_VERSION}`, [user, message, notifications]);
 app.use(`/api/${API_VERSION}`, (req, res) => {
   res.status(404).json({ error: `End point does not exist` });
 });

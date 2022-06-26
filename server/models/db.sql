@@ -84,7 +84,7 @@ DROP TABLE IF EXISTS `notification_content`;
 CREATE TABLE `notification_content`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `notification_id` BIGINT UNSIGNED NOT NULL,
-    `type` ENUM('follow', 'post') NOT NULL,
+    `type` ENUM('follow', 'post', 'message') NOT NULL,
     `content` VARCHAR(255) NOT NULL,
     FOREIGN KEY(`notification_id`) REFERENCES `notifications`(`id`)
 );

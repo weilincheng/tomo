@@ -32,15 +32,18 @@ const getNotifications = async () => {
     });
     const resultJson = await result.json();
     if (resultJson.error) {
-      alert(result.error);
-      return (window.location = "/");
+      alert(resultJson.error);
     }
-    const { notifications } = resultJson;
-    return notifications;
+    return resultJson;
   }
 };
 
-const renderNotifications = async () => {};
+const renderNotifications = async () => {
+  const notifications = await getNotifications();
+  for (const notification of notifications) {
+    console.log("notifications", notification);
+  }
+};
 
 checkAccessToken();
 const currentUserId = parseInt(localStorage.getItem("userId"));

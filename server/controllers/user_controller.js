@@ -1,5 +1,6 @@
 require("dotenv").config();
 const User = require("../models/user_model");
+const Notifications = require("../models/notifications_model");
 const validator = require("validator");
 const { s3Upload } = require("../../utilities/utilities");
 
@@ -144,11 +145,18 @@ const addPost = async (req, res) => {
   const { "post-content": content } = req.body;
   const { userId } = req.params;
   const { "post-images": postImages } = req.files;
-  const fileNames = await s3Upload(postImages);
   const postResult = await User.addPost(userId, content);
   const postId = postResult.insertId;
-  const result = await User.addPostImages(postId, fileNames);
-  res.status(200).json(result);
+  if (postImages) {
+    const fileNames = await s3Upload(postImages);
+    const result = await User.addPostImages(postId, fileNames);
+  }
+  const followers = await User.getRelationships(userId, "followers");
+  for (const follower of followers) {
+    const { follower_user_id: receiverId } = follower;
+    await Notifications.addNotification(receiverId, userId, "post", content);
+  }
+  res.status(200).json({ status: "Post added" });
   return;
 };
 
@@ -165,6 +173,7 @@ const addRelationship = async (req, res) => {
   const { targetUserId } = req.params;
   checkUserIdExist(targetUserId, req, res);
   const result = await User.addRelationship(req.userId, targetUserId);
+  await Notifications.addNotification(targetUserId, req.userId, "follow", "");
   res.status(200).json(result);
   return;
 };

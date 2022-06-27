@@ -116,10 +116,10 @@ const updateUserInfo = async (
   return result;
 };
 
-const getUserPosts = async (userId) => {
-  const sql = `SELECT * FROM posts WHERE user_id = ?`;
+const getPosts = async (userId) => {
+  const sql = `SELECT p.id, p.text, p.created_at, JSON_ARRAYAGG(i.image) AS images FROM posts AS p LEFT JOIN post_images AS i ON p.id = i.post_id WHERE p.user_id = ?`;
   const sqlBindings = [userId];
-  const sqlCondition = `ORDER BY created_at DESC LIMIT 20`;
+  const sqlCondition = `GROUP BY p.id ORDER BY created_at DESC`;
   const [result] = await pool.query(`${sql} ${sqlCondition}`, sqlBindings);
   return result;
 };
@@ -173,7 +173,7 @@ module.exports = {
   profile,
   getUserInfo,
   updateUserInfo,
-  getUserPosts,
+  getPosts,
   addPost,
   addPostImages,
   getRelationships,

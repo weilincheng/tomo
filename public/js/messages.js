@@ -51,6 +51,7 @@ const renderSenderUser = async (accessToken, currentUserId) => {
     const senderUserName = messageUserIdList[i].nickname;
     const senderUserProfileImage = messageUserIdList[i].profile_image;
     const senderUserLastMessage = messageUserIdList[i].content;
+    console.log(senderUserProfileImage);
     renderSenderUserCard(
       currentUserId,
       accessToken,
@@ -70,16 +71,17 @@ const renderSenderUserCard = (
   senderUserProfileImage,
   senderUserLastMessage
 ) => {
-  // if (senderUserId === parseInt(currentUserId)) {
-  //   senderUserId = senderUserLastMessage.split("-")[1];
-  //   senderUserName = senderUserLastMessage.split("-")[0];
-  //   senderUserLastMessage = " ";
-  // }
+  const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
   const card = $('<div class="border-bottom row w-100 mb-2 "></div>');
   card.attr("id", `senderUserCard-UserId-${senderUserId}`);
   const profileImage = $(
     '<div class="col-3 d-flex align-items-center"><img class="rounded-pill img-fluid" src="https://via.placeholder.com/80"></div>'
   );
+  if (senderUserProfileImage) {
+    profileImage
+      .children()
+      .attr("src", `${cloudfrontUrl}/${senderUserProfileImage}`);
+  }
   const nameMessageCol = $(
     '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
   );

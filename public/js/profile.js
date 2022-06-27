@@ -7,28 +7,68 @@ const getUserInfo = async (userId) => {
     alert(resultJson.error);
     return (window.location = "/");
   }
-  const { nickname, location, website } = resultJson;
+  const {
+    nickname,
+    location,
+    website,
+    profile_image: profileImage,
+    background_image: backgroundImage,
+    bio,
+  } = resultJson;
   const userFollowInfo = await fetch(`/api/v1/user/follow/${userId}`, {
     method: "GET",
   });
   const userFollowInfoJson = await userFollowInfo.json();
   const { following, followers } = userFollowInfoJson;
 
-  return { nickname, location, website, following, followers };
+  return {
+    nickname,
+    location,
+    website,
+    profileImage,
+    backgroundImage,
+    following,
+    followers,
+    bio,
+  };
 };
 
 const updateUserInfo = async () => {
-  const { nickname, location, website, following, followers } =
-    await getUserInfo(userId);
+  const {
+    nickname,
+    location,
+    website,
+    profileImage,
+    backgroundImage,
+    following,
+    followers,
+    bio,
+  } = await getUserInfo(userId);
+  const placeholderImage = "https://via.placeholder.com/80";
   $("#name").text(nickname);
   $("#location").text(location);
   $("#website").attr("href", `https://${website}`).text(website);
   $("#followers-count").text(followers.length);
   $("#following-count").text(following.length);
+  if (profileImage) {
+    $("#profile-image").attr("src", `${cloudfrontUrl}/${profileImage}`);
+  }
+  if (backgroundImage) {
+    const backgroundImageUrl = `${cloudfrontUrl}/${backgroundImage}`;
+    $("#background-image").css(
+      "background-image",
+      "url(" + backgroundImageUrl + ")"
+    );
+  }
+  $("#bio").text(bio);
+
   const loggedInUserId = localStorage.getItem("userId");
   updateProfileIconLink(loggedInUserId);
   updateEditFollowButton(userId, loggedInUserId, followers);
-  renderUserPosts(userId);
+  renderUserPosts(
+    userId,
+    profileImage ? `${cloudfrontUrl}/${profileImage}` : placeholderImage
+  );
 };
 
 const updateEditFollowButton = (
@@ -111,10 +151,10 @@ const attachFolloButtonEvent = (targetUserId) => {
   });
 };
 
-const renderUserPosts = async (userId) => {
+const renderUserPosts = async (userId, profileImage) => {
   const postsInfo = await getUserPosts(userId);
   for (let i = 0; i < postsInfo.length; i++) {
-    const { created_at, title, text, id } = postsInfo[i];
+    const { created_at, images, text, id } = postsInfo[i];
     const date = new Date(created_at);
     const options = { month: "long" };
     const month = new Intl.DateTimeFormat("en-US", options).format(date);
@@ -122,11 +162,12 @@ const renderUserPosts = async (userId) => {
     const post = $(
       '<div class="border border-light rounded d-flex w-100 py-2 px-2"></div>'
     );
-    const profileImage = $(
-      '<div class="col-1 d-flex align-items-center"><img class="rounded-pill img-fluid" src="https://via.placeholder.com/80"></div>'
+    const profileImageDiv = $(
+      '<div class="col-1 d-flex align-items-start"><img class="rounded-pill img-fluid" ></div>'
     );
+    profileImageDiv.children().attr("src", `${profileImage}`);
     const namePostCol = $(
-      '<div class="col-10 d-flex flex-column justify-content-center my-2"></div>'
+      '<div class="col-10 d-flex flex-column justify-content-center my-2 px-2"></div>'
     );
     const dateCol = $('<div class="col-1 d-flex align-items-center"></div>');
     const dateConetnt = $('<p class="text-secondary my-0 px-2"></p>').text(
@@ -140,7 +181,23 @@ const renderUserPosts = async (userId) => {
     dateCol.append(dateConetnt);
     namePostCol.append(userName);
     namePostCol.append(postText);
-    post.append(profileImage);
+    if (images[0] !== null) {
+      const postImagesDiv = $('<div class="row"></div>');
+      const postImages = images.map((image) => {
+        const imageDiv = $(
+          '<div class="col-3 d-flex align-items-start"></div>'
+        );
+        const imageElement = $('<img class="img-thumbnail img-fluid"></img>');
+        imageElement.attr("src", `${cloudfrontUrl}/${image}`);
+        imageDiv.append(imageElement);
+        return imageDiv;
+      });
+      for (let image of postImages) {
+        postImagesDiv.append(image);
+      }
+      namePostCol.append(postImagesDiv);
+    }
+    post.append(profileImageDiv);
     post.append(namePostCol);
     post.append(dateCol);
     $("#posts-section").append(post);
@@ -172,6 +229,9 @@ const renderFollowList = async (userId, type) => {
     const profileImage = $(
       '<div class="col-3 d-flex align-items-center"><img class="rounded-pill img-fluid" src="https://via.placeholder.com/80"></div>'
     );
+    if (profile_image) {
+      profileImage.children().attr("src", `${cloudfrontUrl}/${profile_image}`);
+    }
     const followInfoCol = $(
       '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
     );
@@ -238,6 +298,7 @@ const attachClickListeners = () => {
 };
 
 const userId = $("#profile-script").attr("userId");
+const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
 updateUserInfo();
 
 $(document).ready(() => {

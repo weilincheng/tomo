@@ -68,3 +68,23 @@ CREATE TABLE `message_content`(
     `content` VARCHAR(255) NOT NULL,
     FOREIGN KEY(`message_id`) REFERENCES `messages`(`id`)
 );
+
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE `notifications`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `sender_user_id` INT UNSIGNED NOT NULL,
+    `receiver_user_id` INT UNSIGNED NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `read` BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY(`sender_user_id`) REFERENCES `users`(`id`),
+    FOREIGN KEY(`receiver_user_id`) REFERENCES `users`(`id`)
+);
+
+DROP TABLE IF EXISTS `notification_content`;
+CREATE TABLE `notification_content`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `notification_id` BIGINT UNSIGNED NOT NULL,
+    `type` ENUM('follow', 'post', 'message') NOT NULL,
+    `content` VARCHAR(255) NOT NULL,
+    FOREIGN KEY(`notification_id`) REFERENCES `notifications`(`id`)
+);

@@ -40,6 +40,7 @@ const getNotifications = async () => {
 
 const renderNotifications = async () => {
   const notifications = await getNotifications();
+  console.log(notifications);
   const notificationSection = $("#notifications-section");
   for (const notification of notifications) {
     const {
@@ -75,6 +76,11 @@ const renderNotifications = async () => {
       notificationSummary.text(`${nickname} followed you`);
     } else if (type === "post") {
       notificationSummary.text(`${nickname} published a new post`);
+    } else if (type === "message") {
+      notificationSummary.text(
+        `Congratulations! You can send private message to ${nickname} now`
+      );
+      notificationSummary.css("white-space", "pre-line");
     }
     const notificationContent = $('<div class="fs-6 text-secondary"></div>');
     notificationProfile

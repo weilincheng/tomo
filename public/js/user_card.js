@@ -4,7 +4,7 @@ const createUserCard = (socketId) => {
   const cardRow = $('<div class="row g-0">');
   const cardColImage = $('<div class="col-md-4">');
   const cardImage = $(
-    '<img class="img-fluid rounded-circle" src="https://via.placeholder.com/150" alt="Card image">'
+    '<img class="img-fluid rounded-circle px-1 py-1" src="https://via.placeholder.com/150" alt="Card image">'
   );
   cardImage.attr("id", `card-image-${socketId}`);
   cardColImage.append(cardImage);
@@ -14,7 +14,7 @@ const createUserCard = (socketId) => {
   const cardTitle = $('<h5 class="card-title"></h5>');
   cardTitle.attr("id", `card-title-${socketId}`);
   cardBody.append(cardTitle);
-  const cardText = $('<p class="card-text"></p>');
+  const cardText = $('<p class="card-text fs-6 fw-light text-secondary"></p>');
   cardText.attr("id", `card-text-${socketId}`);
   cardBody.append(cardText);
   cardColBody.append(cardBody);
@@ -35,9 +35,7 @@ const updateCardTitleText = (
   profileImage
 ) => {
   $("#card-title-" + socketId).text(name ? name : "annonymous");
-  $("#card-text-" + socketId).text(
-    `${location ? location : ""} ${website ? website : ""}`
-  );
+  $("#card-text-" + socketId).text(`${location ? location : ""}`);
   if (profileImage) {
     $("#card-image-" + socketId).attr(
       "src",

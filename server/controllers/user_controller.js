@@ -1,6 +1,7 @@
 require("dotenv").config();
 const User = require("../models/user_model");
 const Notifications = require("../models/notifications_model");
+const Message = require("../models/message_model");
 const validator = require("validator");
 const { s3Upload } = require("../../utilities/utilities");
 
@@ -172,8 +173,37 @@ const getRelationships = async (req, res) => {
 const addRelationship = async (req, res) => {
   const { targetUserId } = req.params;
   checkUserIdExist(targetUserId, req, res);
-  const result = await User.addRelationship(req.userId, targetUserId);
+  const isMutualFollowing = await User.checkMutualStatus(
+    targetUserId,
+    req.userId
+  );
+  const result = await User.addRelationship(
+    req.userId,
+    targetUserId,
+    isMutualFollowing
+  );
   await Notifications.addNotification(targetUserId, req.userId, "follow", "");
+  if (isMutualFollowing) {
+    await User.updateMutualStatus(targetUserId, req.userId, isMutualFollowing);
+    await Notifications.addNotification(
+      targetUserId,
+      req.userId,
+      "message",
+      ""
+    );
+    await Notifications.addNotification(
+      req.userId,
+      targetUserId,
+      "message",
+      ""
+    );
+    await Message.saveMessages(
+      req.userId,
+      targetUserId,
+      "System Message: You are mutual following now.",
+      "text"
+    );
+  }
   res.status(200).json(result);
   return;
 };
@@ -182,6 +212,7 @@ const removeRelationship = async (req, res) => {
   const { targetUserId } = req.params;
   checkUserIdExist(targetUserId, req, res);
   const result = await User.removeRelationship(req.userId, targetUserId);
+  await User.updateMutualStatus(targetUserId, req.userId, false);
   res.status(200).json(result);
   return;
 };

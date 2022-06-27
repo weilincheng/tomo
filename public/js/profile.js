@@ -303,8 +303,5 @@ updateUserInfo();
 
 $(document).ready(() => {
   $("#send-message-link").hide();
-  if (userId !== localStorage.getItem("userId")) {
-    $("#send-message-link").show();
-  }
   attachClickListeners();
 });

@@ -48,6 +48,12 @@ const attachPostEvent = () => {
   });
 };
 
+const attachCancelEvent = () => {
+  $("#cancel-button").click(() => {
+    window.location = `/user/${localStorage.getItem("userId")}`;
+  });
+};
+
 const sendPostFormData = async (formData) => {
   const accessToken = localStorage.getItem("accessToken");
   const userId = localStorage.getItem("userId");
@@ -60,7 +66,7 @@ const sendPostFormData = async (formData) => {
   });
   const resultJson = await result.json();
   alert(resultJson.status);
-  window.location = "/user/newpost";
+  window.location = `/user/${userId}`;
 };
 
 verifyToken(localStorage.getItem("accessToken"));
@@ -71,4 +77,5 @@ $(() => {
   attachTypeEvent();
   attachImageEvent();
   attachPostEvent();
+  attachCancelEvent();
 });

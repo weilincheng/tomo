@@ -47,9 +47,13 @@ const renderUserProfile = async () => {
     await getUserInfo(userId);
   const cloudFrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
   $("#nickname").val(nickname);
+  $("#nickname-current").text(nickname.length);
   $("#bio").val(bio);
+  $("#bio-current").text(bio.length);
   $("#location").val(location);
+  $("#location-current").text(location.length);
   $("#website").val(website);
+  $("#website-current").text(website.length);
   $("#profile-image-source").attr(
     "src",
     profileImage
@@ -75,7 +79,8 @@ const sendPutFormData = async (formData) => {
     body: formData,
   });
   const resultJson = await result.json();
-  alert(resultJson);
+  alert(resultJson.status);
+  window.location = `/user/${userId}`;
 };
 
 const attachClickEvent = () => {
@@ -95,10 +100,37 @@ const attachClickEvent = () => {
     const formData = new FormData(document.getElementById("profile-form"));
     sendPutFormData(formData);
   });
+  $("#cancel-button").click(() => {
+    window.location = `/user/${localStorage.getItem("userId")}`;
+  });
+};
+
+const attachTypeEvent = () => {
+  $("#nickname").keyup(() => {
+    let characterCount = $("#nickname").val().length,
+      current = $("#nickname-current");
+    current.text(characterCount);
+  });
+  $("#bio").keyup(() => {
+    let characterCount = $("#bio").val().length,
+      current = $("#bio-current");
+    current.text(characterCount);
+  });
+  $("#location").keyup(() => {
+    let characterCount = $("#location").val().length,
+      current = $("#location-current");
+    current.text(characterCount);
+  });
+  $("#website").keyup(() => {
+    let characterCount = $("#website").val().length,
+      current = $("#website-current");
+    current.text(characterCount);
+  });
 };
 
 renderUserProfile();
 
 $(() => {
   attachClickEvent();
+  attachTypeEvent();
 });

@@ -41,9 +41,7 @@ const addNotification = async (
       [notificationId, type, content]
     );
     await conn.query("COMMIT");
-    console.log("committed");
   } catch (error) {
-    console.log(error);
     await conn.query("ROLLBACK");
   } finally {
     conn.release();

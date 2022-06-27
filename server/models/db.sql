@@ -75,7 +75,7 @@ CREATE TABLE `notifications`(
     `sender_user_id` INT UNSIGNED NOT NULL,
     `receiver_user_id` INT UNSIGNED NOT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `read` BOOLEAN DEFAULT FALSE,
+    `has_read` BOOLEAN DEFAULT FALSE,
     FOREIGN KEY(`sender_user_id`) REFERENCES `users`(`id`),
     FOREIGN KEY(`receiver_user_id`) REFERENCES `users`(`id`)
 );

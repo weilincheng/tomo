@@ -51,7 +51,6 @@ const renderSenderUser = async (accessToken, currentUserId) => {
     const senderUserName = messageUserIdList[i].nickname;
     const senderUserProfileImage = messageUserIdList[i].profile_image;
     const senderUserLastMessage = messageUserIdList[i].content;
-    console.log(senderUserProfileImage);
     renderSenderUserCard(
       currentUserId,
       accessToken,

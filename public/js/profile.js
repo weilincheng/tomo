@@ -1,6 +1,11 @@
 const getUserInfo = async (userId) => {
+  const accessToken = localStorage.getItem("accessToken");
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  };
   const result = await fetch(`/api/v1/user/${userId}`, {
     method: "GET",
+    headers,
   });
   const resultJson = await result.json();
   if (resultJson.error) {
@@ -79,6 +84,7 @@ const updateEditFollowButton = (
   $("#follow-button").hide();
   $("#following-button").hide();
   $("#edit-profile-button").hide();
+  $("#block-button").hide();
   if (profileUserId === loggedInUserId) {
     $("#edit-profile-button").show();
   } else {
@@ -90,6 +96,7 @@ const updateEditFollowButton = (
     }
     if (isFollowing) {
       $("#following-button").show();
+      $("#block-button").show();
     } else {
       $("#follow-button").show();
     }
@@ -125,6 +132,7 @@ const attachFollowingButtonEvent = (targetUserId) => {
       $("#followers-count").text(parseInt(currentFollowersCount) - 1);
       $("#follow-button").show();
       $("#following-button").hide();
+      $("#block-button").hide();
     }
   });
 };
@@ -147,6 +155,7 @@ const attachFolloButtonEvent = (targetUserId) => {
       $("#followers-count").text(parseInt(currentFollowersCount) + 1);
       $("#follow-button").hide();
       $("#following-button").show();
+      $("#block-button").show();
     }
   });
 };
@@ -163,9 +172,18 @@ const renderUserPosts = async (userId, profileImage) => {
       '<div class="border border-light rounded d-flex w-100 py-2 px-2"></div>'
     );
     const profileImageDiv = $(
-      '<div class="col-1 d-flex align-items-start"><img class="rounded-pill img-fluid" ></div>'
+      '<div class="col-1 d-flex align-items-start"></div>'
     );
-    profileImageDiv.children().attr("src", `${profileImage}`);
+    profileImageDiv.css({
+      display: "inline-block",
+      width: "100px",
+      height: "100px",
+      "border-radius": "50%",
+      "background-repeat": "no-repeat",
+      "background-position": "center center",
+      "background-size": "cover",
+      "background-image": `url('${profileImage}')`,
+    });
     const namePostCol = $(
       '<div class="col-10 d-flex flex-column justify-content-center my-2 px-2"></div>'
     );
@@ -227,10 +245,23 @@ const renderFollowList = async (userId, type) => {
       `/user/${follower_user_id ? follower_user_id : followed_user_id}`
     );
     const profileImage = $(
-      '<div class="col-3 d-flex align-items-center"><img class="rounded-pill img-fluid" src="https://via.placeholder.com/80"></div>'
+      '<div class="col-3 d-flex align-items-center"></div>'
     );
+    profileImage.css({
+      display: "inline-block",
+      width: "100px",
+      height: "100px",
+      "border-radius": "50%",
+      "background-repeat": "no-repeat",
+      "background-position": "center center",
+      "background-size": "cover",
+      "background-image": `url("https://via.placeholder.com/100")`,
+    });
     if (profile_image) {
-      profileImage.children().attr("src", `${cloudfrontUrl}/${profile_image}`);
+      profileImage.css(
+        "background-image",
+        `url('${cloudfrontUrl}/${profile_image}')`
+      );
     }
     const followInfoCol = $(
       '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
@@ -273,6 +304,7 @@ const attachClickListeners = () => {
   const followingLink = $("#following-link");
   const editProfileButton = $("#edit-profile-button");
   const sendMessageLink = $("#send-message-link");
+  const blockButton = $("#block-button");
   const loggedInUserId = localStorage.getItem("userId");
 
   followersLink.click(() => {

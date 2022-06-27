@@ -85,6 +85,9 @@ const checkAccessToken = async () => {
     }
     const userInfo = await fetch(`/api/v1/user/${resultJson.id}`, {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
     const userInfoJson = await userInfo.json();
     const {

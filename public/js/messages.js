@@ -89,7 +89,7 @@ const renderSenderUserCard = (
     senderUserLastMessage
   );
   nameMessageCol.append(name);
-  // nameMessageCol.append(lastMessage);
+  nameMessageCol.append(lastMessage);
   card.append(profileImage);
   card.append(nameMessageCol);
   $("#user-messages-session").append(card);
@@ -259,7 +259,7 @@ const updateSocketId = (targetUserId, socketId) => {
 
 const accessToken = localStorage.getItem("accessToken");
 if (!accessToken) {
-  alert("Please sign in!");
+  alert("Please log in first!");
   window.location.href = "/";
 }
 

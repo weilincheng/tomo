@@ -15,8 +15,13 @@ const verifyToken = async (accessToken) => {
 };
 
 const getUserInfo = async (userId) => {
+  const accessToken = localStorage.getItem("accessToken");
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  };
   const result = await fetch(`/api/v1/user/${userId}`, {
     method: "GET",
+    headers,
   });
   const resultJson = await result.json();
   if (resultJson.error) {

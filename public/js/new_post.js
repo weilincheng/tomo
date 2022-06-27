@@ -48,6 +48,12 @@ const attachPostEvent = () => {
   });
 };
 
+const attachCancelEvent = () => {
+  $("#cancel-button").click(() => {
+    window.location = `/user/${localStorage.getItem("userId")}`;
+  });
+};
+
 const sendPostFormData = async (formData) => {
   const accessToken = localStorage.getItem("accessToken");
   const userId = localStorage.getItem("userId");
@@ -71,4 +77,5 @@ $(() => {
   attachTypeEvent();
   attachImageEvent();
   attachPostEvent();
+  attachCancelEvent();
 });

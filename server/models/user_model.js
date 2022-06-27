@@ -124,7 +124,7 @@ const updateUserInfo = async (
   sql += `WHERE id = ?`;
   sqlBindings.push(userId);
   const [result] = await pool.query(sql, sqlBindings);
-  return result;
+  return { status: "Change saved" };
 };
 
 const getPosts = async (userId) => {

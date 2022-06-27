@@ -115,7 +115,8 @@ io.on("connection", (socket) => {
   );
 
   socket.on("update position", (data) => {
-    const { socketId, userId, pos, name, location, website } = data;
+    const { socketId, userId, pos, name, location, website, profileImage } =
+      data;
     socket.broadcast.emit("update position", {
       socketId,
       userId,
@@ -123,6 +124,7 @@ io.on("connection", (socket) => {
       name,
       location,
       website,
+      profileImage,
     });
   });
 

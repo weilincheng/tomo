@@ -29,58 +29,32 @@ const removeMarker = (socketId) => {
 
 const initMap = () => {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
-  const map = new google.maps.Map($("#map")[0], {
+  map = new google.maps.Map($("#map")[0], {
     center: appWorksSchool,
     zoom: 13,
     mapId: "d91850b214eae5c9",
+    fullscreenControl: false,
+    streetViewControl: false,
+    mapTypeControl: false,
   });
 
-  if (navigator.geolocation) {
-    const name = localStorage.getItem("name");
-    const location = localStorage.getItem("location");
-    const website = localStorage.getItem("website");
-    const userId = localStorage.getItem("userId");
-    navigator.geolocation.getCurrentPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      const pos = { lat: latitude, lng: longitude };
-      createMarker(map, socket.id, pos, "You are here");
-      socket.emit("update position", {
-        pos,
-        socketId: socket.id,
-        userId,
-        name,
-        location,
-        website,
-      });
-    });
+  const shareLocationControlDiv = document.createElement("div");
+  shareLocationControl(shareLocationControlDiv, map);
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(
+    shareLocationControlDiv
+  );
 
-    navigator.geolocation.watchPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      const pos = {
-        lat: latitude + randomVariation(),
-        lng: longitude + randomVariation(),
-      };
-      updateMarker(socket.id, pos);
-      socket.emit("update position", {
-        pos,
-        socketId: socket.id,
-        userId,
-        name,
-        location,
-        website,
-      });
-    });
-  }
   socket.on("update position", (data) => {
-    const { socketId, userId, pos, name, location, website } = data;
+    const { socketId, userId, pos, name, location, website, profileImage } =
+      data;
     if (markersList.has(socketId)) {
       updateMarker(socketId, pos);
     } else {
       createMarker(map, socketId, pos, name);
       if ($("#signin-signup-form").length === 0) {
-        const card = createUserCard(socketId, name, pos);
+        const card = createUserCard(socketId);
         appendUserCard(card);
-        updateCardTitleText(socketId, name, location, website);
+        updateCardTitleText(socketId, name, location, website, profileImage);
         updateUserCardLink(socketId, userId);
       }
     }
@@ -107,12 +81,12 @@ const checkAccessToken = async () => {
       localStorage.clear();
       return;
     }
-    console.log(resultJson);
-    const { nickname, location, website, id } = resultJson;
+    const { nickname, location, website, id, profileImage } = resultJson;
     localStorage.setItem("name", nickname);
     localStorage.setItem("location", location);
     localStorage.setItem("website", website);
     localStorage.setItem("userId", id);
+    localStorage.setItem("profileImage", profileImage);
     removeSignInSignUpForm();
     appendRightColTitle(nickname);
     updateProfileIconLink(id);
@@ -121,6 +95,78 @@ const checkAccessToken = async () => {
 
 const removeSignInSignUpForm = () => {
   $("#signin-signup-form").remove();
+};
+
+const shareLocationControl = (controlDiv, map) => {
+  const controlUI = document.createElement("div");
+  controlUI.style.backgroundColor = "#fff";
+  controlUI.style.border = "2px solid #fff";
+  controlUI.style.borderRadius = "3px";
+  controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+  controlUI.style.cursor = "pointer";
+  controlUI.style.marginTop = "8px";
+  controlUI.style.marginBottom = "22px";
+  controlUI.style.textAlign = "center";
+  controlUI.title = "Click to share the location";
+  controlDiv.appendChild(controlUI);
+
+  const controlText = document.createElement("div");
+  controlText.style.color = "rgb(25,25,25)";
+  controlText.style.fontFamily = "Roboto,Arial,sans-serif";
+  controlText.style.fontSize = "16px";
+  controlText.style.lineHeight = "38px";
+  controlText.style.paddingLeft = "5px";
+  controlText.style.paddingRight = "5px";
+  controlText.innerHTML = "Share My Location";
+  controlUI.appendChild(controlText);
+
+  controlUI.addEventListener("click", () => {
+    getCurrentLocaiton(map);
+  });
+};
+
+const getCurrentLocaiton = (map) => {
+  if (navigator.geolocation) {
+    const name = localStorage.getItem("name");
+    const location = localStorage.getItem("location");
+    const website = localStorage.getItem("website");
+    const userId = localStorage.getItem("userId");
+    const profileImage = localStorage.getItem("profileImage");
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      const pos = { lat: latitude, lng: longitude };
+      createMarker(map, socket.id, pos, "You are here");
+      map.setCenter(pos);
+      map.setZoom(18);
+      socket.emit("update position", {
+        pos,
+        socketId: socket.id,
+        userId,
+        name,
+        location,
+        website,
+        profileImage,
+      });
+    });
+
+    navigator.geolocation.watchPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      const pos = {
+        lat: latitude + randomVariation(),
+        lng: longitude + randomVariation(),
+      };
+      updateMarker(socket.id, pos);
+      socket.emit("update position", {
+        pos,
+        socketId: socket.id,
+        userId,
+        name,
+        location,
+        website,
+        profileImage,
+      });
+    });
+  }
 };
 
 checkAccessToken();
@@ -134,6 +180,7 @@ const script = $("<script></script>", {
 script.appendTo("head");
 const socket = io(socket_host);
 const markersList = new Map();
+let map;
 window.initMap = initMap;
 
 $("#signin").click(() => {

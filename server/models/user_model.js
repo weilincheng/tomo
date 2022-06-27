@@ -40,7 +40,15 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
       status: 403,
     };
   }
-  const { id, nickname, email, password, location, website } = result[0];
+  const {
+    id,
+    nickname,
+    email,
+    password,
+    location,
+    website,
+    profile_image: profileImage,
+  } = result[0];
   const match = await bcrypt.compare(signInPassword, password);
   if (!match) {
     return {
@@ -53,7 +61,8 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
       nickname,
       signInEmail,
       location,
-      website
+      website,
+      profileImage
     );
     return {
       access_token,
@@ -64,6 +73,7 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
         email,
         location,
         website,
+        profile_image: profileImage,
       },
     };
   }
@@ -71,8 +81,9 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
 
 const profile = (accessToken) => {
   try {
-    const { id, nickname, email, location, website } = verifyToken(accessToken);
-    return { id, nickname, email, location, website };
+    const { id, nickname, email, location, website, profileImage } =
+      verifyToken(accessToken);
+    return { id, nickname, email, location, website, profileImage };
   } catch (error) {
     return { status: 403, error: "Invalid Token" };
   }

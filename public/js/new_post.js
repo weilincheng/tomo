@@ -66,7 +66,7 @@ const sendPostFormData = async (formData) => {
   });
   const resultJson = await result.json();
   alert(resultJson.status);
-  window.location = "/user/newpost";
+  window.location = `/user/${userId}`;
 };
 
 verifyToken(localStorage.getItem("accessToken"));

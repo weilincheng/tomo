@@ -23,8 +23,10 @@ const createMarker = (map, socketId, pos, name) => {
 
 const removeMarker = (socketId) => {
   const marker = markersList.get(socketId);
-  marker.setMap(null);
-  markersList.delete(socketId);
+  if (marker) {
+    marker.setMap(null);
+    markersList.delete(socketId);
+  }
 };
 
 const initMap = () => {
@@ -69,19 +71,29 @@ const initMap = () => {
 const checkAccessToken = async () => {
   const accessToken = localStorage.getItem("accessToken");
   if (accessToken) {
-    const result = await fetch("/api/v1/user/profile", {
+    const verifyResult = await fetch("/api/v1/user/profile", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    const resultJson = await result.json();
+    const resultJson = await verifyResult.json();
     if (resultJson.error) {
       alert(resultJson.error);
       localStorage.clear();
       return;
     }
-    const { nickname, location, website, id, profileImage } = resultJson;
+    const userInfo = await fetch(`/api/v1/user/${resultJson.id}`, {
+      method: "GET",
+    });
+    const userInfoJson = await userInfo.json();
+    const {
+      nickname,
+      location,
+      website,
+      id,
+      profile_image: profileImage,
+    } = userInfoJson;
     localStorage.setItem("name", nickname);
     localStorage.setItem("location", location);
     localStorage.setItem("website", website);
@@ -120,9 +132,11 @@ const shareLocationControl = (controlDiv, map) => {
   controlText.innerHTML = "Share My Location";
   controlUI.appendChild(controlText);
 
-  controlUI.addEventListener("click", () => {
+  const clickShareLocation = () => {
     getCurrentLocaiton(map);
-  });
+    controlUI.removeEventListener("click", clickShareLocation, false);
+  };
+  controlUI.addEventListener("click", clickShareLocation);
 };
 
 const getCurrentLocaiton = (map) => {

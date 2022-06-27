@@ -1,6 +1,7 @@
 require("dotenv").config();
 const User = require("../models/user_model");
 const Notifications = require("../models/notifications_model");
+const Message = require("../models/message_model");
 const validator = require("validator");
 const { s3Upload } = require("../../utilities/utilities");
 
@@ -195,6 +196,12 @@ const addRelationship = async (req, res) => {
       targetUserId,
       "message",
       ""
+    );
+    await Message.saveMessages(
+      req.userId,
+      targetUserId,
+      "System Message: You are mutual following now.",
+      "text"
     );
   }
   res.status(200).json(result);

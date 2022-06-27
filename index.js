@@ -91,7 +91,6 @@ io.on("connection", (socket) => {
     });
   }
   io.emit("users", users);
-  console.log(users);
 
   socket.on(
     "private message",

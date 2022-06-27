@@ -44,45 +44,6 @@ const initMap = () => {
     shareLocationControlDiv
   );
 
-  // if (navigator.geolocation) {
-  //   const name = localStorage.getItem("name");
-  //   const location = localStorage.getItem("location");
-  //   const website = localStorage.getItem("website");
-  //   const userId = localStorage.getItem("userId");
-  //   const profileImage = localStorage.getItem("profileImage");
-  //   navigator.geolocation.getCurrentPosition((position) => {
-  //     const { latitude, longitude } = position.coords;
-  //     const pos = { lat: latitude, lng: longitude };
-  //     createMarker(map, socket.id, pos, "You are here");
-  //     socket.emit("update position", {
-  //       pos,
-  //       socketId: socket.id,
-  //       userId,
-  //       name,
-  //       location,
-  //       website,
-  //       profileImage,
-  //     });
-  //   });
-
-  //   navigator.geolocation.watchPosition((position) => {
-  //     const { latitude, longitude } = position.coords;
-  //     const pos = {
-  //       lat: latitude + randomVariation(),
-  //       lng: longitude + randomVariation(),
-  //     };
-  //     updateMarker(socket.id, pos);
-  //     socket.emit("update position", {
-  //       pos,
-  //       socketId: socket.id,
-  //       userId,
-  //       name,
-  //       location,
-  //       website,
-  //       profileImage,
-  //     });
-  //   });
-  // }
   socket.on("update position", (data) => {
     const { socketId, userId, pos, name, location, website, profileImage } =
       data;

@@ -17,10 +17,21 @@ const catchAsyncError = (callback) => {
   };
 };
 
-const generateToken = (id, nickname, email, location, website) => {
-  return jwt.sign({ id, nickname, email, location, website }, TOKEN_SECRET, {
-    expiresIn: TOKEN_EXPIRATION,
-  });
+const generateToken = (
+  id,
+  nickname,
+  email,
+  location,
+  website,
+  profileImage
+) => {
+  return jwt.sign(
+    { id, nickname, email, location, website, profileImage },
+    TOKEN_SECRET,
+    {
+      expiresIn: TOKEN_EXPIRATION,
+    }
+  );
 };
 
 const verifyToken = (access_token) => {

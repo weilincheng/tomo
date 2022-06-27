@@ -40,6 +40,7 @@ const initMap = () => {
     const location = localStorage.getItem("location");
     const website = localStorage.getItem("website");
     const userId = localStorage.getItem("userId");
+    const profileImage = localStorage.getItem("profileImage");
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       const pos = { lat: latitude, lng: longitude };
@@ -51,6 +52,7 @@ const initMap = () => {
         name,
         location,
         website,
+        profileImage,
       });
     });
 
@@ -68,19 +70,21 @@ const initMap = () => {
         name,
         location,
         website,
+        profileImage,
       });
     });
   }
   socket.on("update position", (data) => {
-    const { socketId, userId, pos, name, location, website } = data;
+    const { socketId, userId, pos, name, location, website, profileImage } =
+      data;
     if (markersList.has(socketId)) {
       updateMarker(socketId, pos);
     } else {
       createMarker(map, socketId, pos, name);
       if ($("#signin-signup-form").length === 0) {
-        const card = createUserCard(socketId, name, pos);
+        const card = createUserCard(socketId);
         appendUserCard(card);
-        updateCardTitleText(socketId, name, location, website);
+        updateCardTitleText(socketId, name, location, website, profileImage);
         updateUserCardLink(socketId, userId);
       }
     }
@@ -108,11 +112,12 @@ const checkAccessToken = async () => {
       return;
     }
     console.log(resultJson);
-    const { nickname, location, website, id } = resultJson;
+    const { nickname, location, website, id, profileImage } = resultJson;
     localStorage.setItem("name", nickname);
     localStorage.setItem("location", location);
     localStorage.setItem("website", website);
     localStorage.setItem("userId", id);
+    localStorage.setItem("profileImage", profileImage);
     removeSignInSignUpForm();
     appendRightColTitle(nickname);
     updateProfileIconLink(id);

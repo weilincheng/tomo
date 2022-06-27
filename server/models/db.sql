@@ -19,6 +19,8 @@ CREATE TABLE `relationships`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `follower_user_id` INT UNSIGNED NOT NULL,
     `followed_user_id` INT UNSIGNED NOT NULL,
+    `mutual_following` BOOLEAN DEFAULT FALSE,
+    `blocked_by_followed` BOOLEAN DEFAULT FALSE,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(`follower_user_id`) REFERENCES `users`(`id`),
     FOREIGN KEY(`followed_user_id`) REFERENCES `users`(`id`)

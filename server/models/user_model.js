@@ -164,9 +164,27 @@ const getRelationships = async (targetUserId, type) => {
   return result;
 };
 
-const addRelationship = async (followerUserid, followedUserId) => {
-  const sql = `INSERT INTO relationships (follower_user_id, followed_user_id) VALUES (?, ?)`;
-  const sqlBindings = [followerUserid, followedUserId];
+const checkMutualStatus = async (followerUserId, followedUserId) => {
+  const sql = `SELECT * FROM relationships WHERE follower_user_id = ? AND followed_user_id = ?`;
+  const sqlBindings = [followerUserId, followedUserId];
+  const [result] = await pool.query(sql, sqlBindings);
+  return result.length > 0;
+};
+
+const updateMutualStatus = async (followerUserId, followedUserId, status) => {
+  const sql = `UPDATE relationships SET mutual_following = ? WHERE follower_user_id = ? AND followed_user_id = ?`;
+  const sqlBindings = [status, followerUserId, followedUserId];
+  const [result] = await pool.query(sql, sqlBindings);
+  return result;
+};
+
+const addRelationship = async (
+  followerUserid,
+  followedUserId,
+  isMutualFollowing
+) => {
+  const sql = `INSERT INTO relationships (follower_user_id, followed_user_id, mutual_following) VALUES (?, ?, ?)`;
+  const sqlBindings = [followerUserid, followedUserId, isMutualFollowing];
   const [result] = await pool.query(sql, sqlBindings);
   return result;
 };
@@ -190,4 +208,6 @@ module.exports = {
   getRelationships,
   addRelationship,
   removeRelationship,
+  checkMutualStatus,
+  updateMutualStatus,
 };

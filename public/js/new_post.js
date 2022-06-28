@@ -7,9 +7,9 @@ const verifyToken = async (accessToken) => {
   });
   const resultJson = await result.json();
   if (resultJson.error) {
-    alert(resultJson.error);
+    alert("resultJson.error");
     localStorage.clear();
-    return;
+    window.location = "/";
   }
   return resultJson;
 };
@@ -69,7 +69,13 @@ const sendPostFormData = async (formData) => {
   window.location = `/user/${userId}`;
 };
 
-verifyToken(localStorage.getItem("accessToken"));
+const accessToken = localStorage.getItem("accessToken");
+if (accessToken) {
+  verifyToken(localStorage.getItem("accessToken"));
+} else {
+  alert("Please log in first!");
+  window.location = "/";
+}
 const userId = localStorage.getItem("userId");
 
 $(() => {

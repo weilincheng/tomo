@@ -3,11 +3,22 @@ const createUserCard = (socketId) => {
   card.attr("id", `user-card-${socketId}`);
   const cardRow = $('<div class="row g-0">');
   const cardColImage = $('<div class="col-md-4">');
-  const cardImage = $(
-    '<img class="img-fluid rounded-circle px-1 py-1" src="https://via.placeholder.com/150" alt="Card image">'
-  );
-  cardImage.attr("id", `card-image-${socketId}`);
-  cardColImage.append(cardImage);
+  cardColImage.css({
+    display: "inline-block",
+    width: "100px",
+    height: "100px",
+    "border-radius": "50%",
+    "background-repeat": "no-repeat",
+    "background-position": "center center",
+    "background-size": "cover",
+    "background-image": `url("https://via.placeholder.com/100")`,
+  });
+  // const cardImage = $(
+  //   '<img class="img-fluid rounded-circle px-1 py-1" src="https://via.placeholder.com/150" alt="Card image">'
+  // );
+  // cardImage.attr("id", `card-image-${socketId}`);
+  cardColImage.attr("id", `card-image-${socketId}`);
+  // cardColImage.append(cardImage);
   cardRow.append(cardColImage);
   const cardColBody = $('<div class="col-md-8">');
   const cardBody = $('<div class="card-body">');
@@ -37,9 +48,13 @@ const updateCardTitleText = (
   $("#card-title-" + socketId).text(name ? name : "annonymous");
   $("#card-text-" + socketId).text(`${location ? location : ""}`);
   if (profileImage) {
-    $("#card-image-" + socketId).attr(
-      "src",
-      `${cloudfrontUrl}/${profileImage}`
+    // $("#card-image-" + socketId).attr(
+    //   "src",
+    //   `${cloudfrontUrl}/${profileImage}`
+    // );
+    $("#card-image-" + socketId).css(
+      "background-image",
+      `url('${cloudfrontUrl}/${profileImage}')`
     );
   }
 };

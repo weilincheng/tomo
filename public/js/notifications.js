@@ -18,6 +18,9 @@ const checkAccessToken = async () => {
     localStorage.setItem("website", website);
     localStorage.setItem("userId", id);
     updateProfileIconLink(id);
+  } else {
+    alert("Please login first!");
+    window.location = "/";
   }
 };
 
@@ -40,7 +43,6 @@ const getNotifications = async () => {
 
 const renderNotifications = async () => {
   const notifications = await getNotifications();
-  console.log(notifications);
   const notificationSection = $("#notifications-section");
   for (const notification of notifications) {
     const {

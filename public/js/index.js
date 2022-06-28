@@ -7,7 +7,7 @@ const updateMarker = (socketId, pos) => {
   marker.setPosition(pos);
 };
 
-const createMarker = (map, socketId, pos, name) => {
+const createPlacesMarker = (map, socketId, pos, name) => {
   const marker = new google.maps.Marker({
     position: pos,
     map: map,
@@ -41,7 +41,7 @@ const initMap = () => {
   });
 
   const shareLocationControlDiv = document.createElement("div");
-  shareLocationControl(shareLocationControlDiv, map);
+  locateMeControl(shareLocationControlDiv, map);
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(
     shareLocationControlDiv
   );
@@ -52,7 +52,7 @@ const initMap = () => {
     if (markersList.has(socketId)) {
       updateMarker(socketId, pos);
     } else {
-      createMarker(map, socketId, pos, name);
+      createPlacesMarker(map, socketId, pos, name);
       if ($("#signin-signup-form").length === 0) {
         const card = createUserCard(socketId);
         appendUserCard(card);
@@ -85,6 +85,9 @@ const checkAccessToken = async () => {
     }
     const userInfo = await fetch(`/api/v1/user/${resultJson.id}`, {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
     const userInfoJson = await userInfo.json();
     const {
@@ -149,7 +152,7 @@ const getCurrentLocaiton = (map) => {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       const pos = { lat: latitude, lng: longitude };
-      createMarker(map, socket.id, pos, "You are here");
+      createPlacesMarker(map, socket.id, pos, "You are here");
       map.setCenter(pos);
       map.setZoom(18);
       socket.emit("update position", {
@@ -192,7 +195,7 @@ const script = $("<script></script>", {
   async: true,
 });
 script.appendTo("head");
-const socket = io(socket_host);
+// const socket = io(socket_host);
 const markersList = new Map();
 let map;
 window.initMap = initMap;

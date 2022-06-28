@@ -34,7 +34,7 @@ router
 router
   .route("/user/follow/:targetUserId")
   .delete(authUser(), catchAsyncError(removeRelationship));
-router.route("/user/:userId").get(catchAsyncError(getUserInfo));
+router.route("/user/:userId").get(authUser(), catchAsyncError(getUserInfo));
 router
   .route("/user/:userId")
   .put(authUser(), cpUpload, catchAsyncError(updateUserInfo));

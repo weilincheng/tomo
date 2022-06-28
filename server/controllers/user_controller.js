@@ -113,7 +113,14 @@ const updateUserInfo = async (req, res) => {
   }
   const { "profile-image": profileImage, "background-image": backgroundImage } =
     req.files;
-  const { nickname, bio, location, website } = req.body;
+  const {
+    nickname,
+    bio,
+    "geo-location-lat": geoLocationLat,
+    "geo-location-lng": geoLocationLng,
+    website,
+    "display-geo-location": displayGeoLocation,
+  } = req.body;
   let profileImageName, backgroundImageName;
   if (profileImage) {
     const result = await s3Upload(profileImage);
@@ -127,7 +134,9 @@ const updateUserInfo = async (req, res) => {
     userId,
     nickname,
     bio,
-    location,
+    geoLocationLat,
+    geoLocationLng,
+    displayGeoLocation === "on" ? true : false,
     website,
     profileImageName,
     backgroundImageName

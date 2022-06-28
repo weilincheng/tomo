@@ -7,7 +7,7 @@ const updateMarker = (socketId, pos) => {
   marker.setPosition(pos);
 };
 
-const createPlacesMarker = (map, socketId, pos, name) => {
+const createMarker = (map, socketId, pos, name) => {
   const marker = new google.maps.Marker({
     position: pos,
     map: map,
@@ -19,6 +19,49 @@ const createPlacesMarker = (map, socketId, pos, name) => {
   });
   markersList.set(socketId, marker);
   createUserCard(socketId, name, pos);
+};
+
+const createInfowindow = () => {
+  const contentString =
+    '<div id="content">' +
+    '<div id="siteNotice">' +
+    "</div>" +
+    '<h1 id="firstHeading" class="firstHeading">Uluru</h1>' +
+    '<div id="bodyContent">' +
+    "<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large " +
+    "sandstone rock formation in the southern part of the " +
+    "Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) " +
+    "south west of the nearest large town, Alice Springs; 450&#160;km " +
+    "(280&#160;mi) by road. Kata Tjuta and Uluru are the two major " +
+    "features of the Uluru - Kata Tjuta National Park. Uluru is " +
+    "sacred to the Pitjantjatjara and Yankunytjatjara, the " +
+    "Aboriginal people of the area. It has many springs, waterholes, " +
+    "rock caves and ancient paintings. Uluru is listed as a World " +
+    "Heritage Site.</p>" +
+    '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">' +
+    "https://en.wikipedia.org/w/index.php?title=Uluru</a> " +
+    "(last visited June 22, 2009).</p>" +
+    "</div>" +
+    "</div>";
+
+  return new google.maps.InfoWindow({
+    content: contentString,
+  });
+};
+
+const createIcon = (map, pos, profileImage) => {
+  const icon = {
+    url: `${profileImage}`,
+    scaledSize: new google.maps.Size(50, 50), // scaled size
+    origin: new google.maps.Point(0, 0), // origin
+    anchor: new google.maps.Point(0, 0), // anchor
+  };
+  return new google.maps.Marker({
+    position: pos,
+    animation: google.maps.Animation.DROP,
+    map,
+    icon,
+  });
 };
 
 const removeMarker = (socketId) => {
@@ -40,32 +83,32 @@ const initMap = () => {
     mapTypeControl: false,
   });
 
-  const shareLocationControlDiv = document.createElement("div");
-  locateMeControl(shareLocationControlDiv, map);
+  const panToCurrentLocationControlDiv = document.createElement("div");
+  panToCurrentLocationControl(panToCurrentLocationControlDiv, map);
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(
-    shareLocationControlDiv
+    panToCurrentLocationControlDiv
   );
 
-  socket.on("update position", (data) => {
-    const { socketId, userId, pos, name, location, website, profileImage } =
-      data;
-    if (markersList.has(socketId)) {
-      updateMarker(socketId, pos);
-    } else {
-      createPlacesMarker(map, socketId, pos, name);
-      if ($("#signin-signup-form").length === 0) {
-        const card = createUserCard(socketId);
-        appendUserCard(card);
-        updateCardTitleText(socketId, name, location, website, profileImage);
-        updateUserCardLink(socketId, userId);
-      }
-    }
-  });
-  socket.on("remove position", (data) => {
-    const { socketId } = data;
-    removeUserCard(socketId);
-    removeMarker(socketId);
-  });
+  // socket.on("update position", (data) => {
+  //   const { socketId, userId, pos, name, location, website, profileImage } =
+  //     data;
+  //   if (markersList.has(socketId)) {
+  //     updateMarker(socketId, pos);
+  //   } else {
+  //     createPlacesMarker(map, socketId, pos, name);
+  //     if ($("#signin-signup-form").length === 0) {
+  //       const card = createUserCard(socketId);
+  //       appendUserCard(card);
+  //       updateCardTitleText(socketId, name, location, website, profileImage);
+  //       updateUserCardLink(socketId, userId);
+  //     }
+  //   }
+  // });
+  // socket.on("remove position", (data) => {
+  //   const { socketId } = data;
+  //   removeUserCard(socketId);
+  //   removeMarker(socketId);
+  // });
 };
 
 const checkAccessToken = async () => {
@@ -112,7 +155,7 @@ const removeSignInSignUpForm = () => {
   $("#signin-signup-form").remove();
 };
 
-const shareLocationControl = (controlDiv, map) => {
+const panToCurrentLocationControl = (controlDiv, map) => {
   const controlUI = document.createElement("div");
   controlUI.style.backgroundColor = "#fff";
   controlUI.style.border = "2px solid #fff";
@@ -122,7 +165,7 @@ const shareLocationControl = (controlDiv, map) => {
   controlUI.style.marginTop = "8px";
   controlUI.style.marginBottom = "22px";
   controlUI.style.textAlign = "center";
-  controlUI.title = "Click to share the location";
+  controlUI.title = "Click to pan to current location";
   controlDiv.appendChild(controlUI);
 
   const controlText = document.createElement("div");
@@ -132,7 +175,7 @@ const shareLocationControl = (controlDiv, map) => {
   controlText.style.lineHeight = "38px";
   controlText.style.paddingLeft = "5px";
   controlText.style.paddingRight = "5px";
-  controlText.innerHTML = "Share My Location";
+  controlText.innerHTML = "Pan to Current Location";
   controlUI.appendChild(controlText);
 
   const clickShareLocation = () => {
@@ -152,37 +195,40 @@ const getCurrentLocaiton = (map) => {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       const pos = { lat: latitude, lng: longitude };
-      createPlacesMarker(map, socket.id, pos, "You are here");
+      const currentUserIcon = createIcon(
+        map,
+        pos,
+        `${cloudfrontUrl}/${profileImage}`
+      );
+      const currentUserInfowindow = createInfowindow();
+      currentUserIcon.addListener("click", () => {
+        currentUserInfowindow.open({
+          anchor: currentUserIcon,
+          map,
+          shouldFocus: false,
+        });
+      });
       map.setCenter(pos);
       map.setZoom(18);
-      socket.emit("update position", {
-        pos,
-        socketId: socket.id,
-        userId,
-        name,
-        location,
-        website,
-        profileImage,
-      });
     });
 
-    navigator.geolocation.watchPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      const pos = {
-        lat: latitude + randomVariation(),
-        lng: longitude + randomVariation(),
-      };
-      updateMarker(socket.id, pos);
-      socket.emit("update position", {
-        pos,
-        socketId: socket.id,
-        userId,
-        name,
-        location,
-        website,
-        profileImage,
-      });
-    });
+    // navigator.geolocation.watchPosition((position) => {
+    //   const { latitude, longitude } = position.coords;
+    //   const pos = {
+    //     lat: latitude + randomVariation(),
+    //     lng: longitude + randomVariation(),
+    //   };
+    //   updateMarker(socket.id, pos);
+    //   socket.emit("update position", {
+    //     pos,
+    //     socketId: socket.id,
+    //     userId,
+    //     name,
+    //     location,
+    //     website,
+    //     profileImage,
+    //   });
+    // });
   }
 };
 
@@ -196,6 +242,7 @@ const script = $("<script></script>", {
 });
 script.appendTo("head");
 // const socket = io(socket_host);
+const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
 const markersList = new Map();
 let map;
 window.initMap = initMap;

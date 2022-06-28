@@ -31,12 +31,23 @@ const getUserInfo = async (userId) => {
   const {
     nickname,
     bio,
-    location,
+    geo_location_lat: geoLocationLat,
+    geo_location_lng: geoLocationLng,
+    display_geo_location: displayGeoLocation,
     website,
     profile_image: profileImage,
     background_image: backgroundImage,
   } = resultJson;
-  return { nickname, bio, location, website, profileImage, backgroundImage };
+  return {
+    nickname,
+    bio,
+    geoLocationLat,
+    geoLocationLng,
+    displayGeoLocation,
+    website,
+    profileImage,
+    backgroundImage,
+  };
 };
 
 const renderUserProfile = async () => {
@@ -48,15 +59,24 @@ const renderUserProfile = async () => {
   await verifyToken(accessToken);
   const userId = localStorage.getItem("userId");
   updateProfileIconLink(userId);
-  const { nickname, location, website, bio, profileImage, backgroundImage } =
-    await getUserInfo(userId);
+  const {
+    nickname,
+    website,
+    bio,
+    profileImage,
+    backgroundImage,
+    geoLocationLat,
+    geoLocationLng,
+    displayGeoLocation,
+  } = await getUserInfo(userId);
   const cloudFrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
   $("#nickname").val(nickname);
   $("#nickname-current").text(nickname.length);
   $("#bio").val(bio);
+  $("#geo-location-lat").val(geoLocationLat);
+  $("#geo-location-lng").val(geoLocationLng);
+  $("#display-geo-location").prop("checked", displayGeoLocation);
   $("#bio-current").text(bio.length);
-  // $("#location").val(location);
-  // $("#location-current").text(location.length);
   $("#website").val(website);
   $("#website-current").text(website.length);
   $("#profile-image-source").attr(
@@ -107,6 +127,14 @@ const attachClickEvent = () => {
   });
   $("#cancel-button").click(() => {
     window.location = `/user/${localStorage.getItem("userId")}`;
+  });
+  $("#display-geo-location").click(() => {
+    const switchStatus = $("#display-geo-location").prop("checked");
+    if (switchStatus) {
+      $("#display-geo-location-label").text("Display Geo Location on Map");
+    } else {
+      $("#display-geo-location-label").text("Hide Geo Location on Map");
+    }
   });
 };
 
@@ -187,7 +215,7 @@ const getCurrentLocaiton = (map) => {
       const pos = { lat: latitude, lng: longitude };
       createCustomMarker(map, pos, "You are here");
       map.setCenter(pos);
-      map.setZoom(15);
+      map.setZoom(16);
       getNearybyPlaces(map, pos, "park");
     });
   }
@@ -222,8 +250,8 @@ const createPlacesMarker = (place) => {
   });
 
   google.maps.event.addListener(marker, "click", () => {
-    console.log(place.name, place.geometry);
-    $("#geo-location").val(place.geometry.location);
+    $("#geo-location-lat").val(place.geometry.location.lat);
+    $("#geo-location-lng").val(place.geometry.location.lng);
   });
 };
 

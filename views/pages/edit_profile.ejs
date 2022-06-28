@@ -66,16 +66,41 @@
         <span id="maximum">/ 160</span>
       </div>
       <div class="mb-3">
-        <label for="Geo Location" class="form-label">Location</label>
+        <label for="Geo Location" class="form-label">Geo Location</label>
         <div class="input-group flex-nowrap mb-1">
-          <span class="input-group-text">Coordinate</span>
+          <span class="input-group-text">Lat</span>
           <input
             type="text"
             class="form-control"
-            id="geo-location"
-            name="geo-location"
+            id="geo-location-lat"
+            name="geo-location-lat"
             maxlength="30"
+            readonly
           />
+          <span class="input-group-text">Lng</span>
+          <input
+            type="text"
+            class="form-control"
+            id="geo-location-lng"
+            name="geo-location-lng"
+            maxlength="30"
+            readonly
+          />
+        </div>
+        <div class="form-check form-switch">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="display-geo-location"
+            name="display-geo-location"
+            checked
+          />
+          <label
+            class="form-check-label"
+            for="display-geo-location"
+            id="display-geo-location-label"
+            >Display Geo Location on Map</label
+          >
         </div>
       </div>
       <div class="mb-3">

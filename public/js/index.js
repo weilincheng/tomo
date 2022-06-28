@@ -39,7 +39,6 @@ const initMap = () => {
     streetViewControl: false,
     mapTypeControl: false,
   });
-  console.log("map", map);
 
   const shareLocationControlDiv = document.createElement("div");
   locateMeControl(shareLocationControlDiv, map);
@@ -196,7 +195,7 @@ const script = $("<script></script>", {
   async: true,
 });
 script.appendTo("head");
-const socket = io(socket_host);
+// const socket = io(socket_host);
 const markersList = new Map();
 let map;
 window.initMap = initMap;

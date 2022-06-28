@@ -106,13 +106,22 @@ const updateUserInfo = async (
   userId,
   name,
   bio,
-  location,
+  geoLocationLat,
+  geoLocationLng,
+  displayGeoLocation,
   website,
   profileImage,
   backgroundImage
 ) => {
-  let sql = `UPDATE users SET nickname = ?, bio = ?, location = ?, website = ? `;
-  let sqlBindings = [name, bio, location, website];
+  let sql = `UPDATE users SET nickname = ?, bio = ?, geo_location_lat = ?, geo_location_lng = ?, display_geo_location = ?, website = ? `;
+  let sqlBindings = [
+    name,
+    bio,
+    geoLocationLat,
+    geoLocationLng,
+    displayGeoLocation,
+    website,
+  ];
   if (profileImage) {
     sql += `, profile_image = ? `;
     sqlBindings.push(profileImage);

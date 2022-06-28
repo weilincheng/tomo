@@ -1,0 +1,137 @@
+<%- include("../partials/header") -%>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script
+  id="map-script"
+  google_api_key="<%= google_api_key%>"
+  src="../../static/js/edit_profile.js"
+></script>
+
+<div class="row justify-content-center vh-75 w-100">
+  <div class="col-1"><%- include("../partials/sidebar") -%></div>
+  <div class="col-6 d-flex justify-content-center h-100">
+    <form class="w-75 h-100" enctype="multipart/form-data" id="profile-form">
+      <div class="mb-3">
+        <div class="d-flex flex-column">
+          <label for="profile-image" class="form-label">Profile Image</label>
+          <img class="w-50" id="profile-image-source" src="" alt="" />
+        </div>
+        <input
+          type="file"
+          class="col-auto form-control"
+          id="profile-image"
+          name="profile-image"
+        />
+      </div>
+      <div class="mb-3">
+        <div class="d-flex flex-column">
+          <label for="background-image" class="form-label"
+            >Background Image</label
+          >
+          <img class="w-50" id="background-image-source" src="" alt="" />
+        </div>
+        <input
+          type="file"
+          class="col-auto form-control"
+          id="background-image"
+          name="background-image"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="nickname" class="form-label">Nickname</label>
+        <input
+          type="text"
+          class="col-auto form-control"
+          id="nickname"
+          name="nickname"
+          maxlength="50"
+        />
+      </div>
+      <div class="text-end" id="nickname-count">
+        <span id="nickname-current">0</span>
+        <span id="maximum">/ 50</span>
+      </div>
+      <div class="mb-3">
+        <label for="bio" class="form-label">Bio</label>
+        <textarea
+          type="text"
+          class="form-control"
+          id="bio"
+          name="bio"
+          rows="2"
+          maxlength="160"
+        ></textarea>
+      </div>
+      <div class="text-end" id="bio-count">
+        <span id="bio-current">0</span>
+        <span id="maximum">/ 160</span>
+      </div>
+      <div class="mb-3">
+        <label for="Geo Location" class="form-label">Geo Location</label>
+        <div class="input-group flex-nowrap mb-1">
+          <span class="input-group-text">Lat</span>
+          <input
+            type="text"
+            class="form-control"
+            id="geo-location-lat"
+            name="geo-location-lat"
+            maxlength="30"
+            readonly
+          />
+          <span class="input-group-text">Lng</span>
+          <input
+            type="text"
+            class="form-control"
+            id="geo-location-lng"
+            name="geo-location-lng"
+            maxlength="30"
+            readonly
+          />
+        </div>
+        <div class="form-check form-switch">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="display-geo-location"
+            name="display-geo-location"
+            checked
+          />
+          <label
+            class="form-check-label"
+            for="display-geo-location"
+            id="display-geo-location-label"
+            >Display Geo Location on Map</label
+          >
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="website" class="form-label">Website</label>
+        <div class="input-group flex-nowrap">
+          <span class="input-group-text" id="addon-wrapping">http://</span>
+          <input
+            type="text"
+            class="form-control"
+            id="website"
+            name="website"
+            maxlength="100"
+          />
+        </div>
+        <div class="text-end" id="website-count">
+          <span id="website-current">0</span>
+          <span id="maximum">/ 100</span>
+        </div>
+      </div>
+      <button id="save-button" type="button" class="btn btn-primary">
+        Save
+      </button>
+      <button id="cancel-button" type="button" class="btn btn-secondary">
+        Cancel
+      </button>
+    </form>
+  </div>
+  <div class="col-5 d-flex flex-column justify-content-start overflow-auto">
+    <p class="fs-3">Select a park as your location</p>
+    <div id="map" class="h-100"></div>
+  </div>
+</div>
+
+<%- include("../partials/footer") -%>

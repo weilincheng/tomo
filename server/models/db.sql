@@ -4,10 +4,11 @@ CREATE DATABASE IF NOT EXISTS tomo;
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users`(
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `name` VARCHAR(747) NOT NULL,
+    `nickname` VARCHAR(747) NOT NULL,
     `email` VARCHAR(255) UNIQUE NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `bio` VARCHAR(255),
     `location` VARCHAR(255),
     `website` VARCHAR(2048), 
     `profile_image` VARCHAR(255), 
@@ -18,6 +19,8 @@ CREATE TABLE `relationships`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `follower_user_id` INT UNSIGNED NOT NULL,
     `followed_user_id` INT UNSIGNED NOT NULL,
+    `mutual_following` BOOLEAN DEFAULT FALSE,
+    `blocked_by_followed` BOOLEAN DEFAULT FALSE,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(`follower_user_id`) REFERENCES `users`(`id`),
     FOREIGN KEY(`followed_user_id`) REFERENCES `users`(`id`)
@@ -40,7 +43,7 @@ CREATE TABLE `post_images`(
 DROP TABLE IF EXISTS `interests`;
 CREATE TABLE `interests`(
     `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `name` VARCHAR(255) NOT NULL
+    `interest_name` VARCHAR(255) NOT NULL
 );
 DROP TABLE IF EXISTS `user_interests`;
 CREATE TABLE `user_interests`(
@@ -66,4 +69,24 @@ CREATE TABLE `message_content`(
     `type` VARCHAR(255) NOT NULL,
     `content` VARCHAR(255) NOT NULL,
     FOREIGN KEY(`message_id`) REFERENCES `messages`(`id`)
+);
+
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE `notifications`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `sender_user_id` INT UNSIGNED NOT NULL,
+    `receiver_user_id` INT UNSIGNED NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `has_read` BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY(`sender_user_id`) REFERENCES `users`(`id`),
+    FOREIGN KEY(`receiver_user_id`) REFERENCES `users`(`id`)
+);
+
+DROP TABLE IF EXISTS `notification_content`;
+CREATE TABLE `notification_content`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `notification_id` BIGINT UNSIGNED NOT NULL,
+    `type` ENUM('follow', 'post', 'message') NOT NULL,
+    `content` VARCHAR(255) NOT NULL,
+    FOREIGN KEY(`notification_id`) REFERENCES `notifications`(`id`)
 );

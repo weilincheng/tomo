@@ -7,7 +7,7 @@ const updateMarker = (socketId, pos) => {
   marker.setPosition(pos);
 };
 
-const createMarker = (map, socketId, pos, name) => {
+const createPlacesMarker = (map, socketId, pos, name) => {
   const marker = new google.maps.Marker({
     position: pos,
     map: map,
@@ -23,27 +23,138 @@ const createMarker = (map, socketId, pos, name) => {
 
 const removeMarker = (socketId) => {
   const marker = markersList.get(socketId);
-  marker.setMap(null);
-  markersList.delete(socketId);
+  if (marker) {
+    marker.setMap(null);
+    markersList.delete(socketId);
+  }
 };
 
 const initMap = () => {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
-  const map = new google.maps.Map($("#map")[0], {
+  map = new google.maps.Map($("#map")[0], {
     center: appWorksSchool,
     zoom: 13,
     mapId: "d91850b214eae5c9",
+    fullscreenControl: false,
+    streetViewControl: false,
+    mapTypeControl: false,
   });
 
+  const shareLocationControlDiv = document.createElement("div");
+  locateMeControl(shareLocationControlDiv, map);
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(
+    shareLocationControlDiv
+  );
+
+  socket.on("update position", (data) => {
+    const { socketId, userId, pos, name, location, website, profileImage } =
+      data;
+    if (markersList.has(socketId)) {
+      updateMarker(socketId, pos);
+    } else {
+      createPlacesMarker(map, socketId, pos, name);
+      if ($("#signin-signup-form").length === 0) {
+        const card = createUserCard(socketId);
+        appendUserCard(card);
+        updateCardTitleText(socketId, name, location, website, profileImage);
+        updateUserCardLink(socketId, userId);
+      }
+    }
+  });
+  socket.on("remove position", (data) => {
+    const { socketId } = data;
+    removeUserCard(socketId);
+    removeMarker(socketId);
+  });
+};
+
+const checkAccessToken = async () => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (accessToken) {
+    const verifyResult = await fetch("/api/v1/user/profile", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const resultJson = await verifyResult.json();
+    if (resultJson.error) {
+      alert(resultJson.error);
+      localStorage.clear();
+      return;
+    }
+    const userInfo = await fetch(`/api/v1/user/${resultJson.id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const userInfoJson = await userInfo.json();
+    const {
+      nickname,
+      location,
+      website,
+      id,
+      profile_image: profileImage,
+    } = userInfoJson;
+    localStorage.setItem("name", nickname);
+    localStorage.setItem("location", location);
+    localStorage.setItem("website", website);
+    localStorage.setItem("userId", id);
+    localStorage.setItem("profileImage", profileImage);
+    removeSignInSignUpForm();
+    appendRightColTitle(nickname);
+    updateProfileIconLink(id);
+  }
+};
+
+const removeSignInSignUpForm = () => {
+  $("#signin-signup-form").remove();
+};
+
+const shareLocationControl = (controlDiv, map) => {
+  const controlUI = document.createElement("div");
+  controlUI.style.backgroundColor = "#fff";
+  controlUI.style.border = "2px solid #fff";
+  controlUI.style.borderRadius = "3px";
+  controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+  controlUI.style.cursor = "pointer";
+  controlUI.style.marginTop = "8px";
+  controlUI.style.marginBottom = "22px";
+  controlUI.style.textAlign = "center";
+  controlUI.title = "Click to share the location";
+  controlDiv.appendChild(controlUI);
+
+  const controlText = document.createElement("div");
+  controlText.style.color = "rgb(25,25,25)";
+  controlText.style.fontFamily = "Roboto,Arial,sans-serif";
+  controlText.style.fontSize = "16px";
+  controlText.style.lineHeight = "38px";
+  controlText.style.paddingLeft = "5px";
+  controlText.style.paddingRight = "5px";
+  controlText.innerHTML = "Share My Location";
+  controlUI.appendChild(controlText);
+
+  const clickShareLocation = () => {
+    getCurrentLocaiton(map);
+    controlUI.removeEventListener("click", clickShareLocation, false);
+  };
+  controlUI.addEventListener("click", clickShareLocation);
+};
+
+const getCurrentLocaiton = (map) => {
   if (navigator.geolocation) {
     const name = localStorage.getItem("name");
     const location = localStorage.getItem("location");
     const website = localStorage.getItem("website");
     const userId = localStorage.getItem("userId");
+    const profileImage = localStorage.getItem("profileImage");
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       const pos = { lat: latitude, lng: longitude };
-      createMarker(map, socket.id, pos, "You are here");
+      createPlacesMarker(map, socket.id, pos, "You are here");
+      map.setCenter(pos);
+      map.setZoom(18);
       socket.emit("update position", {
         pos,
         socketId: socket.id,
@@ -51,6 +162,7 @@ const initMap = () => {
         name,
         location,
         website,
+        profileImage,
       });
     });
 
@@ -68,57 +180,10 @@ const initMap = () => {
         name,
         location,
         website,
+        profileImage,
       });
     });
   }
-  socket.on("update position", (data) => {
-    const { socketId, userId, pos, name, location, website } = data;
-    if (markersList.has(socketId)) {
-      updateMarker(socketId, pos);
-    } else {
-      createMarker(map, socketId, pos, name);
-      if ($("#signin-signup-form").length === 0) {
-        const card = createUserCard(socketId, name, pos);
-        appendUserCard(card);
-        updateCardTitleText(socketId, name, location, website);
-        updateUserCardLink(socketId, userId);
-      }
-    }
-  });
-  socket.on("remove position", (data) => {
-    const { socketId } = data;
-    removeUserCard(socketId);
-    removeMarker(socketId);
-  });
-};
-
-const checkAccessToken = async () => {
-  const accessToken = localStorage.getItem("accessToken");
-  if (accessToken) {
-    const result = await fetch("/api/v1/user/profile", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const resultJson = await result.json();
-    if (resultJson.error) {
-      alert(result.error);
-      return (window.location = "/");
-    }
-    const { name, location, website, id } = resultJson;
-    localStorage.setItem("name", name);
-    localStorage.setItem("location", location);
-    localStorage.setItem("website", website);
-    localStorage.setItem("userId", id);
-    removeSignInSignUpForm();
-    appendRightColTitle(name);
-    updateProfileIconLink(id);
-  }
-};
-
-const removeSignInSignUpForm = () => {
-  $("#signin-signup-form").remove();
 };
 
 checkAccessToken();
@@ -130,8 +195,9 @@ const script = $("<script></script>", {
   async: true,
 });
 script.appendTo("head");
-const socket = io(socket_host);
+// const socket = io(socket_host);
 const markersList = new Map();
+let map;
 window.initMap = initMap;
 
 $("#signin").click(() => {

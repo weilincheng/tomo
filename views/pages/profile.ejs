@@ -5,64 +5,151 @@
   id="profile-script"
   userId="<%= userId%>"
 ></script>
-<div class="row">
+<div class="row w-100 mt-2">
   <div class="col-1"><%- include("../partials/sidebar") -%></div>
   <div class="col-8 d-flex justify-content-center">
-    <div class="container py-5 h-100 w-100">
-      <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col col-lg-9 col-xl-7">
-          <div class="card">
-            <div
-              class="rounded-top text-white d-flex flex-row"
-              style="background-color: lightblue; height: 210px"
-            >
-              <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px">
-                <img
-                  src="https://via.placeholder.com/150"
-                  alt="Generic placeholder image"
-                  class="img-fluid img-thumbnail rounded-circle mt-4 mb-2"
-                  style="width: 150px; z-index: 1"
+    <div class="w-100 h-100 d-flex flex-column">
+      <div
+        id="background-image"
+        class="rounded-top text-white d-flex flex-row"
+        style="
+          min-height: 200px;
+          max-height: 200px;
+          background-repeat: no-repeat;
+          background-size: cover;
+          background-position: center;
+        "
+      >
+        <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px">
+          <img
+            src="https://via.placeholder.com/150"
+            alt="Generic placeholder image"
+            class="img-fluid img-thumbnail rounded-circle mt-4 mb-2"
+            style="min-width: 150px; min-height: 150px; z-index: 1"
+            id="profile-image"
+          />
+          <button
+            id="edit-profile-button"
+            type="button"
+            class="btn btn-outline-dark"
+            data-mdb-ripple-color="dark"
+            style="z-index: 1"
+          >
+            Edit Profile
+          </button>
+          <button
+            id="follow-button"
+            type="button"
+            class="btn btn-outline-dark"
+            data-mdb-ripple-color="dark"
+            style="z-index: 1"
+          >
+            Follow
+          </button>
+          <button
+            id="following-button"
+            type="button"
+            class="btn btn-outline-dark"
+            data-mdb-ripple-color="dark"
+            style="z-index: 1"
+          >
+            Following
+          </button>
+        </div>
+        <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px">
+          <img
+            src="https://via.placeholder.com/150"
+            alt="Generic placeholder image"
+            class="img-fluid img-thumbnail rounded-circle mt-4 mb-2 invisible"
+            style="min-width: 150px; min-height: 150px; z-index: 1"
+          />
+          <button
+            id="block-button"
+            type="button"
+            class="btn btn-outline-danger"
+            data-mdb-ripple-color="dark"
+            style="z-index: 1"
+          >
+            Block
+          </button>
+        </div>
+      </div>
+      <div class="p-4 text-black" style="background-color: #f8f9fa">
+        <div class="mt-5">
+          <p class="fs-3" id="name"></p>
+          <p class="fs-6" id="bio"></p>
+          <div class="d-flex justify-content-start align-items-center">
+            <div class="d-flex align-items-center me-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-geo-fill"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999zm2.493 8.574a.5.5 0 0 1-.411.575c-.712.118-1.28.295-1.655.493a1.319 1.319 0 0 0-.37.265.301.301 0 0 0-.057.09V14l.002.008a.147.147 0 0 0 .016.033.617.617 0 0 0 .145.15c.165.13.435.27.813.395.751.25 1.82.414 3.024.414s2.273-.163 3.024-.414c.378-.126.648-.265.813-.395a.619.619 0 0 0 .146-.15.148.148 0 0 0 .015-.033L12 14v-.004a.301.301 0 0 0-.057-.09 1.318 1.318 0 0 0-.37-.264c-.376-.198-.943-.375-1.655-.493a.5.5 0 1 1 .164-.986c.77.127 1.452.328 1.957.594C12.5 13 13 13.4 13 14c0 .426-.26.752-.544.977-.29.228-.68.413-1.116.558-.878.293-2.059.465-3.34.465-1.281 0-2.462-.172-3.34-.465-.436-.145-.826-.33-1.116-.558C3.26 14.752 3 14.426 3 14c0-.599.5-1 .961-1.243.505-.266 1.187-.467 1.957-.594a.5.5 0 0 1 .575.411z"
                 />
-                <button
-                  type="button"
-                  class="btn btn-outline-dark"
-                  data-mdb-ripple-color="dark"
-                  style="z-index: 1"
-                >
-                  Edit profile
-                </button>
-              </div>
-              <div class="ms-3" style="margin-top: 80px">
-                <p class="fs-4" id="name"></p>
-                <p class="fs-6" id="location"></p>
-                <a class="fs-6" id="website" href=""></a>
-              </div>
+              </svg>
+              <p class="fs-6 my-0 mx-1" id="location"></p>
             </div>
-            <div class="p-4 text-black" style="background-color: #f8f9fa">
-              <div class="d-flex justify-content-end text-center py-1">
-                <div class="px-3">
-                  <p class="mb-1 h5">1026</p>
-                  <p class="small text-muted mb-0">Followers</p>
-                </div>
-                <div>
-                  <p class="mb-1 h5">478</p>
-                  <p class="small text-muted mb-0">Following</p>
-                </div>
-              </div>
-            </div>
-            <div class="card-body p-4 text-black">
-              <div class="mb-5">
-                <p class="lead fw-normal mb-1">About</p>
-                <div class="p-4" style="background-color: #f8f9fa">
-                  <p class="font-italic mb-1">Web Developer</p>
-                </div>
-              </div>
+            <div class="d-flex align-items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-link-45deg"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"
+                />
+                <path
+                  d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"
+                />
+              </svg>
+              <a class="fs-6 mx-1" id="website" href=""></a>
             </div>
           </div>
         </div>
+        <div
+          class="d-flex justify-content-end text-center py-1 align-items-center"
+        >
+          <div id="send-message-link" class="px-3 btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1.5em"
+              height="1.5em"
+              class="bi bi-envelope"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"
+              />
+            </svg>
+          </div>
+          <div id="followers-link" class="btn px-3 d-flex text-center">
+            <p id="followers-count" class="mx-1 fs-6 my-0"></p>
+            <p class="text-secondary my-0">Followers</p>
+          </div>
+          <div id="following-link" class="btn px-3 d-flex text-center">
+            <p id="following-count" class="mx-1 fs-6 my-0"></p>
+            <p class="text-secondary my-0">Following</p>
+          </div>
+        </div>
       </div>
+      <div id="posts-section"></div>
     </div>
   </div>
-  <div class="col-3"></div>
+  <div id="follow-list-section" class="col-3 invisible">
+    <div
+      id="follow-list-title"
+      class="border-bottom text-center fs-3 mb-1"
+    ></div>
+    <div id="follow-list-details" class="d-flex flex-column"></div>
+  </div>
 </div>
 <%- include("../partials/footer") -%>

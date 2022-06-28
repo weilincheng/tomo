@@ -1,4 +1,14 @@
-const { TOKEN_SECRET, TOKEN_EXPIRATION } = process.env;
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const uuid = require("uuid").v4;
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const maxFileSize = 200000;
+const maxFileCounts = 4;
+const multerUpload = multer({
+  storage: storage,
+  limits: { fileSize: maxFileSize, files: maxFileCounts },
+});
+const { TOKEN_SECRET, TOKEN_EXPIRATION, AWS_BUCKET_NAME } = process.env;
 const jwt = require("jsonwebtoken");
 
 const catchAsyncError = (callback) => {
@@ -7,10 +17,21 @@ const catchAsyncError = (callback) => {
   };
 };
 
-const generateToken = (id, name, email, location, website) => {
-  return jwt.sign({ id, name, email, location, website }, TOKEN_SECRET, {
-    expiresIn: TOKEN_EXPIRATION,
-  });
+const generateToken = (
+  id,
+  nickname,
+  email,
+  location,
+  website,
+  profileImage
+) => {
+  return jwt.sign(
+    { id, nickname, email, location, website, profileImage },
+    TOKEN_SECRET,
+    {
+      expiresIn: TOKEN_EXPIRATION,
+    }
+  );
 };
 
 const verifyToken = (access_token) => {
@@ -45,4 +66,30 @@ const authUser = () => {
   };
 };
 
-module.exports = { catchAsyncError, authUser, generateToken, verifyToken };
+const s3Upload = async (files) => {
+  const s3client = new S3Client();
+  const params = files.map((file) => {
+    return {
+      Bucket: AWS_BUCKET_NAME,
+      Key: `${uuid()}-${file.originalname}`,
+      Body: file.buffer,
+    };
+  });
+  let filesName = [];
+  await Promise.all(
+    params.map((param) => {
+      s3client.send(new PutObjectCommand(param));
+      filesName.push(param.Key);
+    })
+  );
+  return filesName;
+};
+
+module.exports = {
+  catchAsyncError,
+  authUser,
+  generateToken,
+  verifyToken,
+  multerUpload,
+  s3Upload,
+};

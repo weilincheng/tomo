@@ -227,7 +227,7 @@ v1
 
 ### Add User Posts API
 
-- **End Point:** `/user/posts`
+- **End Point:** `/user/:userId/posts`
 
 - **Method:** `POST`
 
@@ -247,17 +247,9 @@ v1
 
 ### Get User Posts API
 
-- **End Point:** `/user/posts`
+- **End Point:** `/user/:userId/posts`
 
 - **Method:** `GET`
-
-- **Request Body Example:**
-
-```
-{
-  "userId": 1
-}
-```
 
 - **Success Response Example:**
 
@@ -270,6 +262,36 @@ v1
   "post_images" : ["image1.jpg", "image2.jpg"]
 }
 ```
+
+### Add User Follower API
+
+- **End Point:** `/user/follow/:targetUserId`
+
+- **Method:** `POST`
+
+- **Request Headers:**
+
+|     Field     |  Type  |                                      Description                                       |
+| :-----------: | :----: | :------------------------------------------------------------------------------------: |
+| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
+
+### Remove User Follower API
+
+- **End Point:** `/user/follow/:targetUserId`
+
+- **Method:** `DELETE`
+
+- **Request Headers:**
+
+|     Field     |  Type  |                                      Description                                       |
+| :-----------: | :----: | :------------------------------------------------------------------------------------: |
+| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
+
+### Get User Follower / Following API
+
+- **End Point:** `/user/follow/:targetUserId`
+
+- **Method:** `GET`
 
 ### Get Message API
 

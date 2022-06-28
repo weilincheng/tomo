@@ -1,13 +1,13 @@
 <%- include("../partials/header") -%>
 
-<div class="row justify-content-center h-75 w-100">
+<div class="row justify-content-center h-75 w-100 mt-2">
   <div class="col-1"><%- include("../partials/sidebar") -%></div>
-  <div class="col-8 d-flex justify-content-center h-100">
+  <div class="col-8 d-flex justify-content-center h-100 mt-3">
     <div class="h-100 w-100" id="map"></div>
   </div>
   <div
     id="right-col"
-    class="col-3 d-flex flex-column justify-content-start overflow-auto"
+    class="col-3 d-flex flex-column justify-content-start overflow-auto mt-3"
   >
     <div
       id="signin-signup-form"
@@ -15,12 +15,6 @@
     >
       <div class="d-grid gap-2 col-8 mx-auto">
         <p class="fs-1">Join Today</p>
-        <button
-          class="btn btn-outline-primary text-nowrap rounded-pill"
-          type="button"
-        >
-          Sign Up With Google
-        </button>
         <button
           id="signup"
           class="btn btn-outline-primary text-nowrap rounded-pill"

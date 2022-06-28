@@ -1,6 +1,16 @@
 require("dotenv").config();
 const User = require("../models/user_model");
+const Notifications = require("../models/notifications_model");
+const Message = require("../models/message_model");
 const validator = require("validator");
+const { s3Upload } = require("../../utilities/utilities");
+
+const checkUserIdExist = (targetUserId, req, res) => {
+  if (!targetUserId || !validator.isInt(targetUserId, { min: 1 })) {
+    res.status(403).json({ error: "Target user id is invalid" });
+    return;
+  }
+};
 
 const signUp = async (req, res) => {
   const { name, email, password, location, website } = req.body;
@@ -27,7 +37,7 @@ const signUp = async (req, res) => {
     access_expiration: result.access_expiration,
     user: {
       id: result.id,
-      name,
+      nickname: name,
       email,
       location,
       website,
@@ -96,19 +106,123 @@ const getUserInfo = async (req, res) => {
   return;
 };
 
-const getUserPosts = async (req, res) => {
-  const { userId } = req.body;
-  const result = await User.getUserPosts(userId);
+const updateUserInfo = async (req, res) => {
+  const { userId } = req.params;
+  if (userId != req.userId) {
+    res.status(403).json({ error: "You are not authorized" });
+  }
+  const { "profile-image": profileImage, "background-image": backgroundImage } =
+    req.files;
+  const {
+    nickname,
+    bio,
+    "geo-location-lat": geoLocationLat,
+    "geo-location-lng": geoLocationLng,
+    website,
+    "display-geo-location": displayGeoLocation,
+  } = req.body;
+  let profileImageName, backgroundImageName;
+  if (profileImage) {
+    const result = await s3Upload(profileImage);
+    profileImageName = result;
+  }
+  if (backgroundImage) {
+    const result = await s3Upload(backgroundImage);
+    backgroundImageName = result;
+  }
+  User.updateUserInfo(
+    userId,
+    nickname,
+    bio,
+    geoLocationLat,
+    geoLocationLng,
+    displayGeoLocation === "on" ? true : false,
+    website,
+    profileImageName,
+    backgroundImageName
+  );
+  return res.status(200).json({ status: "Save successfully" });
+};
+
+const getPosts = async (req, res) => {
+  const { userId } = req.params;
+  const result = await User.getPosts(userId);
   res.status(200).json(result);
   return;
 };
 
 const addPost = async (req, res) => {
-  const { content } = req.body;
-  const userId = req.userId;
-  const result = await User.addPost(userId, content);
-  const postId = result.insertId;
-  res.status(200).json({ status: "success", postId });
+  const { "post-content": content } = req.body;
+  const { userId } = req.params;
+  const { "post-images": postImages } = req.files;
+  const postResult = await User.addPost(userId, content);
+  const postId = postResult.insertId;
+  if (postImages) {
+    const fileNames = await s3Upload(postImages);
+    const result = await User.addPostImages(postId, fileNames);
+  }
+  const followers = await User.getRelationships(userId, "followers");
+  for (const follower of followers) {
+    const { follower_user_id: receiverId } = follower;
+    await Notifications.addNotification(receiverId, userId, "post", content);
+  }
+  res.status(200).json({ status: "Post added" });
+  return;
+};
+
+const getRelationships = async (req, res) => {
+  const { targetUserId } = req.params;
+  checkUserIdExist(targetUserId, req, res);
+  const following = await User.getRelationships(targetUserId, "following");
+  const followers = await User.getRelationships(targetUserId, "followers");
+  res.status(200).json({ following, followers });
+  return;
+};
+
+const addRelationship = async (req, res) => {
+  const { targetUserId } = req.params;
+  checkUserIdExist(targetUserId, req, res);
+  const isMutualFollowing = await User.checkMutualStatus(
+    targetUserId,
+    req.userId
+  );
+  const result = await User.addRelationship(
+    req.userId,
+    targetUserId,
+    isMutualFollowing
+  );
+  await Notifications.addNotification(targetUserId, req.userId, "follow", "");
+  if (isMutualFollowing) {
+    await User.updateMutualStatus(targetUserId, req.userId, isMutualFollowing);
+    await Notifications.addNotification(
+      targetUserId,
+      req.userId,
+      "message",
+      ""
+    );
+    await Notifications.addNotification(
+      req.userId,
+      targetUserId,
+      "message",
+      ""
+    );
+    await Message.saveMessages(
+      req.userId,
+      targetUserId,
+      "System Message: You are mutual following now.",
+      "text"
+    );
+  }
+  res.status(200).json(result);
+  return;
+};
+
+const removeRelationship = async (req, res) => {
+  const { targetUserId } = req.params;
+  checkUserIdExist(targetUserId, req, res);
+  const result = await User.removeRelationship(req.userId, targetUserId);
+  await User.updateMutualStatus(targetUserId, req.userId, false);
+  res.status(200).json(result);
   return;
 };
 
@@ -116,7 +230,11 @@ module.exports = {
   signUp,
   signIn,
   getUserInfo,
+  updateUserInfo,
   profile,
-  getUserPosts,
+  getPosts,
   addPost,
+  getRelationships,
+  addRelationship,
+  removeRelationship,
 };

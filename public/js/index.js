@@ -7,7 +7,7 @@ const updateMarker = (socketId, pos) => {
   marker.setPosition(pos);
 };
 
-const createMarker = (map, socketId, pos, name) => {
+const createPlacesMarker = (map, socketId, pos, name) => {
   const marker = new google.maps.Marker({
     position: pos,
     map: map,
@@ -53,7 +53,7 @@ const initMap = () => {
     if (markersList.has(socketId)) {
       updateMarker(socketId, pos);
     } else {
-      createMarker(map, socketId, pos, name);
+      createPlacesMarker(map, socketId, pos, name);
       if ($("#signin-signup-form").length === 0) {
         const card = createUserCard(socketId);
         appendUserCard(card);
@@ -153,7 +153,7 @@ const getCurrentLocaiton = (map) => {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       const pos = { lat: latitude, lng: longitude };
-      createMarker(map, socket.id, pos, "You are here");
+      createPlacesMarker(map, socket.id, pos, "You are here");
       map.setCenter(pos);
       map.setZoom(18);
       socket.emit("update position", {

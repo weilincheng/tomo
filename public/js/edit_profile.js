@@ -135,6 +135,7 @@ const attachTypeEvent = () => {
 
 const initMap = () => {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
+  infowindow = new google.maps.InfoWindow();
   map = new google.maps.Map($("#map")[0], {
     center: appWorksSchool,
     zoom: 13,
@@ -184,14 +185,49 @@ const getCurrentLocaiton = (map) => {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       const pos = { lat: latitude, lng: longitude };
-      createMarker(map, pos, "You are here");
+      createCustomMarker(map, pos, "You are here");
       map.setCenter(pos);
       map.setZoom(15);
+      getNearybyPlaces(map, pos, "park");
     });
   }
 };
 
-const createMarker = (map, pos, name) => {
+const getNearybyPlaces = async (map, pos, type) => {
+  const request = {
+    location: pos,
+    radius: "5000",
+    type: [type],
+  };
+  service = new google.maps.places.PlacesService(map);
+  service.nearbySearch(request, (results, status) => {
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+      for (var i = 0; i < results.length; i++) {
+        createPlacesMarker(results[i]);
+      }
+    }
+  });
+};
+
+const createPlacesMarker = (place) => {
+  if (!place.geometry || !place.geometry.location) return;
+
+  const marker = new google.maps.Marker({
+    map,
+    position: place.geometry.location,
+    label: {
+      text: place.name,
+      color: "green",
+    },
+  });
+
+  google.maps.event.addListener(marker, "click", () => {
+    console.log(place.name, place.geometry);
+    $("#geo-location").val(place.geometry.location);
+  });
+};
+
+const createCustomMarker = (map, pos, name) => {
   new google.maps.Marker({
     position: pos,
     map: map,
@@ -212,9 +248,9 @@ $(() => {
 
 const google_api_key = $("#map-script").attr("google_api_key");
 const script = $("<script></script>", {
-  src: `https://maps.googleapis.com/maps/api/js?key=${google_api_key}&map_ids=d91850b214eae5c9&callback=initMap`,
+  src: `https://maps.googleapis.com/maps/api/js?key=${google_api_key}&map_ids=d91850b214eae5c9&libraries=places&callback=initMap`,
   async: true,
 });
 script.appendTo("head");
-let map;
+let map, service, infowindow;
 window.initMap = initMap;

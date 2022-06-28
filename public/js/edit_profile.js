@@ -55,8 +55,8 @@ const renderUserProfile = async () => {
   $("#nickname-current").text(nickname.length);
   $("#bio").val(bio);
   $("#bio-current").text(bio.length);
-  $("#location").val(location);
-  $("#location-current").text(location.length);
+  // $("#location").val(location);
+  // $("#location-current").text(location.length);
   $("#website").val(website);
   $("#website-current").text(website.length);
   $("#profile-image-source").attr(
@@ -133,9 +133,88 @@ const attachTypeEvent = () => {
   });
 };
 
+const initMap = () => {
+  const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
+  map = new google.maps.Map($("#map")[0], {
+    center: appWorksSchool,
+    zoom: 13,
+    mapId: "d91850b214eae5c9",
+    fullscreenControl: false,
+    streetViewControl: false,
+    mapTypeControl: false,
+  });
+
+  const locateMeControlDiv = document.createElement("div");
+  locateMeControl(locateMeControlDiv, map);
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(locateMeControlDiv);
+};
+
+const locateMeControl = (controlDiv, map) => {
+  const controlUI = document.createElement("div");
+  controlUI.style.backgroundColor = "#fff";
+  controlUI.style.border = "2px solid #fff";
+  controlUI.style.borderRadius = "3px";
+  controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+  controlUI.style.cursor = "pointer";
+  controlUI.style.marginTop = "8px";
+  controlUI.style.marginBottom = "22px";
+  controlUI.style.textAlign = "center";
+  controlUI.title = "Click to locate yourself";
+  controlDiv.appendChild(controlUI);
+
+  const controlText = document.createElement("div");
+  controlText.style.color = "rgb(25,25,25)";
+  controlText.style.fontFamily = "Roboto,Arial,sans-serif";
+  controlText.style.fontSize = "16px";
+  controlText.style.lineHeight = "38px";
+  controlText.style.paddingLeft = "5px";
+  controlText.style.paddingRight = "5px";
+  controlText.innerHTML = "Locate Me";
+  controlUI.appendChild(controlText);
+
+  const clickLocateMe = () => {
+    getCurrentLocaiton(map);
+    controlUI.removeEventListener("click", clickLocateMe, false);
+  };
+  controlUI.addEventListener("click", clickLocateMe);
+};
+
+const getCurrentLocaiton = (map) => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      const pos = { lat: latitude, lng: longitude };
+      createMarker(map, pos, "You are here");
+      map.setCenter(pos);
+      map.setZoom(15);
+    });
+  }
+};
+
+const createMarker = (map, pos, name) => {
+  new google.maps.Marker({
+    position: pos,
+    map: map,
+    label: {
+      color: "blue",
+      fontWeight: "bold",
+      text: name ? name : "annonymous",
+    },
+  });
+};
+
 renderUserProfile();
 
 $(() => {
   attachClickEvent();
   attachTypeEvent();
 });
+
+const google_api_key = $("#map-script").attr("google_api_key");
+const script = $("<script></script>", {
+  src: `https://maps.googleapis.com/maps/api/js?key=${google_api_key}&map_ids=d91850b214eae5c9&callback=initMap`,
+  async: true,
+});
+script.appendTo("head");
+let map;
+window.initMap = initMap;

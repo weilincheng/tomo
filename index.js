@@ -38,7 +38,9 @@ app.get("/signup", (req, res) => {
 });
 
 app.get("/user/edit", (req, res) => {
-  res.render("pages/edit_profile.ejs");
+  res.render("pages/edit_profile.ejs", {
+    google_api_key: GOOGLE_API_KEY,
+  });
 });
 
 app.get("/user/newpost", (req, res) => {

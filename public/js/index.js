@@ -39,9 +39,10 @@ const initMap = () => {
     streetViewControl: false,
     mapTypeControl: false,
   });
+  console.log("map", map);
 
   const shareLocationControlDiv = document.createElement("div");
-  shareLocationControl(shareLocationControlDiv, map);
+  locateMeControl(shareLocationControlDiv, map);
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(
     shareLocationControlDiv
   );

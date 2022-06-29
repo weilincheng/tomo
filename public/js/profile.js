@@ -245,7 +245,7 @@ const renderFollowList = async (userId, type) => {
       `/user/${follower_user_id ? follower_user_id : followed_user_id}`
     );
     const profileImage = $(
-      '<div class="col-3 d-flex align-items-center"></div>'
+      '<div class="col-5 d-flex align-items-center"></div>'
     );
     profileImage.css({
       display: "inline-block",
@@ -264,7 +264,7 @@ const renderFollowList = async (userId, type) => {
       );
     }
     const followInfoCol = $(
-      '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
+      '<div class="col-7 d-flex flex-column justify-content-center my-2"></div>'
     );
     const followName = $('<p class="fs-5 my-0 px-2"></p>').text(nickname);
     followInfoCol.append(followName);

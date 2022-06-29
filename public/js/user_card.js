@@ -64,8 +64,12 @@ const appendRightColTitle = (name) => {
   title.text(`Welcome, ${name}!`);
   const text = $('<p class="fs-6"></p>');
   text.text(`Let's see who is nearby!`);
+  const filterButton = $(
+    '<button type="button" class="btn btn-outline-primary rounded-pill mb-1" data-bs-toggle="modal" data-bs-target="#filter-modal">Filter</button> '
+  );
   $("#right-col").append(title);
   $("#right-col").append(text);
+  $("#right-col").append(filterButton);
 };
 
 const removeUserCard = (socketId) => {

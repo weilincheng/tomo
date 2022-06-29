@@ -114,10 +114,31 @@ const checkAccessToken = async (accessToken) => {
     localStorage.setItem("website", website);
     localStorage.setItem("userId", id);
     localStorage.setItem("profileImage", profileImage);
-    removeSignInSignUpForm();
-    appendRightColTitle(nickname);
-    updateProfileIconLink(id);
+    $(() => {
+      removeSignInSignUpForm();
+      // appendRightColTitle(nickname);
+      displayGreeting();
+      updateProfileIconLink(id);
+    });
   }
+};
+
+const displayGreeting = () => {
+  $("#greeting-name").text(`Welcome, ${localStorage.getItem("nickname")}!`);
+  $("#greeting").removeClass("invisible");
+};
+
+const appendRightColTitle = (name) => {
+  const title = $('<p class="fs-3"></p>');
+  title.text(`Welcome, ${name}!`);
+  const text = $('<p class="fs-6"></p>');
+  text.text(`Let's see who is nearby!`);
+  const filterButton = $(
+    '<button type="button" class="btn btn-outline-primary rounded-pill mb-1" data-bs-toggle="modal" data-bs-target="#filter-modal">Filter</button> '
+  );
+  $("#right-col").append(title);
+  $("#right-col").append(text);
+  $("#right-col").append(filterButton);
 };
 
 const removeSignInSignUpForm = () => {

@@ -128,9 +128,11 @@ const updateUserInfo = async (
   displayGeoLocation,
   website,
   profileImage,
-  backgroundImage
+  backgroundImage,
+  birthdate,
+  gender
 ) => {
-  let sql = `UPDATE users SET nickname = ?, bio = ?, geo_location_lat = ?, geo_location_lng = ?, display_geo_location = ?, website = ? `;
+  let sql = `UPDATE users SET nickname = ?, bio = ?, geo_location_lat = ?, geo_location_lng = ?, display_geo_location = ?, website = ?, birthdate = ?, gender = ? `;
   let sqlBindings = [
     name,
     bio,
@@ -138,6 +140,8 @@ const updateUserInfo = async (
     geoLocationLng,
     displayGeoLocation,
     website,
+    birthdate,
+    gender,
   ];
   if (profileImage) {
     sql += `, profile_image = ? `;
@@ -151,6 +155,16 @@ const updateUserInfo = async (
   sqlBindings.push(userId);
   const [result] = await pool.query(sql, sqlBindings);
   return { status: "Change saved" };
+};
+
+const updateUserInterests = async (userId, interests) => {
+  const sql = `DELETE FROM user_interests WHERE user_id = ?`;
+  const sqlBindings = [userId];
+  await pool.query(sql, sqlBindings);
+  const sql2 = `INSERT INTO user_interests (user_id, interest_id) VALUES ?`;
+  const sqlBindings2 = [interests.map((interest) => [userId, interest])];
+  const [result] = await pool.query(sql2, sqlBindings2);
+  return result;
 };
 
 const getPosts = async (userId) => {
@@ -228,6 +242,7 @@ module.exports = {
   profile,
   getUserInfo,
   updateUserInfo,
+  updateUserInterests,
   getPosts,
   addPost,
   addPostImages,

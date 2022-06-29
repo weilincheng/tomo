@@ -82,8 +82,12 @@ const renderUserProfile = async () => {
   const convertedBirthdate = new Date(birthdate);
   const [year, month, day] = [
     convertedBirthdate.getFullYear(),
-    convertedBirthdate.getMonth(),
-    convertedBirthdate.getDate(),
+    convertedBirthdate.getMonth() < 9
+      ? `0${convertedBirthdate.getMonth() + 1}`
+      : convertedBirthdate.getMonth(),
+    convertedBirthdate.getDate() < 9
+      ? `0${convertedBirthdate.getDate()}`
+      : convertedBirthdate.getDate(),
   ];
 
   const cloudFrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
@@ -110,6 +114,9 @@ const renderUserProfile = async () => {
   );
   $("#gender").val(gender);
   $("#birthdate").val(`${year}-${month}-${day}`);
+  for (const interest of interests) {
+    $(`#${interest}-checkbox`).prop("checked", true);
+  }
 };
 
 const sendPutFormData = async (formData) => {

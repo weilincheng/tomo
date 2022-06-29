@@ -105,12 +105,71 @@
           </div>
           <div class="col-6">
             <label for="gender" class="form-label fw-bold">Gender</label>
-            <select id="gender" class="form-select" name="gender">
-              <option selected>Select the gender</option>
+            <select required id="gender" class="form-select" name="gender">
+              <option value="pnts">Prefer Not to Say</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="neutral">Neutral</option>
             </select>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="interests" class="form-label fw-bold">Interests</label>
+        <div class="d-flex flex-wrap justify-content-between">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value="2"
+              id="reading-checkbox"
+              name="interests"
+            />
+            <label class="form-check-label" for="reading-checkbox">
+              Reading
+            </label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value="1"
+              id="coffee-checkbox"
+              name="interests"
+            />
+            <label class="form-check-label" for="coffee-checkbox">
+              Coffee
+            </label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value="4"
+              id="music-checkbox"
+              name="interests"
+            />
+            <label class="form-check-label" for="music-checkbox"> Music </label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value="5"
+              id="drama-checkbox"
+              name="interests"
+            />
+            <label class="form-check-label" for="drama-checkbox"> Drama </label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value="3"
+              id="anime-checkbox"
+              name="interests"
+            />
+            <label class="form-check-label" for="anime-checkbox"> Anime </label>
           </div>
         </div>
       </div>

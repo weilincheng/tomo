@@ -16,7 +16,7 @@ CREATE TABLE `users`(
     `geo_location_lat` DOUBLE,
     `geo_location_lng` DOUBLE,
     `display_geo_location` BOOLEAN DEFAULT TRUE,
-    `gender` ENUM('male', 'female', 'neutral') DEFAULT 'neutral',
+    `gender` ENUM('pnts', 'male', 'female', 'neutral') DEFAULT 'neutral',
     `birthdate` DATETIME
 );
 DROP TABLE IF EXISTS `relationships`;

@@ -90,7 +90,24 @@ const profile = (accessToken) => {
 };
 
 const getUserInfo = async (userId) => {
-  const sql = `SELECT * FROM users WHERE id = ?`;
+  const sql = ` SELECT 
+    u.id,
+    u.nickname,
+    u.created_at,
+    u.website,
+    u.profile_image,
+    u.background_image,
+    u.bio,
+    u.geo_location_lat,
+    u.geo_location_lng,
+    u.display_geo_location,
+    u.gender,
+    u.birthdate,
+    JSON_ARRAYAGG(i.interest_name) as interests 
+    FROM users AS u 
+    LEFT JOIN user_interests AS ui ON u.id = ui.user_id
+    LEFT JOIN interests AS i ON ui.interest_id = i.id
+    WHERE u.id = ? GROUP BY u.id`;
   const sqlBindings = [userId];
   const [result] = await pool.query(sql, sqlBindings);
   if (result.length === 0) {

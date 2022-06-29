@@ -8,11 +8,13 @@
 
 <div class="row justify-content-center vh-75 w-100">
   <div class="col-1"><%- include("../partials/sidebar") -%></div>
-  <div class="col-6 d-flex justify-content-center h-100">
+  <div class="col-5 d-flex justify-content-center h-100 my-2">
     <form class="w-75 h-100" enctype="multipart/form-data" id="profile-form">
       <div class="mb-3">
         <div class="d-flex flex-column">
-          <label for="profile-image" class="form-label">Profile Image</label>
+          <label for="profile-image" class="form-label fw-bold"
+            >Profile Image</label
+          >
           <img class="w-50" id="profile-image-source" src="" alt="" />
         </div>
         <input
@@ -24,7 +26,7 @@
       </div>
       <div class="mb-3">
         <div class="d-flex flex-column">
-          <label for="background-image" class="form-label"
+          <label for="background-image" class="form-label fw-bold"
             >Background Image</label
           >
           <img class="w-50" id="background-image-source" src="" alt="" />
@@ -37,7 +39,7 @@
         />
       </div>
       <div class="mb-3">
-        <label for="nickname" class="form-label">Nickname</label>
+        <label for="nickname" class="form-label fw-bold">Nickname</label>
         <input
           type="text"
           class="col-auto form-control"
@@ -51,22 +53,9 @@
         <span id="maximum">/ 50</span>
       </div>
       <div class="mb-3">
-        <label for="bio" class="form-label">Bio</label>
-        <textarea
-          type="text"
-          class="form-control"
-          id="bio"
-          name="bio"
-          rows="2"
-          maxlength="160"
-        ></textarea>
-      </div>
-      <div class="text-end" id="bio-count">
-        <span id="bio-current">0</span>
-        <span id="maximum">/ 160</span>
-      </div>
-      <div class="mb-3">
-        <label for="Geo Location" class="form-label">Geo Location</label>
+        <label for="Geo Location" class="form-label fw-bold"
+          >Geo Location</label
+        >
         <div class="input-group flex-nowrap mb-1">
           <span class="input-group-text">Lat</span>
           <input
@@ -104,7 +93,44 @@
         </div>
       </div>
       <div class="mb-3">
-        <label for="website" class="form-label">Website</label>
+        <div class="row">
+          <div class="col-6">
+            <label for="birthdate" class="form-label fw-bold">Birth Date</label>
+            <input
+              type="date"
+              class="form-control"
+              id="birthdate"
+              name="birthdate"
+            />
+          </div>
+          <div class="col-6">
+            <label for="gender" class="form-label fw-bold">Gender</label>
+            <select id="gender" class="form-select" name="gender">
+              <option selected>Select the gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="neutral">Neutral</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="bio" class="form-label fw-bold">Bio</label>
+        <textarea
+          type="text"
+          class="form-control"
+          id="bio"
+          name="bio"
+          rows="2"
+          maxlength="160"
+        ></textarea>
+      </div>
+      <div class="text-end" id="bio-count">
+        <span id="bio-current">0</span>
+        <span id="maximum">/ 160</span>
+      </div>
+      <div class="mb-3">
+        <label for="website" class="form-label fw-bold">Website</label>
         <div class="input-group flex-nowrap">
           <span class="input-group-text" id="addon-wrapping">http://</span>
           <input
@@ -128,9 +154,9 @@
       </button>
     </form>
   </div>
-  <div class="col-5 d-flex flex-column justify-content-start overflow-auto">
+  <div class="col-6 d-flex flex-column justify-content-start overflow-auto">
     <p class="fs-3">Select a park as your location</p>
-    <div id="map" class="h-100"></div>
+    <div id="map" class="vh-100"></div>
   </div>
 </div>
 

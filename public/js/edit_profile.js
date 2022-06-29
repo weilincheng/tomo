@@ -37,7 +37,11 @@ const getUserInfo = async (userId) => {
     website,
     profile_image: profileImage,
     background_image: backgroundImage,
+    gender,
+    birthdate,
+    interests,
   } = resultJson;
+  console.log(resultJson);
   return {
     nickname,
     bio,
@@ -47,6 +51,9 @@ const getUserInfo = async (userId) => {
     website,
     profileImage,
     backgroundImage,
+    gender,
+    birthdate,
+    interests,
   };
 };
 
@@ -68,7 +75,17 @@ const renderUserProfile = async () => {
     geoLocationLat,
     geoLocationLng,
     displayGeoLocation,
+    birthdate,
+    gender,
+    interests,
   } = await getUserInfo(userId);
+  const convertedBirthdate = new Date(birthdate);
+  const [year, month, day] = [
+    convertedBirthdate.getFullYear(),
+    convertedBirthdate.getMonth(),
+    convertedBirthdate.getDate(),
+  ];
+
   const cloudFrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
   $("#nickname").val(nickname);
   $("#nickname-current").text(nickname.length);
@@ -91,6 +108,8 @@ const renderUserProfile = async () => {
       ? `${cloudFrontUrl}/${backgroundImage}`
       : "https://via.placeholder.com/100"
   );
+  $("#gender").val(gender);
+  $("#birthdate").val(`${year}-${month}-${day}`);
 };
 
 const sendPutFormData = async (formData) => {

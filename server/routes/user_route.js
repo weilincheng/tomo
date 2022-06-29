@@ -25,6 +25,7 @@ const cpUpload = multerUpload.fields([
 router.route("/user/signup").post(catchAsyncError(signUp));
 router.route("/user/signin").post(catchAsyncError(signIn));
 router.route("/user/profile").get(catchAsyncError(profile));
+
 router
   .route("/user/follow/:targetUserId")
   .get(catchAsyncError(getRelationships));
@@ -34,10 +35,12 @@ router
 router
   .route("/user/follow/:targetUserId")
   .delete(authUser(), catchAsyncError(removeRelationship));
+
 router.route("/user/:userId").get(authUser(), catchAsyncError(getUserInfo));
 router
   .route("/user/:userId")
   .put(authUser(), cpUpload, catchAsyncError(updateUserInfo));
+
 router.route("/user/:userId/posts").get(catchAsyncError(getPosts));
 router
   .route("/user/:userId/posts")

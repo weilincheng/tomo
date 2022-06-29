@@ -7,7 +7,7 @@ const updateMarker = (socketId, pos) => {
   marker.setPosition(pos);
 };
 
-const createPlacesMarker = (map, socketId, pos, name) => {
+const createMarker = (map, socketId, pos, name) => {
   const marker = new google.maps.Marker({
     position: pos,
     map: map,
@@ -21,6 +21,36 @@ const createPlacesMarker = (map, socketId, pos, name) => {
   createUserCard(socketId, name, pos);
 };
 
+const createInfowindow = (nickname, userId) => {
+  const contentString = `<div id="content"> 
+    <div id="siteNotice">
+    </div>
+    <h5 id="firstHeading" class="firstHeading">${nickname}</h1>
+    <div id="bodyContent">
+    <a href="/user/${userId}">View Profile</a>
+    </div>
+    </div>`;
+
+  return new google.maps.InfoWindow({
+    content: contentString,
+  });
+};
+
+const createIcon = (map, pos, profileImage, animation) => {
+  const icon = {
+    url: `${profileImage}`,
+    scaledSize: new google.maps.Size(50, 50), // scaled size
+    origin: new google.maps.Point(0, 0), // origin
+    anchor: new google.maps.Point(0, 0), // anchor
+  };
+  return new google.maps.Marker({
+    position: pos,
+    animation,
+    map,
+    icon,
+  });
+};
+
 const removeMarker = (socketId) => {
   const marker = markersList.get(socketId);
   if (marker) {
@@ -29,7 +59,7 @@ const removeMarker = (socketId) => {
   }
 };
 
-const initMap = () => {
+function initMap() {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   map = new google.maps.Map($("#map")[0], {
     center: appWorksSchool,
@@ -40,36 +70,18 @@ const initMap = () => {
     mapTypeControl: false,
   });
 
-  const shareLocationControlDiv = document.createElement("div");
-  locateMeControl(shareLocationControlDiv, map);
+  const panToCurrentLocationControlDiv = document.createElement("div");
+  panToCurrentLocationControl(panToCurrentLocationControlDiv, map);
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(
-    shareLocationControlDiv
+    panToCurrentLocationControlDiv
   );
-
-  socket.on("update position", (data) => {
-    const { socketId, userId, pos, name, location, website, profileImage } =
-      data;
-    if (markersList.has(socketId)) {
-      updateMarker(socketId, pos);
-    } else {
-      createPlacesMarker(map, socketId, pos, name);
-      if ($("#signin-signup-form").length === 0) {
-        const card = createUserCard(socketId);
-        appendUserCard(card);
-        updateCardTitleText(socketId, name, location, website, profileImage);
-        updateUserCardLink(socketId, userId);
-      }
-    }
-  });
-  socket.on("remove position", (data) => {
-    const { socketId } = data;
-    removeUserCard(socketId);
-    removeMarker(socketId);
-  });
-};
-
-const checkAccessToken = async () => {
   const accessToken = localStorage.getItem("accessToken");
+  if (accessToken) {
+    renderUsersIcon(accessToken, map);
+  }
+}
+
+const checkAccessToken = async (accessToken) => {
   if (accessToken) {
     const verifyResult = await fetch("/api/v1/user/profile", {
       method: "GET",
@@ -97,22 +109,43 @@ const checkAccessToken = async () => {
       id,
       profile_image: profileImage,
     } = userInfoJson;
-    localStorage.setItem("name", nickname);
+    localStorage.setItem("nickname", nickname);
     localStorage.setItem("location", location);
     localStorage.setItem("website", website);
     localStorage.setItem("userId", id);
     localStorage.setItem("profileImage", profileImage);
-    removeSignInSignUpForm();
-    appendRightColTitle(nickname);
-    updateProfileIconLink(id);
+    $(() => {
+      removeSignInSignUpForm();
+      // appendRightColTitle(nickname);
+      displayGreeting();
+      updateProfileIconLink(id);
+    });
   }
+};
+
+const displayGreeting = () => {
+  $("#greeting-name").text(`Welcome, ${localStorage.getItem("nickname")}!`);
+  $("#greeting").removeClass("invisible");
+};
+
+const appendRightColTitle = (name) => {
+  const title = $('<p class="fs-3"></p>');
+  title.text(`Welcome, ${name}!`);
+  const text = $('<p class="fs-6"></p>');
+  text.text(`Let's see who is nearby!`);
+  const filterButton = $(
+    '<button type="button" class="btn btn-outline-primary rounded-pill mb-1" data-bs-toggle="modal" data-bs-target="#filter-modal">Filter</button> '
+  );
+  $("#right-col").append(title);
+  $("#right-col").append(text);
+  $("#right-col").append(filterButton);
 };
 
 const removeSignInSignUpForm = () => {
   $("#signin-signup-form").remove();
 };
 
-const shareLocationControl = (controlDiv, map) => {
+const panToCurrentLocationControl = (controlDiv, map) => {
   const controlUI = document.createElement("div");
   controlUI.style.backgroundColor = "#fff";
   controlUI.style.border = "2px solid #fff";
@@ -122,7 +155,7 @@ const shareLocationControl = (controlDiv, map) => {
   controlUI.style.marginTop = "8px";
   controlUI.style.marginBottom = "22px";
   controlUI.style.textAlign = "center";
-  controlUI.title = "Click to share the location";
+  controlUI.title = "Click to pan to current location";
   controlDiv.appendChild(controlUI);
 
   const controlText = document.createElement("div");
@@ -132,7 +165,7 @@ const shareLocationControl = (controlDiv, map) => {
   controlText.style.lineHeight = "38px";
   controlText.style.paddingLeft = "5px";
   controlText.style.paddingRight = "5px";
-  controlText.innerHTML = "Share My Location";
+  controlText.innerHTML = "Pan to Current Location";
   controlUI.appendChild(controlText);
 
   const clickShareLocation = () => {
@@ -144,7 +177,7 @@ const shareLocationControl = (controlDiv, map) => {
 
 const getCurrentLocaiton = (map) => {
   if (navigator.geolocation) {
-    const name = localStorage.getItem("name");
+    const nickname = localStorage.getItem("nickname");
     const location = localStorage.getItem("location");
     const website = localStorage.getItem("website");
     const userId = localStorage.getItem("userId");
@@ -152,53 +185,117 @@ const getCurrentLocaiton = (map) => {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       const pos = { lat: latitude, lng: longitude };
-      createPlacesMarker(map, socket.id, pos, "You are here");
+      const currentUserIcon = createIcon(
+        map,
+        pos,
+        `${cloudfrontUrl}/${profileImage}`,
+        google.maps.Animation.DROP
+      );
+      const currentUserInfowindow = createInfowindow(nickname);
+      currentUserIcon.addListener("click", () => {
+        currentUserInfowindow.open({
+          anchor: currentUserIcon,
+          map,
+          shouldFocus: false,
+        });
+      });
       map.setCenter(pos);
-      map.setZoom(18);
-      socket.emit("update position", {
-        pos,
-        socketId: socket.id,
-        userId,
-        name,
-        location,
-        website,
-        profileImage,
-      });
-    });
-
-    navigator.geolocation.watchPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      const pos = {
-        lat: latitude + randomVariation(),
-        lng: longitude + randomVariation(),
-      };
-      updateMarker(socket.id, pos);
-      socket.emit("update position", {
-        pos,
-        socketId: socket.id,
-        userId,
-        name,
-        location,
-        website,
-        profileImage,
-      });
+      map.setZoom(15);
     });
   }
 };
 
-checkAccessToken();
+const getUsersLocation = async (accessToken) => {
+  const result = await fetch(`/api/v1/location/`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const resultJson = await result.json();
+  return resultJson;
+};
 
+const renderUsersIcon = async (accessToken, map) => {
+  const usersLocation = await getUsersLocation(accessToken);
+  const markers = [];
+  for (const user of usersLocation) {
+    // console.log(user);
+    const {
+      geo_location_lat: lat,
+      geo_location_lng: lng,
+      profile_image: profileImage,
+      id: userId,
+      nickname,
+      interests,
+    } = user;
+    if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
+      renderUserCard(userId, nickname, profileImage);
+      const pos = { lat, lng };
+      const userIcon = createIcon(map, pos, `${cloudfrontUrl}/${profileImage}`);
+      markers.push(userIcon);
+      const iconInfowindow = createInfowindow(nickname, userId);
+      userIcon.addListener("click", () => {
+        iconInfowindow.open({
+          anchor: userIcon,
+          map,
+          shouldFocus: false,
+        });
+      });
+    }
+  }
+  const markerCluster = new markerClusterer.MarkerClusterer({ map, markers });
+};
+
+const renderUserCard = async (userId, nickname, profileImage) => {
+  const user = $('<a class="row w-100 mb-2"></a>');
+  user.attr("href", `/user/${userId}`);
+  const profileImageDiv = $(
+    '<div class="col-3 d-flex align-items-center"></div>'
+  );
+  profileImageDiv.css({
+    display: "inline-block",
+    width: "80px",
+    height: "80px",
+    "border-radius": "50%",
+    "background-repeat": "no-repeat",
+    "background-position": "center center",
+    "background-size": "cover",
+    "background-image": `url("https://via.placeholder.com/100")`,
+  });
+  if (profileImage) {
+    profileImageDiv.css(
+      "background-image",
+      `url('${cloudfrontUrl}/${profileImage}')`
+    );
+  }
+  const userInfoCol = $(
+    '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
+  );
+  const username = $('<p class="fs-5 my-0 px-2"></p>').text(nickname);
+  userInfoCol.append(username);
+  user.append(profileImageDiv);
+  user.append(userInfoCol);
+  $("#right-col").append(user);
+};
+
+const accessToken = localStorage.getItem("accessToken");
+checkAccessToken(accessToken);
 const google_api_key = $("#map-script").attr("google_api_key");
 const socket_host = $("#map-script").attr("socket_host");
 const script = $("<script></script>", {
   src: `https://maps.googleapis.com/maps/api/js?key=${google_api_key}&map_ids=d91850b214eae5c9&callback=initMap`,
   async: true,
+  defer: true,
+  type: "text/javascript",
 });
 script.appendTo("head");
 // const socket = io(socket_host);
+const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
 const markersList = new Map();
 let map;
 window.initMap = initMap;
+// renderUsersIcon(accessToken, map);
 
 $("#signin").click(() => {
   window.location.href = "/signin";

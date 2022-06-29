@@ -8,11 +8,16 @@ CREATE TABLE `users`(
     `email` VARCHAR(255) UNIQUE NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `bio` VARCHAR(255),
     `location` VARCHAR(255),
     `website` VARCHAR(2048), 
     `profile_image` VARCHAR(255), 
     `background_image` VARCHAR(255),
+    `bio` VARCHAR(255),
+    `geo_location_lat` DOUBLE,
+    `geo_location_lng` DOUBLE,
+    `display_geo_location` BOOLEAN DEFAULT TRUE,
+    `gender` ENUM('pnts', 'male', 'female', 'neutral') DEFAULT 'neutral',
+    `birthdate` DATETIME
 );
 DROP TABLE IF EXISTS `relationships`;
 CREATE TABLE `relationships`(

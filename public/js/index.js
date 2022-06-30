@@ -77,8 +77,10 @@ function initMap() {
   );
   const accessToken = localStorage.getItem("accessToken");
   if (accessToken) {
-    renderUsersIcon(accessToken, map);
+    renderUsersIcon(accessToken, map, markers);
   }
+  attachAgeRangeListener();
+  attachApplyFilterListener(map);
 }
 
 const checkAccessToken = async (accessToken) => {
@@ -116,29 +118,16 @@ const checkAccessToken = async (accessToken) => {
     localStorage.setItem("profileImage", profileImage);
     $(() => {
       removeSignInSignUpForm();
-      // appendRightColTitle(nickname);
-      displayGreeting();
+      displayGreetingAndSearch();
       updateProfileIconLink(id);
     });
   }
 };
 
-const displayGreeting = () => {
+const displayGreetingAndSearch = () => {
   $("#greeting-name").text(`Welcome, ${localStorage.getItem("nickname")}!`);
   $("#greeting").removeClass("invisible");
-};
-
-const appendRightColTitle = (name) => {
-  const title = $('<p class="fs-3"></p>');
-  title.text(`Welcome, ${name}!`);
-  const text = $('<p class="fs-6"></p>');
-  text.text(`Let's see who is nearby!`);
-  const filterButton = $(
-    '<button type="button" class="btn btn-outline-primary rounded-pill mb-1" data-bs-toggle="modal" data-bs-target="#filter-modal">Filter</button> '
-  );
-  $("#right-col").append(title);
-  $("#right-col").append(text);
-  $("#right-col").append(filterButton);
+  $("#filters-button").removeClass("invisible");
 };
 
 const removeSignInSignUpForm = () => {
@@ -216,11 +205,9 @@ const getUsersLocation = async (accessToken) => {
   return resultJson;
 };
 
-const renderUsersIcon = async (accessToken, map) => {
+const renderUsersIcon = async (accessToken, map, markers) => {
   const usersLocation = await getUsersLocation(accessToken);
-  const markers = [];
   for (const user of usersLocation) {
-    // console.log(user);
     const {
       geo_location_lat: lat,
       geo_location_lng: lng,
@@ -244,11 +231,45 @@ const renderUsersIcon = async (accessToken, map) => {
       });
     }
   }
-  const markerCluster = new markerClusterer.MarkerClusterer({ map, markers });
+  userIconClusterer = new markerClusterer.MarkerClusterer({ map, markers });
+};
+
+const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
+  while (markers.length > 0) {
+    const marker = markers.pop();
+    marker.setMap(null);
+  }
+  userIconClusterer.clearMarkers();
+  $(".user-card").remove();
+  for (const user of usersLocation) {
+    const {
+      geo_location_lat: lat,
+      geo_location_lng: lng,
+      profile_image: profileImage,
+      id: userId,
+      nickname,
+      interests,
+    } = user;
+    if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
+      renderUserCard(userId, nickname, profileImage);
+      const pos = { lat, lng };
+      const userIcon = createIcon(map, pos, `${cloudfrontUrl}/${profileImage}`);
+      markers.push(userIcon);
+      const iconInfowindow = createInfowindow(nickname, userId);
+      userIcon.addListener("click", () => {
+        iconInfowindow.open({
+          anchor: userIcon,
+          map,
+          shouldFocus: false,
+        });
+      });
+    }
+  }
+  userIconClusterer = new markerClusterer.MarkerClusterer({ map, markers });
 };
 
 const renderUserCard = async (userId, nickname, profileImage) => {
-  const user = $('<a class="row w-100 mb-2"></a>');
+  const user = $('<a class="row w-100 mb-2 user-card"></a>');
   user.attr("href", `/user/${userId}`);
   const profileImageDiv = $(
     '<div class="col-3 d-flex align-items-center"></div>'
@@ -279,6 +300,80 @@ const renderUserCard = async (userId, nickname, profileImage) => {
   $("#right-col").append(user);
 };
 
+const attachAgeRangeListener = () => {
+  const minAgeInput = $("#minAgeRangeInput").val();
+  const maxAgeInput = $("#maxAgeRangeInput").val();
+  $("#maxAgeRangeInput").attr("min", minAgeInput);
+  $("#minAgeRangeInput").attr("max", maxAgeInput);
+  $("#minAgeRangeInput").change(() => {
+    const minAgeInput = $("#minAgeRangeInput").val();
+    $("#maxAgeRangeInput").attr("min", minAgeInput);
+  });
+  $("#maxAgeRangeInput").change(() => {
+    const maxAgeInput = $("#maxAgeRangeInput").val();
+    $("#minAgeRangeInput").attr("max", maxAgeInput);
+  });
+};
+
+const attachApplyFilterListener = (map) => {
+  $("#filters-clear-button").click(() => {
+    $("#minAgeRangeInput").val(20);
+    $("#maxAgeRangeInput").val(100);
+    $("#minAgeAmount").val(20);
+    $("#maxAgeAmount").val(100);
+    $("#gender").val("");
+    $("[id$=checkbox]").prop("checked", false);
+  });
+  $("#filters-apply-button").click(async () => {
+    const minAgeInput = $("#minAgeRangeInput").val();
+    const maxAgeInput = $("#maxAgeRangeInput").val();
+    const interests = $("[id$=checkbox]");
+    const gender = $("#gender").val();
+    const interestsArray = [];
+    for (const interest of interests) {
+      if (interest.checked) {
+        const interestName = interest.id.split("-")[0];
+        interestsArray.push(interestName);
+      }
+    }
+    const minAge = parseInt(minAgeInput);
+    const maxAge = parseInt(maxAgeInput);
+    const filteredUsersLocation = await fetchFilteredUsersLocation(
+      minAge,
+      maxAge,
+      gender,
+      interestsArray
+    );
+    renderFilteredUsersIcon(map, filteredUsersLocation, markers);
+  });
+};
+
+const fetchFilteredUsersLocation = async (
+  minAge,
+  maxAge,
+  gender,
+  interests
+) => {
+  let targetUrl = `/api/v1/location/?min_age=${minAge}&max_age=${maxAge}`;
+  if (gender) {
+    targetUrl += `&gender=${gender}`;
+  }
+  if (interests.length > 0) {
+    for (const interest of interests) {
+      targetUrl += `&interests=${interest}`;
+    }
+  }
+  console.log("targetUrl", targetUrl);
+  const result = await fetch(targetUrl, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const resultJson = await result.json();
+  return resultJson;
+};
+
 const accessToken = localStorage.getItem("accessToken");
 checkAccessToken(accessToken);
 const google_api_key = $("#map-script").attr("google_api_key");
@@ -293,7 +388,9 @@ script.appendTo("head");
 // const socket = io(socket_host);
 const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
 const markersList = new Map();
-let map;
+let map,
+  markers = [],
+  userIconClusterer;
 window.initMap = initMap;
 // renderUsersIcon(accessToken, map);
 

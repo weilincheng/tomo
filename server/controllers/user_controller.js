@@ -120,6 +120,9 @@ const updateUserInfo = async (req, res) => {
     "geo-location-lng": geoLocationLng,
     website,
     "display-geo-location": displayGeoLocation,
+    birthdate,
+    gender,
+    interests,
   } = req.body;
   let profileImageName, backgroundImageName;
   if (profileImage) {
@@ -139,8 +142,11 @@ const updateUserInfo = async (req, res) => {
     displayGeoLocation === "on" ? true : false,
     website,
     profileImageName,
-    backgroundImageName
+    backgroundImageName,
+    birthdate ? birthdate : null,
+    gender
   );
+  User.updateUserInterests(userId, interests);
   return res.status(200).json({ status: "Save successfully" });
 };
 

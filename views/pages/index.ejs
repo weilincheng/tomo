@@ -9,6 +9,189 @@
     id="right-col"
     class="col-3 d-flex flex-column justify-content-start overflow-auto mt-3"
   >
+    <div id="greeting" class="invisible">
+      <p id="greeting-name" class="fs-3"></p>
+      <p class="fs-6">Let's see who is nearby!</p>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button
+        type="button"
+        class="btn btn-outline-primary rounded-pill mb-1 invisible"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#filters-coffcanvas"
+        id="filters-button"
+      >
+        Filters
+      </button>
+    </div>
+    <div
+      class="offcanvas offcanvas-bottom"
+      id="filters-coffcanvas"
+      tabindex="-1"
+      aria-labelledby="filters-coffcanvas"
+      aria-hidden="true"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+    >
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="filters-coffcanvas-label">Filters</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="row">
+          <div class="col-12">
+            <div class="mb-3">
+              <label for="interests" class="form-label fw-bold"
+                >Interests</label
+              >
+              <div class="d-flex">
+                <div class="form-check mx-1">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="2"
+                    id="reading-checkbox"
+                    name="interests"
+                  />
+                  <label class="form-check-label" for="reading-checkbox">
+                    Reading
+                  </label>
+                </div>
+                <div class="form-check mx-1">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="1"
+                    id="coffee-checkbox"
+                    name="interests"
+                  />
+                  <label class="form-check-label" for="coffee-checkbox">
+                    Coffee
+                  </label>
+                </div>
+                <div class="form-check mx-1">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="4"
+                    id="music-checkbox"
+                    name="interests"
+                  />
+                  <label class="form-check-label" for="music-checkbox">
+                    Music
+                  </label>
+                </div>
+                <div class="form-check mx-1">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="5"
+                    id="drama-checkbox"
+                    name="interests"
+                  />
+                  <label class="form-check-label" for="drama-checkbox">
+                    Drama
+                  </label>
+                </div>
+                <div class="form-check mx-1">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="3"
+                    id="anime-checkbox"
+                    name="interests"
+                  />
+                  <label class="form-check-label" for="anime-checkbox">
+                    Anime
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-5">
+            <div class="mb-3">
+              <label for="gender" class="form-label fw-bold">Gender</label>
+              <select required id="gender" class="form-select" name="gender">
+                <option value="">Select the gender</option>
+                <option value="pnts">Prefer Not to Say</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="neutral">Neutral</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-5">
+            <div class="mb-3">
+              <label for="min-age" class="form-label fw-bold">Min Age</label>
+              <div class="row">
+                <div class="col-11">
+                  <input
+                    type="range"
+                    class="form-range"
+                    min="20"
+                    max="100"
+                    step="10"
+                    id="minAgeRangeInput"
+                    name="minAgeRangeInput"
+                    value="20"
+                    oninput="minAgeAmount.value=minAgeRangeInput.value"
+                  />
+                </div>
+                <div class="col-1">
+                  <output id="minAgeAmount" name="minAgeAmount" class="col-2"
+                    >20</output
+                  >
+                </div>
+              </div>
+              <label for="max-age" class="form-label fw-bold">Max Age</label>
+              <div class="row">
+                <div class="col-11">
+                  <input
+                    type="range"
+                    class="form-range"
+                    min="20"
+                    max="100"
+                    step="10"
+                    value="100"
+                    id="maxAgeRangeInput"
+                    name="maxAgeRangeInput"
+                    oninput="maxAgeAmount.value=maxAgeRangeInput.value"
+                  />
+                </div>
+                <div class="col-1">
+                  <output id="maxAgeAmount" name="maxAgeAmount" class="col-2"
+                    >100</output
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-2 d-flex flex-column justify-content-center">
+            <button
+              id="filters-apply-button"
+              type="button"
+              class="btn btn-primary mb-3"
+            >
+              Apply
+            </button>
+            <button
+              id="filters-clear-button"
+              type="button"
+              class="btn btn-secondary"
+            >
+              Clear Filters
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div
       id="signin-signup-form"
       class="d-flex flex-column justify-content-between h-100"
@@ -36,7 +219,14 @@
     </div>
   </div>
 </div>
-<script src="../../static/js/user_card.js"></script>
+
+<!-- <script src="../../static/js/user_card.js"></script> -->
+<!-- <script
+  src="https://maps.googleapis.com/maps/api/js?key=<%= google_api_key%>&callback=initMap&map_ids=d91850b214eae5c9"
+  async
+  defer
+></script> -->
+<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 <script
   id="map-script"
   type="module"

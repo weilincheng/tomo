@@ -7,7 +7,8 @@ nvm install --lts
 
 # Create working directory if it doesn't exist
 DIR="/home/ec2-user/tomo"
-if [ -d "$DIR"]; then
+if [ -d "$DIR"] 
+then
   echo "${DIR} exists" 
 else
   echo "Creating ${DIR} directory"

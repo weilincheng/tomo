@@ -8,7 +8,6 @@ CREATE TABLE `users`(
     `email` VARCHAR(255) UNIQUE NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `location` VARCHAR(255),
     `website` VARCHAR(2048), 
     `profile_image` VARCHAR(255), 
     `background_image` VARCHAR(255),
@@ -19,17 +18,27 @@ CREATE TABLE `users`(
     `gender` ENUM('pnts', 'male', 'female', 'neutral') DEFAULT 'neutral',
     `birthdate` DATETIME
 );
+
 DROP TABLE IF EXISTS `relationships`;
 CREATE TABLE `relationships`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `follower_user_id` INT UNSIGNED NOT NULL,
     `followed_user_id` INT UNSIGNED NOT NULL,
-    `mutual_following` BOOLEAN DEFAULT FALSE,
-    `blocked_by_followed` BOOLEAN DEFAULT FALSE,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(`follower_user_id`) REFERENCES `users`(`id`),
     FOREIGN KEY(`followed_user_id`) REFERENCES `users`(`id`)
 );
+
+DROP TABLE IF EXISTS `blocklist`;
+CREATE TABLE `blocklist`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `blocker_user_id` INT UNSIGNED NOT NULL,
+    `blocked_user_id` INT UNSIGNED NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(`blocker_user_id`) REFERENCES `users`(`id`),
+    FOREIGN KEY(`blocked_user_id`) REFERENCES `users`(`id`)
+);
+
 DROP TABLE IF EXISTS `posts`;
 CREATE TABLE `posts`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,

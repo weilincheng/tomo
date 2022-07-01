@@ -205,26 +205,20 @@ const getRelationships = async (targetUserId, type) => {
 };
 
 const checkMutualStatus = async (followerUserId, followedUserId) => {
-  const sql = `SELECT * FROM relationships WHERE follower_user_id = ? AND followed_user_id = ?`;
-  const sqlBindings = [followerUserId, followedUserId];
+  const sql = `SELECT * FROM relationships WHERE (follower_user_id = ? AND followed_user_id = ?) OR (follower_user_id = ? AND followed_user_id = ?)`;
+  const sqlBindings = [
+    followerUserId,
+    followedUserId,
+    followedUserId,
+    followerUserId,
+  ];
   const [result] = await pool.query(sql, sqlBindings);
-  return result.length > 0;
+  return result.length > 1;
 };
 
-const updateMutualStatus = async (followerUserId, followedUserId, status) => {
-  const sql = `UPDATE relationships SET mutual_following = ? WHERE follower_user_id = ? AND followed_user_id = ?`;
-  const sqlBindings = [status, followerUserId, followedUserId];
-  const [result] = await pool.query(sql, sqlBindings);
-  return result;
-};
-
-const addRelationship = async (
-  followerUserid,
-  followedUserId,
-  isMutualFollowing
-) => {
-  const sql = `INSERT INTO relationships (follower_user_id, followed_user_id, mutual_following) VALUES (?, ?, ?)`;
-  const sqlBindings = [followerUserid, followedUserId, isMutualFollowing];
+const addRelationship = async (followerUserid, followedUserId) => {
+  const sql = `INSERT INTO relationships (follower_user_id, followed_user_id) VALUES (?, ?)`;
+  const sqlBindings = [followerUserid, followedUserId];
   const [result] = await pool.query(sql, sqlBindings);
   return result;
 };
@@ -232,6 +226,33 @@ const addRelationship = async (
 const removeRelationship = async (followerUserid, followedUserId) => {
   const sql = `DELETE FROM relationships WHERE follower_user_id = ? AND followed_user_id = ?`;
   const sqlBindings = [followerUserid, followedUserId];
+  const [result] = await pool.query(sql, sqlBindings);
+  return result;
+};
+
+const getBlockStatus = async (currentUserId, targetUserId) => {
+  const sql = `SELECT id FROM blocklist WHERE blocker_user_id = ? AND blocked_user_id = ?`;
+  const sqlBindings = [currentUserId, targetUserId];
+  const [result] = await pool.query(sql, sqlBindings);
+  const sql2 = `SELECT id FROM blocklist WHERE blocker_user_id = ? AND blocked_user_id = ?`;
+  const sqlBindings2 = [targetUserId, currentUserId];
+  const [result2] = await pool.query(sql2, sqlBindings2);
+  return {
+    currentUserBlockTargetUser: result.length > 0,
+    targetUserBlockCurrentUser: result2.length > 0,
+  };
+};
+
+const addBlockStatus = async (blockerUserid, blockedUserId) => {
+  const sql = `INSERT INTO blocklist (blocker_user_id, blocked_user_id) VALUES (?, ?)`;
+  const sqlBindings = [blockerUserid, blockedUserId];
+  const [result] = await pool.query(sql, sqlBindings);
+  return result;
+};
+
+const removeBlockStatus = async (blockerUserid, blockedUserId) => {
+  const sql = `DELETE FROM blocklist WHERE blocker_user_id = ? AND blocked_user_id = ?`;
+  const sqlBindings = [blockerUserid, blockedUserId];
   const [result] = await pool.query(sql, sqlBindings);
   return result;
 };
@@ -250,5 +271,7 @@ module.exports = {
   addRelationship,
   removeRelationship,
   checkMutualStatus,
-  updateMutualStatus,
+  getBlockStatus,
+  addBlockStatus,
+  removeBlockStatus,
 };

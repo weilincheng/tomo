@@ -188,18 +188,13 @@ const getRelationships = async (req, res) => {
 const addRelationship = async (req, res) => {
   const { targetUserId } = req.params;
   checkUserIdExist(targetUserId, req, res);
+  const result = await User.addRelationship(req.userId, targetUserId);
   const isMutualFollowing = await User.checkMutualStatus(
     targetUserId,
     req.userId
   );
-  const result = await User.addRelationship(
-    req.userId,
-    targetUserId,
-    isMutualFollowing
-  );
   await Notifications.addNotification(targetUserId, req.userId, "follow", "");
   if (isMutualFollowing) {
-    await User.updateMutualStatus(targetUserId, req.userId, isMutualFollowing);
     await Notifications.addNotification(
       targetUserId,
       req.userId,
@@ -227,7 +222,30 @@ const removeRelationship = async (req, res) => {
   const { targetUserId } = req.params;
   checkUserIdExist(targetUserId, req, res);
   const result = await User.removeRelationship(req.userId, targetUserId);
-  await User.updateMutualStatus(targetUserId, req.userId, false);
+  res.status(200).json(result);
+  return;
+};
+
+const getBlockStatus = async (req, res) => {
+  const currentUserId = req.userId;
+  const { targetUserId } = req.params;
+  const result = await User.getBlockStatus(currentUserId, targetUserId);
+  res.status(200).json(result);
+  return;
+};
+
+const addBlockStatus = async (req, res) => {
+  const currentUserId = req.userId;
+  const { targetUserId } = req.params;
+  const result = await User.addBlockStatus(currentUserId, targetUserId);
+  res.status(200).json(result);
+  return;
+};
+
+const removeBlockStatus = async (req, res) => {
+  const currentUserId = req.userId;
+  const { targetUserId } = req.params;
+  const result = await User.removeBlockStatus(currentUserId, targetUserId);
   res.status(200).json(result);
   return;
 };
@@ -243,4 +261,7 @@ module.exports = {
   getRelationships,
   addRelationship,
   removeRelationship,
+  getBlockStatus,
+  addBlockStatus,
+  removeBlockStatus,
 };

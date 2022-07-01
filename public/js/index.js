@@ -285,10 +285,14 @@ const renderUserCard = async (userId, nickname, profileImage) => {
     "background-image": `url("https://via.placeholder.com/100")`,
   });
   if (profileImage) {
-    profileImageDiv.css(
-      "background-image",
-      `url('${cloudfrontUrl}/${profileImage}')`
-    );
+    if (profileImage.slice(0, 5) === "https") {
+      profileImageDiv.css("background-image", `url(${profileImage})`);
+    } else {
+      profileImageDiv.css(
+        "background-image",
+        `url('${cloudfrontUrl}/${profileImage}')`
+      );
+    }
   }
   const userInfoCol = $(
     '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'

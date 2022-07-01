@@ -21,13 +21,14 @@ const createMarker = (map, socketId, pos, name) => {
   createUserCard(socketId, name, pos);
 };
 
-const createInfowindow = (nickname, userId) => {
+const createInfowindow = (nickname, userId, bio) => {
   const contentString = `<div id="content"> 
     <div id="siteNotice">
     </div>
     <h5 id="firstHeading" class="firstHeading">${nickname}</h1>
     <div id="bodyContent">
-    <a href="/user/${userId}">View Profile</a>
+    <a href="/user/${userId}" target="_blank">View Profile</a>
+    <p>${bio}</p>
     </div>
     </div>`;
 
@@ -63,7 +64,7 @@ function initMap() {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   map = new google.maps.Map($("#map")[0], {
     center: appWorksSchool,
-    zoom: 13,
+    zoom: 15,
     mapId: "d91850b214eae5c9",
     fullscreenControl: false,
     streetViewControl: false,
@@ -174,10 +175,16 @@ const getCurrentLocaiton = (map) => {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       const pos = { lat: latitude, lng: longitude };
+      let profileUrl;
+      if (profileImage.slice(0, 5) === "https") {
+        profileUrl = profileImage;
+      } else {
+        profileUrl = `${cloudfrontUrl}/${profileImage}`;
+      }
       const currentUserIcon = createIcon(
         map,
         pos,
-        `${cloudfrontUrl}/${profileImage}`,
+        profileUrl,
         google.maps.Animation.DROP
       );
       const currentUserInfowindow = createInfowindow(nickname);
@@ -215,13 +222,20 @@ const renderUsersIcon = async (accessToken, map, markers) => {
       id: userId,
       nickname,
       interests,
+      bio,
     } = user;
     if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
-      renderUserCard(userId, nickname, profileImage);
+      renderUserCard(userId, nickname, profileImage, bio);
       const pos = { lat, lng };
-      const userIcon = createIcon(map, pos, `${cloudfrontUrl}/${profileImage}`);
+      let profileUrl;
+      if (profileImage.slice(0, 5) === "https") {
+        profileUrl = profileImage;
+      } else {
+        profileUrl = `${cloudfrontUrl}/${profileImage}`;
+      }
+      const userIcon = createIcon(map, pos, profileUrl);
       markers.push(userIcon);
-      const iconInfowindow = createInfowindow(nickname, userId);
+      const iconInfowindow = createInfowindow(nickname, userId, bio);
       userIcon.addListener("click", () => {
         iconInfowindow.open({
           anchor: userIcon,
@@ -249,13 +263,20 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       id: userId,
       nickname,
       interests,
+      bio,
     } = user;
     if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
-      renderUserCard(userId, nickname, profileImage);
+      renderUserCard(userId, nickname, profileImage, bio);
       const pos = { lat, lng };
-      const userIcon = createIcon(map, pos, `${cloudfrontUrl}/${profileImage}`);
+      let profileUrl;
+      if (profileImage.slice(0, 5) === "https") {
+        profileUrl = profileImage;
+      } else {
+        profileUrl = `${cloudfrontUrl}/${profileImage}`;
+      }
+      const userIcon = createIcon(map, pos, profileUrl);
       markers.push(userIcon);
-      const iconInfowindow = createInfowindow(nickname, userId);
+      const iconInfowindow = createInfowindow(nickname, userId, bio);
       userIcon.addListener("click", () => {
         iconInfowindow.open({
           anchor: userIcon,
@@ -268,8 +289,10 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
   userIconClusterer = new markerClusterer.MarkerClusterer({ map, markers });
 };
 
-const renderUserCard = async (userId, nickname, profileImage) => {
-  const user = $('<a class="row w-100 mb-2 user-card"></a>');
+const renderUserCard = async (userId, nickname, profileImage, bio) => {
+  const user = $(
+    '<a class="row w-100 mb-2 user-card text-decoration-none"></a>'
+  );
   user.attr("href", `/user/${userId}`);
   const profileImageDiv = $(
     '<div class="col-3 d-flex align-items-center"></div>'
@@ -298,7 +321,9 @@ const renderUserCard = async (userId, nickname, profileImage) => {
     '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
   );
   const username = $('<p class="fs-5 my-0 px-2"></p>').text(nickname);
+  const bioP = $('<p class="fs-5 my-0 px-2"></p>').text(bio);
   userInfoCol.append(username);
+  userInfoCol.append(bioP);
   user.append(profileImageDiv);
   user.append(userInfoCol);
   $("#right-col").append(user);

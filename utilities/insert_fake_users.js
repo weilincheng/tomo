@@ -1,5 +1,6 @@
 const { pool } = require("../server/models/mysql_connection");
 const { faker } = require("@faker-js/faker");
+const uuid = require("uuid").v4;
 
 const insertUsers = async (sql, sqlBindings) => {
   const [result] = await pool.query(sql, [sqlBindings]);
@@ -16,7 +17,7 @@ const insertUserInterests = async (startUserId, usersCount) => {
   const [result] = await pool.query(sql, [sqlBindings]);
 };
 
-const insertFake = async (usersCount) => {
+const insertFake = async (usersCount, coordinate) => {
   const sql = `INSERT INTO users 
   (nickname, email, password, website, profile_image, bio, geo_location_lat, geo_location_lng, gender, birthdate) 
   VALUES 
@@ -25,10 +26,7 @@ const insertFake = async (usersCount) => {
   const genderArray = ["pnts", "male", "female", "neutral"];
   const password = "password";
   for (let i = 0; i < usersCount; i++) {
-    const randomLocation = faker.address.nearbyGPSCoordinate(
-      [25.105497, 121.597366],
-      10
-    );
+    const randomLocation = faker.address.nearbyGPSCoordinate(coordinate, 10);
     const randomName = faker.name.firstName(); // Rowan
     const randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
     const randomBirthdate = faker.date.birthdate({
@@ -42,7 +40,7 @@ const insertFake = async (usersCount) => {
 
     const sqlBind = [
       randomName,
-      randomEmail,
+      `${randomEmail}_${uuid()}`,
       password,
       randomWebsite,
       randomProfileImage,
@@ -58,5 +56,6 @@ const insertFake = async (usersCount) => {
   insertUserInterests(startUserId, usersCount);
 };
 
-const usersCount = 5;
-insertFake(usersCount);
+const usersCount = 10000;
+const coordinate = [25.04, 121.5602];
+insertFake(usersCount, coordinate);

@@ -81,12 +81,12 @@ const getBlockStatus = async (targetUserId) => {
   const headers = {
     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
   };
-  const result = await fetch(`/api/v1/user/block/`, {
+  const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
     method: "GET",
     headers,
   });
   const resultJson = await result.json();
-  return resultJson[1].blocked.includes(parseInt(targetUserId));
+  return resultJson.currentUserBlockTargetUser;
 };
 
 const updateEditFollowBlockButton = (
@@ -203,6 +203,26 @@ const attachBlockedButtonEvent = (targetUserId) => {
     } else {
       $("#block-button").show();
       $("#blocked-button").hide();
+    }
+  });
+};
+
+const attachBlockButtonEvent = (targetUserId) => {
+  const blockButton = $("#block-button");
+  blockButton.click(async () => {
+    const headers = {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    };
+    const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+      method: "POST",
+      headers,
+    });
+    const resultJson = await result.json();
+    if (resultJson.error) {
+      alert(resultJson.error);
+    } else {
+      $("#block-button").hide();
+      $("#blocked-button").show();
     }
   });
 };

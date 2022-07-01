@@ -1,4 +1,5 @@
 #!/bin/bash
+source /home/ec2-user/.bash_profile
 
 # Download node and npm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash

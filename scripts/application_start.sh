@@ -1,4 +1,6 @@
 #!/bin/bash
+source /home/ec2-user/.bash_profile
+
 
 sudo chmod -R 777 /home/ec2-user/tomo
 cd /home/ec2-user/tomo

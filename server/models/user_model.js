@@ -236,6 +236,33 @@ const removeRelationship = async (followerUserid, followedUserId) => {
   return result;
 };
 
+const getBlockStatus = async (currentUserId, targetUserId) => {
+  const sql = `SELECT id FROM blocklist WHERE blocker_user_id = ? AND blocked_user_id = ?`;
+  const sqlBindings = [currentUserId, targetUserId];
+  const [result] = await pool.query(sql, sqlBindings);
+  const sql2 = `SELECT id FROM blocklist WHERE blocker_user_id = ? AND blocked_user_id = ?`;
+  const sqlBindings2 = [targetUserId, currentUserId];
+  const [result2] = await pool.query(sql2, sqlBindings2);
+  return {
+    currentUserBlockTargetUser: result.length > 0,
+    targetUserBlockCurrentUser: result2.length > 0,
+  };
+};
+
+const addBlockStatus = async (blockerUserid, blockedUserId) => {
+  const sql = `INSERT INTO blocklist (blocker_user_id, blocked_user_id) VALUES (?, ?)`;
+  const sqlBindings = [blockerUserid, blockedUserId];
+  const [result] = await pool.query(sql, sqlBindings);
+  return result;
+};
+
+const removeBlockStatus = async (blockerUserid, blockedUserId) => {
+  const sql = `DELETE FROM blocklist WHERE blocker_user_id = ? AND blocked_user_id = ?`;
+  const sqlBindings = [blockerUserid, blockedUserId];
+  const [result] = await pool.query(sql, sqlBindings);
+  return result;
+};
+
 module.exports = {
   signUp,
   nativeSignIn,
@@ -251,4 +278,7 @@ module.exports = {
   removeRelationship,
   checkMutualStatus,
   updateMutualStatus,
+  getBlockStatus,
+  addBlockStatus,
+  removeBlockStatus,
 };

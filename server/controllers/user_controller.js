@@ -232,6 +232,30 @@ const removeRelationship = async (req, res) => {
   return;
 };
 
+const getBlockStatus = async (req, res) => {
+  const currentUserId = req.userId;
+  const { targetUserId } = req.params;
+  const result = await User.getBlockStatus(currentUserId, targetUserId);
+  res.status(200).json(result);
+  return;
+};
+
+const addBlockStatus = async (req, res) => {
+  const currentUserId = req.userId;
+  const { targetUserId } = req.params;
+  const result = await User.addBlockStatus(currentUserId, targetUserId);
+  res.status(200).json(result);
+  return;
+};
+
+const removeBlockStatus = async (req, res) => {
+  const currentUserId = req.userId;
+  const { targetUserId } = req.params;
+  const result = await User.removeBlockStatus(currentUserId, targetUserId);
+  res.status(200).json(result);
+  return;
+};
+
 module.exports = {
   signUp,
   signIn,
@@ -243,4 +267,7 @@ module.exports = {
   getRelationships,
   addRelationship,
   removeRelationship,
+  getBlockStatus,
+  addBlockStatus,
+  removeBlockStatus,
 };

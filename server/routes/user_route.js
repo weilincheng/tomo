@@ -10,6 +10,9 @@ const {
   getRelationships,
   addRelationship,
   removeRelationship,
+  getBlockStatus,
+  addBlockStatus,
+  removeBlockStatus,
 } = require("../controllers/user_controller");
 const {
   catchAsyncError,
@@ -35,6 +38,16 @@ router
 router
   .route("/user/follow/:targetUserId")
   .delete(authUser(), catchAsyncError(removeRelationship));
+
+router
+  .route("/user/block/:targetUserId")
+  .get(authUser(), catchAsyncError(getBlockStatus));
+router
+  .route("/user/block/:targetUserId")
+  .post(authUser(), catchAsyncError(addBlockStatus));
+router
+  .route("/user/block/:targetUserId")
+  .delete(authUser(), catchAsyncError(removeBlockStatus));
 
 router.route("/user/:userId").get(authUser(), catchAsyncError(getUserInfo));
 router

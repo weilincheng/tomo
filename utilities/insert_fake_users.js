@@ -14,7 +14,6 @@ const insertUserInterests = async (startUserId, usersCount) => {
     sqlBindings.push([startUserId + i, randomInterestsId]);
   }
   const [result] = await pool.query(sql, [sqlBindings]);
-  console.log(sql, sqlBindings);
 };
 
 const insertFake = async (usersCount) => {

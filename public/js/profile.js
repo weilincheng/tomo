@@ -3,6 +3,17 @@ const getUserInfo = async (userId) => {
   const headers = {
     Authorization: `Bearer ${accessToken}`,
   };
+  const blockStatusResult = await fetch(`/api/v1/user/block/${userId}`, {
+    method: "GET",
+    headers,
+  });
+  const blockStatusJson = await blockStatusResult.json();
+  if (blockStatusJson.targetUserBlockCurrentUser) {
+    alert("You are blocked by this user");
+    window.location = "/";
+    return;
+  }
+  $("body").show();
   const result = await fetch(`/api/v1/user/${userId}`, {
     method: "GET",
     headers,
@@ -136,8 +147,8 @@ const attachFollowingButtonEvent = (targetUserId) => {
       followingButton.text("Following");
     }
   );
-
-  followingButton.click(async () => {
+  const confirmUnfollowButton = $("#confirm-unfollow-button");
+  confirmUnfollowButton.click(async () => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
@@ -208,7 +219,7 @@ const attachBlockedButtonEvent = (targetUserId) => {
 };
 
 const attachBlockButtonEvent = (targetUserId) => {
-  const blockButton = $("#block-button");
+  const blockButton = $("#confirm-block-button");
   blockButton.click(async () => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -400,6 +411,7 @@ const attachClickListeners = () => {
 
 const userId = $("#profile-script").attr("userId");
 const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
+$("body").hide();
 updateUserInfo();
 
 $(document).ready(() => {

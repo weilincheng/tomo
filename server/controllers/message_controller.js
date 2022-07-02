@@ -1,6 +1,8 @@
 require("dotenv").config();
 const Message = require("../models/message_model");
+const User = require("../models/user_model");
 const validator = require("validator");
+const { getUserInfo } = require("./user_controller");
 
 const getMessages = async (req, res) => {
   const { currentUserId, targetUserId } = req.params;
@@ -60,12 +62,16 @@ const saveMessages = async (req, res) => {
     res.status(400).json({ error: "content and type are required" });
     return;
   }
-  const result = await Message.saveMessages(
-    currentUserId,
-    targetUserId,
-    content,
-    type
-  );
+  const blockStatus = await User.getBlockStatus(currentUserId, targetUserId);
+  let result;
+  if (!blockStatus.targetUserBlockCurrentUser) {
+    result = await Message.saveMessages(
+      currentUserId,
+      targetUserId,
+      content,
+      type
+    );
+  }
   res.status(200).json(result);
 };
 

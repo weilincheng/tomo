@@ -168,8 +168,16 @@ const addPost = async (req, res) => {
     const result = await User.addPostImages(postId, fileNames);
   }
   const followers = await User.getRelationships(userId, "followers");
+  const blockedUsers = await User.getBlockStatus(userId, "allBlocked");
+  let blockedUsersId;
+  if (blockedUsers.length > 0) {
+    blockedUsersId = blockedUsers[0].blockedUsers;
+  }
   for (const follower of followers) {
     const { follower_user_id: receiverId } = follower;
+    if (blockedUsersId && blockedUsersId.includes(receiverId)) {
+      continue;
+    }
     await Notifications.addNotification(receiverId, userId, "post", content);
   }
   res.status(200).json({ status: "Post added" });
@@ -193,26 +201,30 @@ const addRelationship = async (req, res) => {
     targetUserId,
     req.userId
   );
-  await Notifications.addNotification(targetUserId, req.userId, "follow", "");
-  if (isMutualFollowing) {
-    await Notifications.addNotification(
-      targetUserId,
-      req.userId,
-      "message",
-      ""
-    );
-    await Notifications.addNotification(
-      req.userId,
-      targetUserId,
-      "message",
-      ""
-    );
-    await Message.saveMessages(
-      req.userId,
-      targetUserId,
-      "System Message: You are mutual following now.",
-      "text"
-    );
+  const blockedStatus = await User.getBlockStatus(req.userId, targetUserId);
+  const isBlocked = blockedStatus.targetUserBlockCurrentUser;
+  if (!isBlocked) {
+    await Notifications.addNotification(targetUserId, req.userId, "follow", "");
+    if (isMutualFollowing) {
+      await Notifications.addNotification(
+        targetUserId,
+        req.userId,
+        "message",
+        ""
+      );
+      await Notifications.addNotification(
+        req.userId,
+        targetUserId,
+        "message",
+        ""
+      );
+      await Message.saveMessages(
+        req.userId,
+        targetUserId,
+        "System Message: You are mutual following now.",
+        "text"
+      );
+    }
   }
   res.status(200).json(result);
   return;

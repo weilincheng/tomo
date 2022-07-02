@@ -52,9 +52,57 @@
             class="btn btn-outline-dark"
             data-mdb-ripple-color="dark"
             style="z-index: 1"
+            data-bs-toggle="modal"
+            data-bs-target="#confirmUnfollowModal"
           >
             Following
           </button>
+          <div
+            class="modal fade"
+            id="confirmUnfollowModal"
+            tabindex="-1"
+            aria-labelledby="confirmUnfollowModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content mx-5">
+                <div class="modal-header px-5">
+                  <h4
+                    class="text-dark modal-title"
+                    id="confirmUnfollowModalLabel"
+                  >
+                    Are you sure?
+                  </h4>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body d-flex flex-column px-5">
+                  <h6 class="text-muted mb-3">
+                    You will not see notifications from unfollowed users.
+                  </h6>
+                  <button
+                    type="button"
+                    class="btn btn-danger mb-3 rounded-pill"
+                    id="confirm-unfollow-button"
+                    data-bs-dismiss="modal"
+                  >
+                    Unfollow
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary mb-3 rounded-pill"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px">
           <img
@@ -69,6 +117,8 @@
             class="btn btn-outline-danger"
             data-mdb-ripple-color="dark"
             style="z-index: 1"
+            data-bs-toggle="modal"
+            data-bs-target="#confirmBlockModal"
           >
             Block
           </button>
@@ -81,6 +131,50 @@
           >
             Blocked
           </button>
+          <div
+            class="modal fade"
+            id="confirmBlockModal"
+            tabindex="-1"
+            aria-labelledby="confirmBlockModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content mx-5">
+                <div class="modal-header px-5">
+                  <h4 class="text-dark modal-title" id="confirmBlockModalLabel">
+                    Are you sure?
+                  </h4>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body d-flex flex-column px-5">
+                  <h6 class="text-muted mb-3">
+                    Blocked users will not be able to view your profile, and you
+                    will not see notifications from them.
+                  </h6>
+                  <button
+                    type="button"
+                    class="btn btn-danger mb-3 rounded-pill"
+                    id="confirm-block-button"
+                    data-bs-dismiss="modal"
+                  >
+                    Block
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary mb-3 rounded-pill"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="p-4 text-black" style="background-color: #f8f9fa">
@@ -88,22 +182,6 @@
           <p class="fs-3" id="name"></p>
           <p class="fs-6" id="bio"></p>
           <div class="d-flex justify-content-start align-items-center">
-            <div class="d-flex align-items-center me-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                class="bi bi-geo-fill"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999zm2.493 8.574a.5.5 0 0 1-.411.575c-.712.118-1.28.295-1.655.493a1.319 1.319 0 0 0-.37.265.301.301 0 0 0-.057.09V14l.002.008a.147.147 0 0 0 .016.033.617.617 0 0 0 .145.15c.165.13.435.27.813.395.751.25 1.82.414 3.024.414s2.273-.163 3.024-.414c.378-.126.648-.265.813-.395a.619.619 0 0 0 .146-.15.148.148 0 0 0 .015-.033L12 14v-.004a.301.301 0 0 0-.057-.09 1.318 1.318 0 0 0-.37-.264c-.376-.198-.943-.375-1.655-.493a.5.5 0 1 1 .164-.986c.77.127 1.452.328 1.957.594C12.5 13 13 13.4 13 14c0 .426-.26.752-.544.977-.29.228-.68.413-1.116.558-.878.293-2.059.465-3.34.465-1.281 0-2.462-.172-3.34-.465-.436-.145-.826-.33-1.116-.558C3.26 14.752 3 14.426 3 14c0-.599.5-1 .961-1.243.505-.266 1.187-.467 1.957-.594a.5.5 0 0 1 .575.411z"
-                />
-              </svg>
-              <p class="fs-6 my-0 mx-1" id="location"></p>
-            </div>
             <div class="d-flex align-items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

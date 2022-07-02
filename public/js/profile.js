@@ -136,8 +136,8 @@ const attachFollowingButtonEvent = (targetUserId) => {
       followingButton.text("Following");
     }
   );
-
-  followingButton.click(async () => {
+  const confirmUnfollowButton = $("#confirm-unfollow-button");
+  confirmUnfollowButton.click(async () => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
@@ -208,7 +208,7 @@ const attachBlockedButtonEvent = (targetUserId) => {
 };
 
 const attachBlockButtonEvent = (targetUserId) => {
-  const blockButton = $("#block-button");
+  const blockButton = $("#confirm-block-button");
   blockButton.click(async () => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

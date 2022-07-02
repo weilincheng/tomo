@@ -52,9 +52,57 @@
             class="btn btn-outline-dark"
             data-mdb-ripple-color="dark"
             style="z-index: 1"
+            data-bs-toggle="modal"
+            data-bs-target="#confirmUnfollowModal"
           >
             Following
           </button>
+          <div
+            class="modal fade"
+            id="confirmUnfollowModal"
+            tabindex="-1"
+            aria-labelledby="confirmUnfollowModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content mx-5">
+                <div class="modal-header px-5">
+                  <h4
+                    class="text-dark modal-title"
+                    id="confirmUnfollowModalLabel"
+                  >
+                    Are you sure?
+                  </h4>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body d-flex flex-column px-5">
+                  <h6 class="text-muted mb-3">
+                    You will not see notifications from unfollowed users.
+                  </h6>
+                  <button
+                    type="button"
+                    class="btn btn-danger mb-3 rounded-pill"
+                    id="confirm-unfollow-button"
+                    data-bs-dismiss="modal"
+                  >
+                    Unfollow
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary mb-3 rounded-pill"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px">
           <img
@@ -69,6 +117,8 @@
             class="btn btn-outline-danger"
             data-mdb-ripple-color="dark"
             style="z-index: 1"
+            data-bs-toggle="modal"
+            data-bs-target="#confirmBlockModal"
           >
             Block
           </button>
@@ -81,6 +131,50 @@
           >
             Blocked
           </button>
+          <div
+            class="modal fade"
+            id="confirmBlockModal"
+            tabindex="-1"
+            aria-labelledby="confirmBlockModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content mx-5">
+                <div class="modal-header px-5">
+                  <h4 class="text-dark modal-title" id="confirmBlockModalLabel">
+                    Are you sure?
+                  </h4>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body d-flex flex-column px-5">
+                  <h6 class="text-muted mb-3">
+                    Blocked users will not be able to view your profile, and you
+                    will not see notifications from them.
+                  </h6>
+                  <button
+                    type="button"
+                    class="btn btn-danger mb-3 rounded-pill"
+                    id="confirm-block-button"
+                    data-bs-dismiss="modal"
+                  >
+                    Block
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary mb-3 rounded-pill"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="p-4 text-black" style="background-color: #f8f9fa">

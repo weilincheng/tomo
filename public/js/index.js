@@ -299,8 +299,8 @@ const renderUserCard = async (userId, nickname, profileImage, bio) => {
   );
   profileImageDiv.css({
     display: "inline-block",
-    width: "80px",
-    height: "80px",
+    width: "50px",
+    height: "50px",
     "border-radius": "50%",
     "background-repeat": "no-repeat",
     "background-position": "center center",

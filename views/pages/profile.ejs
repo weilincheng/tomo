@@ -229,6 +229,51 @@
         </div>
       </div>
       <div id="posts-section"></div>
+      <div
+        class="modal fade"
+        id="confirmDeletePostModal"
+        tabindex="-1"
+        aria-labelledby="confirmDeletePostModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content mx-5">
+            <div class="modal-header px-5">
+              <h4
+                class="text-dark modal-title"
+                id="confirmDeletePostModalLabel"
+              >
+                Are you sure?
+              </h4>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body d-flex flex-column px-5">
+              <h6 class="text-muted mb-3">Click detele to delete your post.</h6>
+              <button
+                type="button"
+                class="btn btn-danger mb-3 rounded-pill"
+                id="confirm-delete-post-button"
+                data-bs-dismiss="modal"
+              >
+                Delete
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary mb-3 rounded-pill"
+                data-bs-dismiss="modal"
+                post-id=""
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div id="follow-list-section" class="col-3 invisible">

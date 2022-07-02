@@ -189,6 +189,20 @@ const addPostImages = async (postId, postImages) => {
   return result;
 };
 
+const removePost = async (postId) => {
+  const sql = `DELETE FROM posts where id = ?`;
+  const sqlBindings = [postId];
+  const [result] = await pool.query(sql, sqlBindings);
+  return result;
+};
+
+const removePostImages = async (postId) => {
+  const sql = `DELETE FROM post_images WHERE post_id = ?`;
+  const sqlBindings = [postId];
+  const [result] = await pool.query(sql, sqlBindings);
+  return result;
+};
+
 const getRelationships = async (targetUserId, type) => {
   let sql = "";
   let sqlCondition = "";
@@ -271,7 +285,9 @@ module.exports = {
   updateUserInterests,
   getPosts,
   addPost,
+  removePost,
   addPostImages,
+  removePostImages,
   getRelationships,
   addRelationship,
   removeRelationship,

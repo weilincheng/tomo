@@ -168,8 +168,16 @@ const addPost = async (req, res) => {
     const result = await User.addPostImages(postId, fileNames);
   }
   const followers = await User.getRelationships(userId, "followers");
+  const blockedUsers = await User.getBlockStatus(userId, "allBlocked");
+  let blockedUsersId;
+  if (blockedUsers.length > 0) {
+    blockedUsersId = blockedUsers[0].blockedUsers;
+  }
   for (const follower of followers) {
     const { follower_user_id: receiverId } = follower;
+    if (blockedUsersId && blockedUsersId.includes(receiverId)) {
+      continue;
+    }
     await Notifications.addNotification(receiverId, userId, "post", content);
   }
   res.status(200).json({ status: "Post added" });

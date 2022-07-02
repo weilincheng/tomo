@@ -205,15 +205,13 @@ const getRelationships = async (targetUserId, type) => {
 };
 
 const checkMutualStatus = async (followerUserId, followedUserId) => {
-  const sql = `SELECT * FROM relationships WHERE (follower_user_id = ? AND followed_user_id = ?) OR (follower_user_id = ? AND followed_user_id = ?)`;
-  const sqlBindings = [
-    followerUserId,
-    followedUserId,
-    followedUserId,
-    followerUserId,
-  ];
+  const sql = `SELECT * FROM relationships WHERE follower_user_id = ? AND followed_user_id = ?`;
+  const sqlBindings = [followerUserId, followedUserId];
   const [result] = await pool.query(sql, sqlBindings);
-  return result.length > 1;
+  const sql2 = `SELECT * FROM relationships WHERE follower_user_id = ? AND followed_user_id = ?`;
+  const sqlBindings2 = [followedUserId, followerUserId];
+  const [result2] = await pool.query(sql2, sqlBindings2);
+  return result.length > 0 && result2.length > 0;
 };
 
 const addRelationship = async (followerUserid, followedUserId) => {
@@ -231,16 +229,23 @@ const removeRelationship = async (followerUserid, followedUserId) => {
 };
 
 const getBlockStatus = async (currentUserId, targetUserId) => {
-  const sql = `SELECT id FROM blocklist WHERE blocker_user_id = ? AND blocked_user_id = ?`;
-  const sqlBindings = [currentUserId, targetUserId];
-  const [result] = await pool.query(sql, sqlBindings);
-  const sql2 = `SELECT id FROM blocklist WHERE blocker_user_id = ? AND blocked_user_id = ?`;
-  const sqlBindings2 = [targetUserId, currentUserId];
-  const [result2] = await pool.query(sql2, sqlBindings2);
-  return {
-    currentUserBlockTargetUser: result.length > 0,
-    targetUserBlockCurrentUser: result2.length > 0,
-  };
+  if (targetUserId === "allBlocked") {
+    const sql = `SELECT JSON_ARRAYAGG(blocked_user_id) AS blockedUsers FROM blocklist WHERE blocker_user_id = ? GROUP BY blocker_user_id`;
+    const sqlBindings = [currentUserId];
+    const [result] = await pool.query(sql, sqlBindings);
+    return result;
+  } else {
+    const sql = `SELECT id FROM blocklist WHERE blocker_user_id = ? AND blocked_user_id = ?`;
+    const sqlBindings = [currentUserId, targetUserId];
+    const [result] = await pool.query(sql, sqlBindings);
+    const sql2 = `SELECT id FROM blocklist WHERE blocker_user_id = ? AND blocked_user_id = ?`;
+    const sqlBindings2 = [targetUserId, currentUserId];
+    const [result2] = await pool.query(sql2, sqlBindings2);
+    return {
+      currentUserBlockTargetUser: result.length > 0,
+      targetUserBlockCurrentUser: result2.length > 0,
+    };
+  }
 };
 
 const addBlockStatus = async (blockerUserid, blockedUserId) => {

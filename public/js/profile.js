@@ -3,6 +3,17 @@ const getUserInfo = async (userId) => {
   const headers = {
     Authorization: `Bearer ${accessToken}`,
   };
+  const blockStatusResult = await fetch(`/api/v1/user/block/${userId}`, {
+    method: "GET",
+    headers,
+  });
+  const blockStatusJson = await blockStatusResult.json();
+  if (blockStatusJson.targetUserBlockCurrentUser) {
+    alert("You are blocked by this user");
+    window.location = "/";
+    return;
+  }
+  $("body").show();
   const result = await fetch(`/api/v1/user/${userId}`, {
     method: "GET",
     headers,
@@ -69,22 +80,37 @@ const updateUserInfo = async () => {
 
   const loggedInUserId = localStorage.getItem("userId");
   updateProfileIconLink(loggedInUserId);
-  updateEditFollowButton(userId, loggedInUserId, followers);
+  const blockStatus = await getBlockStatus(userId);
+  updateEditFollowBlockButton(userId, loggedInUserId, followers, blockStatus);
   renderUserPosts(
     userId,
     profileImage ? `${cloudfrontUrl}/${profileImage}` : placeholderImage
   );
 };
 
-const updateEditFollowButton = (
+const getBlockStatus = async (targetUserId) => {
+  const headers = {
+    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+  };
+  const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+    method: "GET",
+    headers,
+  });
+  const resultJson = await result.json();
+  return resultJson.currentUserBlockTargetUser;
+};
+
+const updateEditFollowBlockButton = (
   profileUserId,
   loggedInUserId,
-  profileUserFollowers
+  profileUserFollowers,
+  blockStatus
 ) => {
   $("#follow-button").hide();
   $("#following-button").hide();
   $("#edit-profile-button").hide();
   $("#block-button").hide();
+  $("#blocked-button").hide();
   if (profileUserId === loggedInUserId) {
     $("#edit-profile-button").show();
   } else {
@@ -96,13 +122,19 @@ const updateEditFollowButton = (
     }
     if (isFollowing) {
       $("#following-button").show();
-      $("#block-button").show();
     } else {
       $("#follow-button").show();
+    }
+    if (blockStatus) {
+      $("#blocked-button").show();
+    } else {
+      $("#block-button").show();
     }
   }
   attachFollowingButtonEvent(profileUserId);
   attachFolloButtonEvent(profileUserId);
+  attachBlockedButtonEvent(profileUserId);
+  attachBlockButtonEvent(profileUserId);
 };
 
 const attachFollowingButtonEvent = (targetUserId) => {
@@ -115,8 +147,8 @@ const attachFollowingButtonEvent = (targetUserId) => {
       followingButton.text("Following");
     }
   );
-
-  followingButton.click(async () => {
+  const confirmUnfollowButton = $("#confirm-unfollow-button");
+  confirmUnfollowButton.click(async () => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
@@ -132,7 +164,6 @@ const attachFollowingButtonEvent = (targetUserId) => {
       $("#followers-count").text(parseInt(currentFollowersCount) - 1);
       $("#follow-button").show();
       $("#following-button").hide();
-      $("#block-button").hide();
     }
   });
 };
@@ -155,7 +186,54 @@ const attachFolloButtonEvent = (targetUserId) => {
       $("#followers-count").text(parseInt(currentFollowersCount) + 1);
       $("#follow-button").hide();
       $("#following-button").show();
+    }
+  });
+};
+
+const attachBlockedButtonEvent = (targetUserId) => {
+  const blockedButton = $("#blocked-button");
+  blockedButton.hover(
+    () => {
+      blockedButton.text("Unblock");
+    },
+    () => {
+      blockedButton.text("Blocked");
+    }
+  );
+  blockedButton.click(async () => {
+    const headers = {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    };
+    const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+      method: "DELETE",
+      headers,
+    });
+    const resultJson = await result.json();
+    if (resultJson.error) {
+      alert(resultJson.error);
+    } else {
       $("#block-button").show();
+      $("#blocked-button").hide();
+    }
+  });
+};
+
+const attachBlockButtonEvent = (targetUserId) => {
+  const blockButton = $("#confirm-block-button");
+  blockButton.click(async () => {
+    const headers = {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    };
+    const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+      method: "POST",
+      headers,
+    });
+    const resultJson = await result.json();
+    if (resultJson.error) {
+      alert(resultJson.error);
+    } else {
+      $("#block-button").hide();
+      $("#blocked-button").show();
     }
   });
 };
@@ -327,10 +405,13 @@ const attachClickListeners = () => {
   editProfileButton.click(() => {
     return (window.location = `/user/edit`);
   });
+
+  blockButton.click(() => {});
 };
 
 const userId = $("#profile-script").attr("userId");
 const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
+$("body").hide();
 updateUserInfo();
 
 $(document).ready(() => {

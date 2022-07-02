@@ -1,3 +1,14 @@
+const getBlockStatus = async (accessToken, targetUserId) => {
+  const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const resultJson = await result.json();
+  return resultJson;
+};
+
 const renderMessagesHistory = async (
   accessToken,
   currentUserId,
@@ -93,12 +104,16 @@ const renderSenderUserCard = (
   card.append(profileImage);
   card.append(nameMessageCol);
   $("#user-messages-session").append(card);
-  card.click(() => {
+  card.click(async () => {
     const targetUserId = card.attr("id").split("-")[2];
+    const blockStatus = await getBlockStatus(accessToken, targetUserId);
+    if (blockStatus.targetUserBlockCurrentUser) {
+      alert("You are blocked by this user.");
+      return;
+    }
     $("#messages-session").attr("target-user-id", targetUserId);
     $("#messages-session").empty();
     renderMessagesHistory(accessToken, currentUserId, targetUserId);
-
     const sendMessageButton = $("#send-message-button");
     const messageInput = $("#message-content-input");
     sendMessageButton.show();

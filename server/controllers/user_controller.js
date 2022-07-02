@@ -201,26 +201,30 @@ const addRelationship = async (req, res) => {
     targetUserId,
     req.userId
   );
-  await Notifications.addNotification(targetUserId, req.userId, "follow", "");
-  if (isMutualFollowing) {
-    await Notifications.addNotification(
-      targetUserId,
-      req.userId,
-      "message",
-      ""
-    );
-    await Notifications.addNotification(
-      req.userId,
-      targetUserId,
-      "message",
-      ""
-    );
-    await Message.saveMessages(
-      req.userId,
-      targetUserId,
-      "System Message: You are mutual following now.",
-      "text"
-    );
+  const blockedStatus = await User.getBlockStatus(req.userId, targetUserId);
+  const isBlocked = blockedStatus.targetUserBlockCurrentUser;
+  if (!isBlocked) {
+    await Notifications.addNotification(targetUserId, req.userId, "follow", "");
+    if (isMutualFollowing) {
+      await Notifications.addNotification(
+        targetUserId,
+        req.userId,
+        "message",
+        ""
+      );
+      await Notifications.addNotification(
+        req.userId,
+        targetUserId,
+        "message",
+        ""
+      );
+      await Message.saveMessages(
+        req.userId,
+        targetUserId,
+        "System Message: You are mutual following now.",
+        "text"
+      );
+    }
   }
   res.status(200).json(result);
   return;

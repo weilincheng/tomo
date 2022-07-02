@@ -7,6 +7,7 @@ const {
   updateUserInfo,
   getPosts,
   addPost,
+  removePost,
   getRelationships,
   addRelationship,
   removeRelationship,
@@ -58,5 +59,8 @@ router.route("/user/:userId/posts").get(catchAsyncError(getPosts));
 router
   .route("/user/:userId/posts")
   .post(authUser(), cpUpload, catchAsyncError(addPost));
+router
+  .route("/user/:userId/posts/:postId")
+  .delete(authUser(), catchAsyncError(removePost));
 
 module.exports = router;

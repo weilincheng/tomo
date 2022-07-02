@@ -271,10 +271,10 @@ const renderPosts = async (userId, profileImage) => {
       "background-size": "cover",
     });
     const namePostCol = $(
-      '<div class="col-10 d-flex flex-column justify-content-center my-2 px-2"></div>'
+      '<div class="col-11 d-flex flex-column justify-content-center my-2 px-2"></div>'
     );
     const deleteDropdownCol = $(
-      '<div class="col-1 dropdown d-flex justify-content-center"></div>'
+      '<div class="col-auto dropdown d-flex justify-content-center align-self-start"></div>'
     );
     const dropdownButton = $(
       '<button class="btn btn-sm dropdown-toggle dropdown-toggle-button" type="button"  data-bs-toggle="dropdown" aria-expanded="false"></button>'

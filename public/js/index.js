@@ -25,7 +25,7 @@ const createInfowindow = (nickname, userId, bio) => {
   const contentString = `<div id="content"> 
     <div id="siteNotice">
     </div>
-    <h5 id="firstHeading" class="firstHeading">${nickname}</h1>
+    <h5 id="firstHeading" class="firstHeading">${nickname}</h5>
     <div id="bodyContent">
     <a href="/user/${userId}" target="_blank">View Profile</a>
     <p>${bio}</p>

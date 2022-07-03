@@ -7,7 +7,7 @@
 ></script>
 <div class="row w-100 mt-2">
   <div class="col-1"><%- include("../partials/sidebar") -%></div>
-  <div class="col-8 d-flex justify-content-center">
+  <div class="col-10 d-flex justify-content-center">
     <div class="w-100 h-100 d-flex flex-column">
       <div
         id="background-image"
@@ -218,11 +218,23 @@
               />
             </svg>
           </div>
-          <div id="followers-link" class="btn px-3 d-flex text-center">
+          <div
+            id="followers-link"
+            class="btn px-3 d-flex text-center"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#follow-list-offcanvas"
+            aria-controls="follow-list-offcanvas"
+          >
             <p id="followers-count" class="mx-1 fs-6 my-0"></p>
             <p class="text-secondary my-0">Followers</p>
           </div>
-          <div id="following-link" class="btn px-3 d-flex text-center">
+          <div
+            id="following-link"
+            class="btn px-3 d-flex text-center"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#follow-list-offcanvas"
+            aria-controls="follow-list-offcanvas"
+          >
             <p id="following-count" class="mx-1 fs-6 my-0"></p>
             <p class="text-secondary my-0">Following</p>
           </div>
@@ -276,12 +288,31 @@
       </div>
     </div>
   </div>
-  <div id="follow-list-section" class="col-3 invisible">
+  <!-- <div id="follow-list-section" class="col-3 invisible">
     <div
       id="follow-list-title"
       class="border-bottom text-center fs-3 mb-1"
     ></div>
-    <div id="follow-list-details" class="d-flex flex-column"></div>
+  </div> -->
+  <div
+    class="offcanvas offcanvas-end"
+    data-bs-scroll="true"
+    tabindex="-1"
+    id="follow-list-offcanvas"
+    aria-labelledby="follow-list-offcanvas"
+  >
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="follow-list-offcanvas-title"></h5>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="offcanvas"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div class="offcanvas-body">
+      <div id="follow-list-details" class="d-flex flex-column"></div>
+    </div>
   </div>
 </div>
 <%- include("../partials/footer") -%>

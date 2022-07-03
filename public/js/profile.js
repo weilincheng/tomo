@@ -345,7 +345,7 @@ const renderFollowList = async (userId, type) => {
   for (let i = 0; i < followList.length; i++) {
     const { follower_user_id, followed_user_id, nickname, profile_image } =
       followList[i];
-    const follow = $('<a class="row w-100 mb-2"></a>');
+    const follow = $('<a class="row w-100 mb-4 px-3"></a>');
     follow.attr(
       "href",
       `/user/${follower_user_id ? follower_user_id : followed_user_id}`
@@ -416,14 +416,12 @@ const attachClickListeners = () => {
 
   followersLink.click(() => {
     $("#follow-list-details").empty();
-    $("#follow-list-section").removeClass("invisible");
-    $("#follow-list-title").text("Followers");
+    $("#follow-list-offcanvas-title").text("Followers");
     renderFollowList(userId, "followers");
   });
   followingLink.click(() => {
     $("#follow-list-details").empty();
-    $("#follow-list-section").removeClass("invisible");
-    $("#follow-list-title").text("Following");
+    $("#follow-list-offcanvas-title").text("Following");
     renderFollowList(userId, "following");
   });
   sendMessageLink.click(() => {

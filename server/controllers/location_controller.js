@@ -1,6 +1,6 @@
 const Location = require("../models/location_model");
-const colNum = 20.0,
-  rowNum = 20.0;
+const colNum = 15.0,
+  rowNum = 15.0;
 
 const getUsersLocation = async (req, res) => {
   const { min_age, max_age, gender, interests, latLL, lngLL, latUR, lngUR } =

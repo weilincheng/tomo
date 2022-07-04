@@ -58,6 +58,7 @@ const removeMarker = (socketId) => {
     marker.setMap(null);
     markersList.delete(socketId);
   }
+  userIconClusterer.clearMarkers();
 };
 
 function initMap() {
@@ -76,10 +77,24 @@ function initMap() {
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(
     panToCurrentLocationControlDiv
   );
-  const accessToken = localStorage.getItem("accessToken");
-  if (accessToken) {
-    renderUsersIcon(accessToken, map, markers);
-  }
+  google.maps.event.addListener(map, "idle", () => {
+    visibleLatLL = map.getBounds().getSouthWest().lat();
+    visibleLngLL = map.getBounds().getSouthWest().lng();
+    visibleLatUR = map.getBounds().getNorthEast().lat();
+    visibleLngUR = map.getBounds().getNorthEast().lng();
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      renderUsersIcon(
+        accessToken,
+        map,
+        markers,
+        visibleLatLL,
+        visibleLngLL,
+        visibleLatUR,
+        visibleLngUR
+      );
+    }
+  });
   attachAgeRangeListener();
   attachApplyFilterListener(map);
 }
@@ -201,19 +216,50 @@ const getCurrentLocaiton = (map) => {
   }
 };
 
-const getUsersLocation = async (accessToken) => {
-  const result = await fetch(`/api/v1/location/`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+const getUsersLocation = async (
+  accessToken,
+  visibleLatLL,
+  visibleLngLL,
+  visibleLatUR,
+  visibleLngUR
+) => {
+  const result = await fetch(
+    `/api/v1/location/?latLL=${visibleLatLL}&lngLL=${visibleLngLL}&latUR=${visibleLatUR}&lngUR=${visibleLngUR}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
   const resultJson = await result.json();
   return resultJson;
 };
 
-const renderUsersIcon = async (accessToken, map, markers) => {
-  const usersLocation = await getUsersLocation(accessToken);
+const renderUsersIcon = async (
+  accessToken,
+  map,
+  markers,
+  visibleLatLL,
+  visibleLngLL,
+  visibleLatUR,
+  visibleLngUR
+) => {
+  while (markers.length > 0) {
+    const marker = markers.pop();
+    marker.setMap(null);
+  }
+  if (userIconClusterer) {
+    userIconClusterer.clearMarkers();
+  }
+  $(".user-card").remove();
+  const usersLocation = await getUsersLocation(
+    accessToken,
+    visibleLatLL,
+    visibleLngLL,
+    visibleLatUR,
+    visibleLngUR
+  );
   for (const user of usersLocation) {
     const {
       geo_location_lat: lat,
@@ -394,7 +440,6 @@ const fetchFilteredUsersLocation = async (
       targetUrl += `&interests=${interest}`;
     }
   }
-  console.log("targetUrl", targetUrl);
   const result = await fetch(targetUrl, {
     method: "GET",
     headers: {
@@ -408,7 +453,6 @@ const fetchFilteredUsersLocation = async (
 const accessToken = localStorage.getItem("accessToken");
 checkAccessToken(accessToken);
 const google_api_key = $("#map-script").attr("google_api_key");
-const socket_host = $("#map-script").attr("socket_host");
 const script = $("<script></script>", {
   src: `https://maps.googleapis.com/maps/api/js?key=${google_api_key}&map_ids=d91850b214eae5c9&callback=initMap`,
   async: true,
@@ -416,14 +460,16 @@ const script = $("<script></script>", {
   type: "text/javascript",
 });
 script.appendTo("head");
-// const socket = io(socket_host);
 const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
 const markersList = new Map();
 let map,
   markers = [],
-  userIconClusterer;
+  userIconClusterer,
+  visibleLatLL,
+  visibleLngLL,
+  visibleLatUR,
+  visibleLngUR;
 window.initMap = initMap;
-// renderUsersIcon(accessToken, map);
 
 $("#signin").click(() => {
   window.location.href = "/signin";

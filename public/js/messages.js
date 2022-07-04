@@ -306,8 +306,6 @@ const updateOnlinStatus = (targetUserId, onlineStatus) => {
 
 const initializeSenderSocket = async () => {
   await renderSenderUser(accessToken, currentUserId);
-  const socket_host = $("#message-script").attr("socket_host");
-  const socket = io(socket_host, { autoConnect: false });
   socket.auth = { currentUserName, currentUserId };
   socket.connect();
 
@@ -379,4 +377,6 @@ const sendMessageButton = $("#send-message-button");
 const messageInput = $("#message-content-input");
 sendMessageButton.hide();
 messageInput.hide();
+const socket_host = $("#message-script").attr("socket_host");
+const socket = io(socket_host, { autoConnect: false });
 initializeSenderSocket();

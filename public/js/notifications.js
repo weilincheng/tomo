@@ -59,7 +59,7 @@ const renderNotifications = async () => {
     const month = new Intl.DateTimeFormat("en-US", options).format(date);
     const dateString = `${month} ${date.getDate()}`;
     const notificationCard = $(
-      '<div class="row border-bottom my-2 py-2 d-flex justify-content-between align-items-center">'
+      '<div class="row border-bottom py-4 d-flex justify-content-between align-items-center">'
     );
     if (!hasRead) {
       notificationCard.css("background-color", "#79DAE8");
@@ -67,9 +67,27 @@ const renderNotifications = async () => {
     const notificationLeftColumn = $('<div class="col-1">');
     const notificationMiddleColumn = $('<div class="col-10 pe-3">');
     const notificationRightColumn = $('<div class="col-1">');
-    const notificationProfile = $(
-      '<div><img class="rounded-pill img-thumbnail"></div>'
-    );
+    const profileImageDiv = $('<div class="col-2 d-flex "></div>');
+    profileImageDiv.css({
+      display: "inline-block",
+      width: "50px",
+      height: "50px",
+      "border-radius": "50%",
+      "background-repeat": "no-repeat",
+      "background-position": "center center",
+      "background-size": "cover",
+      "background-image": `url("https://via.placeholder.com/100")`,
+    });
+    if (profileImage) {
+      if (profileImage.slice(0, 5) === "https") {
+        profileImageDiv.css("background-image", `url(${profileImage})`);
+      } else {
+        profileImageDiv.css(
+          "background-image",
+          `url('${cloudfrontUrl}/${profileImage}')`
+        );
+      }
+    }
     const notificationDateConetnt = $(
       '<p class="text-secondary my-0 px-2"></p>'
     ).text(dateString);
@@ -85,11 +103,8 @@ const renderNotifications = async () => {
       notificationSummary.css("white-space", "pre-line");
     }
     const notificationContent = $('<div class="fs-6 text-secondary"></div>');
-    notificationProfile
-      .children("img")
-      .attr("src", `${cloudfrontUrl}/${profileImage}`);
     notificationContent.text(content);
-    notificationLeftColumn.append(notificationProfile);
+    notificationLeftColumn.append(profileImageDiv);
     notificationMiddleColumn.append(notificationSummary);
     notificationMiddleColumn.append(notificationContent);
     notificationRightColumn.append(notificationDateConetnt);

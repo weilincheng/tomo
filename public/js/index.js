@@ -82,13 +82,6 @@ function initMap() {
     visibleLngLL = map.getBounds().getSouthWest().lng();
     visibleLatUR = map.getBounds().getNorthEast().lat();
     visibleLngUR = map.getBounds().getNorthEast().lng();
-    console.log(
-      "bounds",
-      visibleLatLL,
-      visibleLngLL,
-      visibleLatUR,
-      visibleLngUR
-    );
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       renderUsersIcon(

@@ -7,7 +7,7 @@
   <div class="col-8 d-flex justify-content-center h-100">
     <form class="w-75 h-100" enctype="multipart/form-data" id="post-form">
       <div class="mb-3">
-        <label for="post-content" class="form-label fs-3"
+        <label for="post-content" class="form-label fs-4 fw-bold"
           >What's happening?</label
         >
         <textarea
@@ -23,9 +23,9 @@
           <span id="maximum">/ 280</span>
         </div>
       </div>
-      <div class="mb-3">
+      <div class="mb-3 pb-5 border-bottom">
         <div class="d-flex flex-column">
-          <label for="post-images" class="form-label fs-3"
+          <label for="post-images" class="form-label fs-4 fw-bold"
             >Add some images?</label
           >
           <div class="flex" id="post-images-container"></div>
@@ -38,12 +38,25 @@
           multiple
         />
       </div>
-      <button id="post-button" type="button" class="btn btn-primary">
-        Post
-      </button>
-      <button id="cancel-button" type="button" class="btn btn-secondary">
-        Cancel
-      </button>
+      <div class="row">
+        <div class="col-9"></div>
+        <div class="col-3">
+          <button
+            id="post-button"
+            type="button"
+            class="btn btn-primary w-100 px-5 rounded-pill mb-3"
+          >
+            Post
+          </button>
+          <!-- <button
+            id="cancel-button"
+            type="button"
+            class="btn btn-secondary w-100 px-5 rounded-pill"
+          >
+            Cancel
+          </button> -->
+        </div>
+      </div>
     </form>
   </div>
   <div

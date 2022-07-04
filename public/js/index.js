@@ -1,26 +1,3 @@
-const randomVariation = () => {
-  return (Math.random() - 0.5) * 0.0005;
-};
-
-const updateMarker = (socketId, pos) => {
-  const marker = markersList.get(socketId);
-  marker.setPosition(pos);
-};
-
-const createMarker = (map, socketId, pos, name) => {
-  const marker = new google.maps.Marker({
-    position: pos,
-    map: map,
-    label: {
-      color: "blue",
-      fontWeight: "bold",
-      text: name ? name : "annonymous",
-    },
-  });
-  markersList.set(socketId, marker);
-  createUserCard(socketId, name, pos);
-};
-
 const createInfowindow = (nickname, userId, bio) => {
   const contentString = `<div id="content"> 
     <div id="siteNotice">
@@ -39,7 +16,7 @@ const createInfowindow = (nickname, userId, bio) => {
 
 const createClusterIcon = (map, pos, count) => {
   const clusterIcon = {
-    url: "https://cdn.rawgit.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m1.png",
+    url: "https://d3efyzwqsfoubm.cloudfront.net/asset/marker_cluster_icon.png",
     scaledSize: new google.maps.Size(50, 50), // scaled size
     origin: new google.maps.Point(0, 0), // origin
     anchor: new google.maps.Point(0, 0), // anchor
@@ -384,7 +361,6 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
     const marker = markers.pop();
     marker.setMap(null);
   }
-  // userIconClusterer.clearMarkers();
   $(".user-card").remove();
   for (const user of usersLocation) {
     const {
@@ -497,7 +473,12 @@ const attachApplyFilterListener = (map) => {
     $("#gender").val("");
     $("[id$=checkbox]").prop("checked", false);
     const interestsArray = [];
-    const filteredUsersLocation = await fetchFilteredUsersLocation(
+    const filteredUsersLocation = await getUsersLocation(
+      accessToken,
+      visibleLatLL,
+      visibleLngLL,
+      visibleLatUR,
+      visibleLngUR,
       20,
       100,
       "",
@@ -519,7 +500,12 @@ const attachApplyFilterListener = (map) => {
     }
     const minAge = parseInt(minAgeInput);
     const maxAge = parseInt(maxAgeInput);
-    const filteredUsersLocation = await fetchFilteredUsersLocation(
+    const filteredUsersLocation = await getUsersLocation(
+      accessToken,
+      visibleLatLL,
+      visibleLngLL,
+      visibleLatUR,
+      visibleLngUR,
       minAge,
       maxAge,
       gender,
@@ -527,31 +513,6 @@ const attachApplyFilterListener = (map) => {
     );
     renderFilteredUsersIcon(map, filteredUsersLocation, markers);
   });
-};
-
-const fetchFilteredUsersLocation = async (
-  minAge,
-  maxAge,
-  gender,
-  interests
-) => {
-  let targetUrl = `/api/v1/location/?min_age=${minAge}&max_age=${maxAge}`;
-  if (gender) {
-    targetUrl += `&gender=${gender}`;
-  }
-  if (interests.length > 0) {
-    for (const interest of interests) {
-      targetUrl += `&interests=${interest}`;
-    }
-  }
-  const result = await fetch(targetUrl, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const resultJson = await result.json();
-  return resultJson;
 };
 
 const accessToken = localStorage.getItem("accessToken");

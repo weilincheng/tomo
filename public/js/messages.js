@@ -306,7 +306,6 @@ const updateOnlinStatus = (targetUserId, onlineStatus) => {
 
 const initializeSenderSocket = async () => {
   await renderSenderUser(accessToken, currentUserId);
-
   socket.auth = { currentUserName, currentUserId };
   socket.connect();
 

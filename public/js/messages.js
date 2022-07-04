@@ -85,7 +85,7 @@ const renderSenderUserCard = (
   const card = $('<div class="border-bottom row w-100 py-3 px-3"></div>');
   card.attr("id", `senderUserCard-UserId-${senderUserId}`);
   const profileImageDiv = $(
-    '<div class="col-2 d-flex align-self-center"></div>'
+    '<div class="col-2 d-flex align-self-center position-relative"></div>'
   );
   profileImageDiv.css({
     display: "inline-block",
@@ -107,13 +107,19 @@ const renderSenderUserCard = (
       );
     }
   }
+
   const nameMessageCol = $(
     '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
   );
-  const name = $('<p class="fs-5 my-0 px-2"></p>').text(senderUserName);
+  const name = $('<p class="fs-5 my-0 px-2 "></p>').text(senderUserName);
   const lastMessage = $('<p class="fs-6 text-secondary my-0 px-2"></p>').text(
     senderUserLastMessage
   );
+  const badge = $(
+    '<span class="position-absolute top-0 start-100 translate-middle p-2 bg-secondary border border-light rounded-circle"></span>'
+  );
+  badge.attr("id", `badge-UserId-${senderUserId}`);
+  profileImageDiv.append(badge);
   nameMessageCol.append(name);
   nameMessageCol.append(lastMessage);
   card.append(profileImageDiv);
@@ -287,6 +293,17 @@ const updateSocketId = (targetUserId, socketId) => {
   userCard.attr("socket-id", socketId);
 };
 
+const updateOnlinStatus = (targetUserId, onlineStatus) => {
+  const badge = $(`#badge-UserId-${targetUserId}`);
+  if (onlineStatus) {
+    badge.removeClass("bg-secondary");
+    badge.addClass("bg-primary");
+  } else {
+    badge.removeClass("bg-primary");
+    badge.addClass("bg-secondary");
+  }
+};
+
 const accessToken = localStorage.getItem("accessToken");
 if (!accessToken) {
   alert("Please log in first!");
@@ -307,10 +324,15 @@ const socket = io(socket_host, { autoConnect: false });
 socket.auth = { currentUserName, currentUserId };
 socket.connect();
 
+socket.on("user disconnecting", (data) => {
+  updateOnlinStatus(data.disconnectingUserId, false);
+});
+
 socket.on("users", (users) => {
   users.forEach((user) => {
     const { userId, socketId } = user;
     updateSocketId(userId, socketId);
+    updateOnlinStatus(userId, true);
   });
 });
 

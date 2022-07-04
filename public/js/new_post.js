@@ -28,6 +28,12 @@ const attachImageEvent = () => {
     postImagesContainer.empty();
     $("#post-button").attr("disabled", false);
     const files = evt.target.files;
+    for (const file of files) {
+      if (file.size > 1000000) {
+        alert("File size is too large. Max size is 1MB.");
+        $("#post-images").prop("value", "");
+        return;
+      }
     if (files.length > 4) {
       alert("You can only upload a maximum of 4 files");
       $("#post-button").attr("disabled", true);

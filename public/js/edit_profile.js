@@ -112,7 +112,9 @@ const renderUserProfile = async () => {
       : "https://via.placeholder.com/100"
   );
   $("#gender").val(gender);
-  $("#birthdate").val(`${year}-${month}-${day}`);
+  if (birthdate) {
+    $("#birthdate").val(`${year}-${month}-${day}`);
+  }
   for (const interest of interests) {
     $(`#${interest}-checkbox`).prop("checked", true);
   }
@@ -136,12 +138,22 @@ const sendPutFormData = async (formData) => {
 const attachClickEvent = () => {
   $("#profile-image").on("change", (evt) => {
     const [file] = evt.target.files;
+    if (file.size > 1000000) {
+      alert("File size is too large. Max size is 1MB");
+      $("#profile-image").prop("value", "");
+      return;
+    }
     if (file) {
       $("#profile-image-source").attr("src", URL.createObjectURL(file));
     }
   });
   $("#background-image").on("change", (evt) => {
     const [file] = evt.target.files;
+    if (file.size > 1000000) {
+      alert("File size is too large");
+      $("#profile-image").prop("value", "");
+      return;
+    }
     if (file) {
       $("#background-image-source").attr("src", URL.createObjectURL(file));
     }
@@ -213,7 +225,7 @@ const locateMeControl = (controlDiv, map) => {
   controlUI.style.marginTop = "8px";
   controlUI.style.marginBottom = "22px";
   controlUI.style.textAlign = "center";
-  controlUI.title = "Click to locate yourself";
+  controlUI.title = "We do not share your real location";
   controlDiv.appendChild(controlUI);
 
   const controlText = document.createElement("div");
@@ -240,7 +252,7 @@ const getCurrentLocaiton = (map) => {
       const pos = { lat: latitude, lng: longitude };
       createCustomMarker(map, pos, "You are here");
       map.setCenter(pos);
-      map.setZoom(16);
+      map.setZoom(15);
       getNearybyPlaces(map, pos, "park");
     });
   }
@@ -249,7 +261,7 @@ const getCurrentLocaiton = (map) => {
 const getNearybyPlaces = async (map, pos, type) => {
   const request = {
     location: pos,
-    radius: "5000",
+    radius: "15000",
     type: [type],
   };
   service = new google.maps.places.PlacesService(map);
@@ -268,10 +280,11 @@ const createPlacesMarker = (place) => {
   const marker = new google.maps.Marker({
     map,
     position: place.geometry.location,
-    label: {
-      text: place.name,
-      color: "green",
-    },
+    // label: {
+    //   text: place.name,
+    //   color: "green",
+    // },
+    icon: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
   });
 
   google.maps.event.addListener(marker, "click", () => {

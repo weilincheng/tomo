@@ -2,7 +2,7 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const uuid = require("uuid").v4;
 const multer = require("multer");
 const storage = multer.memoryStorage();
-const maxFileSize = 200000;
+const maxFileSize = 1000000;
 const maxFileCounts = 4;
 const multerUpload = multer({
   storage: storage,

@@ -184,6 +184,17 @@ const addPost = async (req, res) => {
   return;
 };
 
+const removePost = async (req, res) => {
+  const { userId, postId } = req.params;
+  if (req.userId != userId) {
+    res.status(403).json({ error: "You are not authorized" });
+  }
+  await User.removePostImages(postId);
+  await User.removePost(postId);
+  res.status(200).json({ status: "Post removed" });
+  return;
+};
+
 const getRelationships = async (req, res) => {
   const { targetUserId } = req.params;
   checkUserIdExist(targetUserId, req, res);
@@ -270,6 +281,7 @@ module.exports = {
   profile,
   getPosts,
   addPost,
+  removePost,
   getRelationships,
   addRelationship,
   removeRelationship,

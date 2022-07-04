@@ -25,7 +25,7 @@ const createInfowindow = (nickname, userId, bio) => {
   const contentString = `<div id="content"> 
     <div id="siteNotice">
     </div>
-    <h5 id="firstHeading" class="firstHeading">${nickname}</h1>
+    <h5 id="firstHeading" class="firstHeading">${nickname}</h5>
     <div id="bodyContent">
     <a href="/user/${userId}" target="_blank">View Profile</a>
     <p>${bio}</p>
@@ -291,16 +291,14 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
 
 const renderUserCard = async (userId, nickname, profileImage, bio) => {
   const user = $(
-    '<a class="row w-100 mb-2 user-card text-decoration-none"></a>'
+    '<div class="row w-100 mb-4 user-card text-decoration-none align-items-center"></div>'
   );
-  user.attr("href", `/user/${userId}`);
-  const profileImageDiv = $(
-    '<div class="col-3 d-flex align-items-center"></div>'
-  );
+  // user.attr("href", `/user/${userId}`);
+  const profileImageDiv = $('<div class="col-2 d-flex "></div>');
   profileImageDiv.css({
     display: "inline-block",
-    width: "80px",
-    height: "80px",
+    width: "50px",
+    height: "50px",
     "border-radius": "50%",
     "background-repeat": "no-repeat",
     "background-position": "center center",
@@ -318,15 +316,19 @@ const renderUserCard = async (userId, nickname, profileImage, bio) => {
     }
   }
   const userInfoCol = $(
-    '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
+    '<div class="col-10 d-flex flex-column justify-content-center my-2"></div>'
   );
-  const username = $('<p class="fs-5 my-0 px-2"></p>').text(nickname);
-  const bioP = $('<p class="fs-5 my-0 px-2"></p>').text(bio);
+  const username = $(
+    '<a class="text-decoration-none"><p class="fs-5 fw-semibold my-0 px-2 text-muted "></p></a>'
+  );
+  username.children().text(nickname);
+  username.attr("href", `/user/${userId}`);
+  const bioP = $('<p class="fs-6 fw-light my-0 px-2 lh-sm"></p>').text(bio);
   userInfoCol.append(username);
   userInfoCol.append(bioP);
   user.append(profileImageDiv);
   user.append(userInfoCol);
-  $("#right-col").append(user);
+  $("#user-cards-list-section").append(user);
 };
 
 const attachAgeRangeListener = () => {

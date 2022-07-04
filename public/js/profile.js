@@ -67,7 +67,11 @@ const updateUserInfo = async () => {
   $("#followers-count").text(followers.length);
   $("#following-count").text(following.length);
   if (profileImage) {
-    $("#profile-image").attr("src", `${cloudfrontUrl}/${profileImage}`);
+    if (profileImage.includes("http")) {
+      $("#profile-image").attr("src", profileImage);
+    } else {
+      $("#profile-image").attr("src", `${cloudfrontUrl}/${profileImage}`);
+    }
   }
   if (backgroundImage) {
     const backgroundImageUrl = `${cloudfrontUrl}/${backgroundImage}`;
@@ -82,10 +86,7 @@ const updateUserInfo = async () => {
   updateProfileIconLink(loggedInUserId);
   const blockStatus = await getBlockStatus(userId);
   updateEditFollowBlockButton(userId, loggedInUserId, followers, blockStatus);
-  renderUserPosts(
-    userId,
-    profileImage ? `${cloudfrontUrl}/${profileImage}` : placeholderImage
-  );
+  renderPosts(userId, profileImage ? profileImage : placeholderImage);
 };
 
 const getBlockStatus = async (targetUserId) => {
@@ -238,7 +239,7 @@ const attachBlockButtonEvent = (targetUserId) => {
   });
 };
 
-const renderUserPosts = async (userId, profileImage) => {
+const renderPosts = async (userId, profileImage) => {
   const postsInfo = await getUserPosts(userId);
   for (let i = 0; i < postsInfo.length; i++) {
     const { created_at, images, text, id } = postsInfo[i];
@@ -247,35 +248,62 @@ const renderUserPosts = async (userId, profileImage) => {
     const month = new Intl.DateTimeFormat("en-US", options).format(date);
     const dateString = `${month} ${date.getDate()}`;
     const post = $(
-      '<div class="border border-light rounded d-flex w-100 py-2 px-2"></div>'
+      '<div class="border border-light rounded d-flex w-100 py-2 px-2 align-items-center"></div>'
     );
-    const profileImageDiv = $(
-      '<div class="col-1 d-flex align-items-start"></div>'
-    );
+    post.attr("id", `post-div-${id}`);
+    const profileImageDiv = $('<div class="col-1 "></div>');
+    if (profileImage.includes("http")) {
+      profileImageDiv.css({
+        "background-image": `url('${profileImage}')`,
+      });
+    } else {
+      profileImageDiv.css({
+        "background-image": `url('${cloudfrontUrl}/${profileImage}')`,
+      });
+    }
     profileImageDiv.css({
       display: "inline-block",
-      width: "100px",
-      height: "100px",
+      width: "50px",
+      height: "50px",
       "border-radius": "50%",
       "background-repeat": "no-repeat",
       "background-position": "center center",
       "background-size": "cover",
-      "background-image": `url('${profileImage}')`,
     });
     const namePostCol = $(
-      '<div class="col-10 d-flex flex-column justify-content-center my-2 px-2"></div>'
+      '<div class="col-11 d-flex flex-column justify-content-center my-2 px-2"></div>'
     );
-    const dateCol = $('<div class="col-1 d-flex align-items-center"></div>');
-    const dateConetnt = $('<p class="text-secondary my-0 px-2"></p>').text(
+    const deleteDropdownCol = $(
+      '<div class="col-auto dropdown d-flex justify-content-center align-self-start"></div>'
+    );
+    const dropdownButton = $(
+      '<button class="btn btn-sm dropdown-toggle dropdown-toggle-button" type="button"  data-bs-toggle="dropdown" aria-expanded="false"></button>'
+    );
+    const dropdownMenu = $(
+      '<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton1">'
+    );
+    const dropdownItem = $(
+      ' <li> <button class="btn-danger dropdown-item delete-button" data-bs-toggle="modal" data-bs-target="#confirmDeletePostModal" > Delete </button> </li> '
+    );
+    dropdownItem.children().attr("id", `dropdown-item-post-id-${id}`);
+    dropdownItem.children().click(() => {
+      $("#confirm-delete-post-button").attr("post-id", id);
+    });
+    dropdownMenu.append(dropdownItem);
+    deleteDropdownCol.append(dropdownButton);
+    deleteDropdownCol.append(dropdownMenu);
+    const dateContent = $('<p class="fs-6 text-secondary my-0 px-2"></p>').text(
       dateString
     );
     const nickname = $("#name").text();
+    const nameDateDiv = $('<div class="d-flex align-items-center"></div>');
     const userName = $('<p class="fs-5 my-0 px-2"></p>').text(nickname);
+    nameDateDiv.append(userName);
+    nameDateDiv.append(dateContent);
     const postText = $('<p class="fs-6 text-secondary my-0 px-2"></p>').text(
       text
     );
-    dateCol.append(dateConetnt);
-    namePostCol.append(userName);
+    namePostCol.append(nameDateDiv);
     namePostCol.append(postText);
     if (images[0] !== null) {
       const postImagesDiv = $('<div class="row"></div>');
@@ -295,7 +323,7 @@ const renderUserPosts = async (userId, profileImage) => {
     }
     post.append(profileImageDiv);
     post.append(namePostCol);
-    post.append(dateCol);
+    post.append(deleteDropdownCol);
     $("#posts-section").append(post);
   }
 };
@@ -317,7 +345,7 @@ const renderFollowList = async (userId, type) => {
   for (let i = 0; i < followList.length; i++) {
     const { follower_user_id, followed_user_id, nickname, profile_image } =
       followList[i];
-    const follow = $('<a class="row w-100 mb-2"></a>');
+    const follow = $('<a class="row w-100 mb-4 px-3"></a>');
     follow.attr(
       "href",
       `/user/${follower_user_id ? follower_user_id : followed_user_id}`
@@ -327,8 +355,8 @@ const renderFollowList = async (userId, type) => {
     );
     profileImage.css({
       display: "inline-block",
-      width: "100px",
-      height: "100px",
+      width: "50px",
+      height: "50px",
       "border-radius": "50%",
       "background-repeat": "no-repeat",
       "background-position": "center center",
@@ -382,19 +410,18 @@ const attachClickListeners = () => {
   const followingLink = $("#following-link");
   const editProfileButton = $("#edit-profile-button");
   const sendMessageLink = $("#send-message-link");
-  const blockButton = $("#block-button");
   const loggedInUserId = localStorage.getItem("userId");
+
+  const deletePostButton = $("#confirm-delete-post-button");
 
   followersLink.click(() => {
     $("#follow-list-details").empty();
-    $("#follow-list-section").removeClass("invisible");
-    $("#follow-list-title").text("Followers");
+    $("#follow-list-offcanvas-title").text("Followers");
     renderFollowList(userId, "followers");
   });
   followingLink.click(() => {
     $("#follow-list-details").empty();
-    $("#follow-list-section").removeClass("invisible");
-    $("#follow-list-title").text("Following");
+    $("#follow-list-offcanvas-title").text("Following");
     renderFollowList(userId, "following");
   });
   sendMessageLink.click(() => {
@@ -406,7 +433,22 @@ const attachClickListeners = () => {
     return (window.location = `/user/edit`);
   });
 
-  blockButton.click(() => {});
+  deletePostButton.click(async () => {
+    const postId = $("#confirm-delete-post-button").attr("post-id");
+    const accessToken = localStorage.getItem("accessToken");
+    const result = await fetch(
+      `/api/v1/user/${loggedInUserId}/posts/${postId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    const resultJson = await result.json();
+    alert(resultJson.status);
+    $(`#post-div-${postId}`).remove();
+  });
 };
 
 const userId = $("#profile-script").attr("userId");

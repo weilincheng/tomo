@@ -82,15 +82,30 @@ const renderSenderUserCard = (
   senderUserLastMessage
 ) => {
   const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
-  const card = $('<div class="border-bottom row w-100 mb-2 "></div>');
+  const card = $('<div class="border-bottom row w-100 py-3 px-3"></div>');
   card.attr("id", `senderUserCard-UserId-${senderUserId}`);
-  const profileImage = $(
-    '<div class="col-3 d-flex align-items-center"><img class="rounded-pill img-fluid" src="https://via.placeholder.com/80"></div>'
+  const profileImageDiv = $(
+    '<div class="col-2 d-flex align-self-center"></div>'
   );
+  profileImageDiv.css({
+    display: "inline-block",
+    width: "50px",
+    height: "50px",
+    "border-radius": "50%",
+    "background-repeat": "no-repeat",
+    "background-position": "center center",
+    "background-size": "cover",
+    "background-image": `url("https://via.placeholder.com/100")`,
+  });
   if (senderUserProfileImage) {
-    profileImage
-      .children()
-      .attr("src", `${cloudfrontUrl}/${senderUserProfileImage}`);
+    if (senderUserProfileImage.slice(0, 5) === "https") {
+      profileImageDiv.css("background-image", `url(${senderUserProfileImage})`);
+    } else {
+      profileImageDiv.css(
+        "background-image",
+        `url('${cloudfrontUrl}/${senderUserProfileImage}')`
+      );
+    }
   }
   const nameMessageCol = $(
     '<div class="col-9 d-flex flex-column justify-content-center my-2"></div>'
@@ -101,7 +116,7 @@ const renderSenderUserCard = (
   );
   nameMessageCol.append(name);
   nameMessageCol.append(lastMessage);
-  card.append(profileImage);
+  card.append(profileImageDiv);
   card.append(nameMessageCol);
   $("#user-messages-session").append(card);
   card.click(async () => {

@@ -131,6 +131,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnecting", () => {
-    io.emit("remove position", { socketId: socket.id });
+    const disconnectingUserId = socket.userId;
+    io.emit("user disconnecting", { disconnectingUserId });
   });
 });

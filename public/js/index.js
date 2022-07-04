@@ -37,6 +37,21 @@ const createInfowindow = (nickname, userId, bio) => {
   });
 };
 
+const createClusterIcon = (map, pos, count) => {
+  const clusterIcon = {
+    url: "https://cdn.rawgit.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m1.png",
+    scaledSize: new google.maps.Size(50, 50), // scaled size
+    origin: new google.maps.Point(0, 0), // origin
+    anchor: new google.maps.Point(0, 0), // anchor
+  };
+  return new google.maps.Marker({
+    position: pos,
+    map,
+    icon: clusterIcon,
+    label: { text: count.toString(), color: "white" },
+  });
+};
+
 const createIcon = (map, pos, profileImage, animation) => {
   const icon = {
     url: `${profileImage}`,
@@ -84,6 +99,19 @@ function initMap() {
     visibleLngUR = map.getBounds().getNorthEast().lng();
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
+      const minAgeInput = $("#minAgeRangeInput").val();
+      const maxAgeInput = $("#maxAgeRangeInput").val();
+      const interests = $("[id$=checkbox]");
+      const gender = $("#gender").val();
+      const interestsArray = [];
+      for (const interest of interests) {
+        if (interest.checked) {
+          const interestName = interest.id.split("-")[0];
+          interestsArray.push(interestName);
+        }
+      }
+      const minAge = parseInt(minAgeInput);
+      const maxAge = parseInt(maxAgeInput);
       renderUsersIcon(
         accessToken,
         map,
@@ -91,7 +119,11 @@ function initMap() {
         visibleLatLL,
         visibleLngLL,
         visibleLatUR,
-        visibleLngUR
+        visibleLngUR,
+        minAge,
+        maxAge,
+        gender,
+        interestsArray
       );
     }
   });
@@ -221,17 +253,27 @@ const getUsersLocation = async (
   visibleLatLL,
   visibleLngLL,
   visibleLatUR,
-  visibleLngUR
+  visibleLngUR,
+  minAge,
+  maxAge,
+  gender,
+  interests
 ) => {
-  const result = await fetch(
-    `/api/v1/location/?latLL=${visibleLatLL}&lngLL=${visibleLngLL}&latUR=${visibleLatUR}&lngUR=${visibleLngUR}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+  let targetUrl = `/api/v1/location/?latLL=${visibleLatLL}&lngLL=${visibleLngLL}&latUR=${visibleLatUR}&lngUR=${visibleLngUR}&min_age=${minAge}&max_age=${maxAge}`;
+  if (gender) {
+    targetUrl += `&gender=${gender}`;
+  }
+  if (interests.length > 0) {
+    for (const interest of interests) {
+      targetUrl += `&interests=${interest}`;
     }
-  );
+  }
+  const result = await fetch(targetUrl, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
   const resultJson = await result.json();
   return resultJson;
 };
@@ -243,7 +285,11 @@ const renderUsersIcon = async (
   visibleLatLL,
   visibleLngLL,
   visibleLatUR,
-  visibleLngUR
+  visibleLngUR,
+  minAge,
+  maxAge,
+  gender,
+  interestsArray
 ) => {
   while (markers.length > 0) {
     const marker = markers.pop();
@@ -258,7 +304,11 @@ const renderUsersIcon = async (
     visibleLatLL,
     visibleLngLL,
     visibleLatUR,
-    visibleLngUR
+    visibleLngUR,
+    minAge,
+    maxAge,
+    gender,
+    interestsArray
   );
   for (const user of usersLocation) {
     const {
@@ -269,29 +319,39 @@ const renderUsersIcon = async (
       nickname,
       interests,
       bio,
+      type,
+      clusterSize,
     } = user;
     if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
-      renderUserCard(userId, nickname, profileImage, bio);
+      if (type !== "clusterMarker") {
+        renderUserCard(userId, nickname, profileImage, bio);
+      }
       const pos = { lat, lng };
       let profileUrl;
-      if (profileImage.slice(0, 5) === "https") {
-        profileUrl = profileImage;
-      } else {
-        profileUrl = `${cloudfrontUrl}/${profileImage}`;
+      if (typeof profileImage !== "undefined") {
+        if (profileImage.slice(0, 5) === "https") {
+          profileUrl = profileImage;
+        } else {
+          profileUrl = `${cloudfrontUrl}/${profileImage}`;
+        }
       }
-      const userIcon = createIcon(map, pos, profileUrl);
-      markers.push(userIcon);
-      const iconInfowindow = createInfowindow(nickname, userId, bio);
-      userIcon.addListener("click", () => {
-        iconInfowindow.open({
-          anchor: userIcon,
-          map,
-          shouldFocus: false,
+      if (type === "clusterMarker") {
+        const clusterMarker = createClusterIcon(map, pos, clusterSize);
+        markers.push(clusterMarker);
+      } else {
+        const userIcon = createIcon(map, pos, profileUrl);
+        markers.push(userIcon);
+        const iconInfowindow = createInfowindow(nickname, userId, bio);
+        userIcon.addListener("click", () => {
+          iconInfowindow.open({
+            anchor: userIcon,
+            map,
+            shouldFocus: false,
+          });
         });
-      });
+      }
     }
   }
-  userIconClusterer = new markerClusterer.MarkerClusterer({ map, markers });
 };
 
 const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
@@ -299,7 +359,7 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
     const marker = markers.pop();
     marker.setMap(null);
   }
-  userIconClusterer.clearMarkers();
+  // userIconClusterer.clearMarkers();
   $(".user-card").remove();
   for (const user of usersLocation) {
     const {
@@ -310,29 +370,40 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       nickname,
       interests,
       bio,
+      type,
+      clusterSize,
     } = user;
     if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
-      renderUserCard(userId, nickname, profileImage, bio);
+      if (type !== "clusterMarker") {
+        renderUserCard(userId, nickname, profileImage, bio);
+      }
       const pos = { lat, lng };
       let profileUrl;
-      if (profileImage.slice(0, 5) === "https") {
-        profileUrl = profileImage;
-      } else {
-        profileUrl = `${cloudfrontUrl}/${profileImage}`;
+      if (typeof profileImage !== "undefined") {
+        if (profileImage.slice(0, 5) === "https") {
+          profileUrl = profileImage;
+        } else {
+          profileUrl = `${cloudfrontUrl}/${profileImage}`;
+        }
       }
-      const userIcon = createIcon(map, pos, profileUrl);
-      markers.push(userIcon);
-      const iconInfowindow = createInfowindow(nickname, userId, bio);
-      userIcon.addListener("click", () => {
-        iconInfowindow.open({
-          anchor: userIcon,
-          map,
-          shouldFocus: false,
+      if (type === "clusterMarker") {
+        const clusterMarker = createClusterIcon(map, pos, clusterSize);
+        markers.push(clusterMarker);
+      } else {
+        const userIcon = createIcon(map, pos, profileUrl);
+        markers.push(userIcon);
+        const iconInfowindow = createInfowindow(nickname, userId, bio);
+        userIcon.addListener("click", () => {
+          iconInfowindow.open({
+            anchor: userIcon,
+            map,
+            shouldFocus: false,
+          });
         });
-      });
+      }
     }
   }
-  userIconClusterer = new markerClusterer.MarkerClusterer({ map, markers });
+  // userIconClusterer = new markerClusterer.MarkerClusterer({ map, markers });
 };
 
 const renderUserCard = async (userId, nickname, profileImage, bio) => {
@@ -393,13 +464,21 @@ const attachAgeRangeListener = () => {
 };
 
 const attachApplyFilterListener = (map) => {
-  $("#filters-clear-button").click(() => {
+  $("#filters-clear-button").click(async () => {
     $("#minAgeRangeInput").val(20);
     $("#maxAgeRangeInput").val(100);
     $("#minAgeAmount").val(20);
     $("#maxAgeAmount").val(100);
     $("#gender").val("");
     $("[id$=checkbox]").prop("checked", false);
+    const interestsArray = [];
+    const filteredUsersLocation = await fetchFilteredUsersLocation(
+      20,
+      100,
+      "",
+      interestsArray
+    );
+    renderFilteredUsersIcon(map, filteredUsersLocation, markers);
   });
   $("#filters-apply-button").click(async () => {
     const minAgeInput = $("#minAgeRangeInput").val();

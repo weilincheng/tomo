@@ -1,6 +1,15 @@
 const { pool } = require("./mysql_connection");
 
-const getUsersLocation = async (min_age, max_age, gender, interests) => {
+const getUsersLocation = async (
+  min_age,
+  max_age,
+  gender,
+  interests,
+  latLL,
+  lngLL,
+  latUR,
+  lngUR
+) => {
   let sql = `
     SELECT 
       u.id,
@@ -60,6 +69,10 @@ const getUsersLocation = async (min_age, max_age, gender, interests) => {
       sql += " AND i.interest_name = ?";
       sqlBindings.push(interests);
     }
+  }
+  if (latLL && lngLL && latUR && lngUR) {
+    sql += ` AND u.geo_location_lat BETWEEN ? AND ? AND u.geo_location_lng BETWEEN ? AND ?`;
+    sqlBindings.push(latLL, latUR, lngLL, lngUR);
   }
   const [result] = await pool.query(`${sql}${sqlCondition}`, sqlBindings);
   return result;

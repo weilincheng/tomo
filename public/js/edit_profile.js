@@ -41,7 +41,6 @@ const getUserInfo = async (userId) => {
     birthdate,
     interests,
   } = resultJson;
-  console.log(resultJson);
   return {
     nickname,
     bio,

@@ -157,12 +157,14 @@ const checkAccessToken = async (accessToken) => {
       location,
       website,
       id,
+      bio,
       profile_image: profileImage,
     } = userInfoJson;
     localStorage.setItem("nickname", nickname);
     localStorage.setItem("location", location);
     localStorage.setItem("website", website);
     localStorage.setItem("userId", id);
+    localStorage.setItem("bio", bio);
     localStorage.setItem("profileImage", profileImage);
     $(() => {
       removeSignInSignUpForm();
@@ -212,39 +214,62 @@ const panToCurrentLocationControl = (controlDiv, map) => {
   controlUI.addEventListener("click", clickShareLocation);
 };
 
-const getCurrentLocaiton = (map) => {
+const getCurrentLocaiton = async (map) => {
   if (navigator.geolocation) {
-    const nickname = localStorage.getItem("nickname");
-    const location = localStorage.getItem("location");
-    const website = localStorage.getItem("website");
-    const userId = localStorage.getItem("userId");
-    const profileImage = localStorage.getItem("profileImage");
-    navigator.geolocation.getCurrentPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      const pos = { lat: latitude, lng: longitude };
-      let profileUrl;
-      if (profileImage.slice(0, 5) === "https") {
-        profileUrl = profileImage;
-      } else {
-        profileUrl = `${cloudfrontUrl}/${profileImage}`;
-      }
-      const currentUserIcon = createIcon(
-        map,
-        pos,
-        profileUrl,
-        google.maps.Animation.DROP
-      );
-      const currentUserInfowindow = createInfowindow(nickname);
-      currentUserIcon.addListener("click", () => {
-        currentUserInfowindow.open({
-          anchor: currentUserIcon,
-          map,
-          shouldFocus: false,
-        });
+    if (accessToken) {
+      const verifyResult = await fetch("/api/v1/user/profile", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
-      map.setCenter(pos);
-      map.setZoom(15);
-    });
+      const resultJson = await verifyResult.json();
+      if (resultJson.error) {
+        alert(resultJson.error);
+        localStorage.clear();
+        return;
+      }
+      const userInfo = await fetch(`/api/v1/user/${resultJson.id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const userInfoJson = await userInfo.json();
+      const {
+        nickname,
+        website,
+        id,
+        bio,
+        profile_image: profileImage,
+      } = userInfoJson;
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        const pos = { lat: latitude, lng: longitude };
+        let profileUrl;
+        if (profileImage.slice(0, 5) === "https") {
+          profileUrl = profileImage;
+        } else {
+          profileUrl = `${cloudfrontUrl}/${profileImage}`;
+        }
+        const currentUserIcon = createIcon(
+          map,
+          pos,
+          profileUrl,
+          google.maps.Animation.DROP
+        );
+        const currentUserInfowindow = createInfowindow(nickname, id, bio);
+        currentUserIcon.addListener("click", () => {
+          currentUserInfowindow.open({
+            anchor: currentUserIcon,
+            map,
+            shouldFocus: false,
+          });
+        });
+        map.setCenter(pos);
+        map.setZoom(15);
+      });
+    }
   }
 };
 

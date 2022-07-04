@@ -304,6 +304,68 @@ const updateOnlinStatus = (targetUserId, onlineStatus) => {
   }
 };
 
+const initializeSenderSocket = async () => {
+  await renderSenderUser(accessToken, currentUserId);
+  const socket_host = $("#message-script").attr("socket_host");
+  const socket = io(socket_host, { autoConnect: false });
+  socket.auth = { currentUserName, currentUserId };
+  socket.connect();
+
+  socket.on("user disconnecting", (data) => {
+    updateOnlinStatus(data.disconnectingUserId, false);
+  });
+
+  socket.on("users", (users) => {
+    users.forEach((user) => {
+      const { userId, socketId } = user;
+      updateSocketId(userId, socketId);
+      updateOnlinStatus(userId, true);
+    });
+  });
+
+  socket.on(
+    "private message",
+    ({
+      currentUserName: senderUserName,
+      currentUserId: senderUserId,
+      targetUserId: receiverUserId,
+      content,
+      from,
+      currentDate,
+    }) => {
+      const targetSocketId = $(`#senderUserCard-UserId-${senderUserId}`).attr(
+        "socket-id"
+      );
+      if ($("#senderUserCard-UserId-" + senderUserId).length === 0) {
+        renderSenderUserCard(
+          receiverUserId,
+          accessToken,
+          senderUserId,
+          senderUserName,
+          null,
+          content
+        );
+        updateSocketId(senderUserId, from);
+      }
+      if (from === targetSocketId) {
+        const message = createMessage(
+          parseInt(senderUserId),
+          parseInt(receiverUserId),
+          currentDate,
+          "text",
+          content
+        );
+        if (
+          parseInt($("#messages-session").attr("target-user-id")) ===
+          parseInt(senderUserId)
+        ) {
+          appendMessage(message, senderUserId);
+        }
+      }
+    }
+  );
+};
+
 const accessToken = localStorage.getItem("accessToken");
 if (!accessToken) {
   alert("Please log in first!");
@@ -317,63 +379,4 @@ const sendMessageButton = $("#send-message-button");
 const messageInput = $("#message-content-input");
 sendMessageButton.hide();
 messageInput.hide();
-renderSenderUser(accessToken, currentUserId);
-
-const socket_host = $("#message-script").attr("socket_host");
-const socket = io(socket_host, { autoConnect: false });
-socket.auth = { currentUserName, currentUserId };
-socket.connect();
-
-socket.on("user disconnecting", (data) => {
-  updateOnlinStatus(data.disconnectingUserId, false);
-});
-
-socket.on("users", (users) => {
-  users.forEach((user) => {
-    const { userId, socketId } = user;
-    updateSocketId(userId, socketId);
-    updateOnlinStatus(userId, true);
-  });
-});
-
-socket.on(
-  "private message",
-  ({
-    currentUserName: senderUserName,
-    currentUserId: senderUserId,
-    targetUserId: receiverUserId,
-    content,
-    from,
-    currentDate,
-  }) => {
-    const targetSocketId = $(`#senderUserCard-UserId-${senderUserId}`).attr(
-      "socket-id"
-    );
-    if ($("#senderUserCard-UserId-" + senderUserId).length === 0) {
-      renderSenderUserCard(
-        receiverUserId,
-        accessToken,
-        senderUserId,
-        senderUserName,
-        null,
-        content
-      );
-      updateSocketId(senderUserId, from);
-    }
-    if (from === targetSocketId) {
-      const message = createMessage(
-        parseInt(senderUserId),
-        parseInt(receiverUserId),
-        currentDate,
-        "text",
-        content
-      );
-      if (
-        parseInt($("#messages-session").attr("target-user-id")) ===
-        parseInt(senderUserId)
-      ) {
-        appendMessage(message, senderUserId);
-      }
-    }
-  }
-);
+initializeSenderSocket();

@@ -43,6 +43,10 @@ const attachImageEvent = () => {
 
 const attachPostEvent = () => {
   $("#post-button").click(() => {
+    if ($("#post-content").val().length === 0) {
+      alert("Please enter some content");
+      return;
+    }
     const formData = new FormData(document.getElementById("post-form"));
     sendPostFormData(formData);
   });

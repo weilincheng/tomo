@@ -57,8 +57,12 @@ CREATE TABLE `post_images`(
 DROP TABLE IF EXISTS `interests`;
 CREATE TABLE `interests`(
     `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `interest_name` VARCHAR(255) NOT NULL
+    `name` VARCHAR(255) NOT NULL UNIQUE,
+    `category` VARCHAR(255) NOT NULL
 );
+
+INSERT INTO interests (name, category) VALUES ('Baking', 'Indoors'), ('Cooking', 'Indoors'), ('Bonsai', 'Indoors'), ('Coding', 'Indoors'), ('Dancing', 'Outdoors'), ('Fishing', 'Outdoors'), ('Gardening', 'Outdoors'), ('Hiking', 'Outdoors'), ('Running', 'Outdoors'), ('Singing', 'Indoors'), ('Traveling', 'Outdoors'), ('Writing', 'Indoors'), ('Yoga', 'Indoors'), ('Pilates', 'Indoors'), ('Weaving', 'Indoors'), ('Photography', 'Outdoors'), ('Sewing', 'Indoors'), ('Badminton', 'Outdoors'), ('Baseball', 'Outdoors'), ('Motorcycling', 'Outdoors'), ('Rugby', 'Outdoors'), ('Tennis', 'Outdoors'), ('Skiing', 'Outdoors');
+
 DROP TABLE IF EXISTS `user_interests`;
 CREATE TABLE `user_interests`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -67,6 +71,7 @@ CREATE TABLE `user_interests`(
     FOREIGN KEY(`user_id`) REFERENCES `users`(`id`),
     FOREIGN KEY(`interest_id`) REFERENCES `interests`(`id`)
 );
+
 DROP TABLE IF EXISTS `messages`;
 CREATE TABLE `messages`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,

@@ -471,7 +471,7 @@ const attachApplyFilterListener = (map) => {
     $("#minAgeAmount").val(20);
     $("#maxAgeAmount").val(100);
     $("#gender").val("");
-    $("[id$=checkbox]").prop("checked", false);
+    $("#interests-select").selectivity("clear");
     const interestsArray = [];
     const filteredUsersLocation = await getUsersLocation(
       accessToken,
@@ -489,15 +489,8 @@ const attachApplyFilterListener = (map) => {
   $("#filters-apply-button").click(async () => {
     const minAgeInput = $("#minAgeRangeInput").val();
     const maxAgeInput = $("#maxAgeRangeInput").val();
-    const interests = $("[id$=checkbox]");
     const gender = $("#gender").val();
-    const interestsArray = [];
-    for (const interest of interests) {
-      if (interest.checked) {
-        const interestName = interest.id.split("-")[0];
-        interestsArray.push(interestName);
-      }
-    }
+    const interestsArray = $("#interests-select").selectivity("value");
     const minAge = parseInt(minAgeInput);
     const maxAge = parseInt(maxAgeInput);
     const filteredUsersLocation = await getUsersLocation(
@@ -512,6 +505,35 @@ const attachApplyFilterListener = (map) => {
       interestsArray
     );
     renderFilteredUsersIcon(map, filteredUsersLocation, markers);
+  });
+};
+
+const renderInterestsSelect = async () => {
+  const accessToken = localStorage.getItem("accessToken");
+  const result = await fetch(`/api/v1/interests`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const resultJson = await result.json();
+  const indoorsInterests = resultJson[0].interests;
+  const outdoorsInterests = resultJson[1].interests;
+  $("#interests-select").selectivity({
+    items: [
+      { text: "Indoors", children: indoorsInterests },
+      { text: "Outdoors", children: outdoorsInterests },
+    ],
+    multiple: true,
+    placeholder: "Type to search a interest",
+    backspaceHighlightsBeforeDelete: true,
+  });
+  $("#interests-select").children().addClass("bg-light");
+  $("#interests-select").on("selectivity-selected", () => {
+    $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
+  });
+  $("#interests-select").on("sselectivity-open", () => {
+    $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
   });
 };
 
@@ -542,3 +564,5 @@ $("#signin").click(() => {
 $("#signup").click(() => {
   window.location.href = "/signup";
 });
+
+renderInterestsSelect();

@@ -50,3 +50,7 @@ body {
 #sidebar {
   text-align: center;
 }
+
+.highlight {
+  background-color: #0d6efd !important;
+}

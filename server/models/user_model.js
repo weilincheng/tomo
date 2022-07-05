@@ -103,7 +103,7 @@ const getUserInfo = async (userId) => {
     u.display_geo_location,
     u.gender,
     u.birthdate,
-    JSON_ARRAYAGG(i.interest_name) as interests 
+    JSON_ARRAYAGG(i.name) as interests 
     FROM users AS u 
     LEFT JOIN user_interests AS ui ON u.id = ui.user_id
     LEFT JOIN interests AS i ON ui.interest_id = i.id

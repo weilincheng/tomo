@@ -34,6 +34,7 @@ const attachImageEvent = () => {
         $("#post-images").prop("value", "");
         return;
       }
+    }
     if (files.length > 4) {
       alert("You can only upload a maximum of 4 files");
       $("#post-button").attr("disabled", true);

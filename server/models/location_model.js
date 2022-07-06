@@ -70,8 +70,13 @@ const getUsersLocation = async (
       sqlBindings.push(interests);
     }
   }
-  if (latLL && lngLL && latUR && lngUR) {
-    sql += ` AND u.geo_location_lat BETWEEN ? AND ? AND u.geo_location_lng BETWEEN ? AND ?`;
+  if (lngLL > 0 && lngUR < 0) {
+    sql += ` AND u.geo_location_lat BETWEEN ? AND ?
+             AND (u.geo_location_lng BETWEEN ? AND 180 OR u.geo_location_lng BETWEEN -180 AND ?)`;
+    sqlBindings.push(latLL, latUR, lngLL, lngUR);
+  } else {
+    sql += ` AND u.geo_location_lat BETWEEN ? AND ?
+             AND u.geo_location_lng BETWEEN ? AND ?`;
     sqlBindings.push(latLL, latUR, lngLL, lngUR);
   }
   const [result] = await pool.query(`${sql}${sqlCondition}`, sqlBindings);

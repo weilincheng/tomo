@@ -1,6 +1,9 @@
 <%- include("../partials/header") -%>
 
-<div class="row justify-content-center h-100 w-100 pb-5 pt-3">
+<div
+  class="row justify-content-center h-100 w-100 pb-5 pt-3 invisible"
+  id="main-content"
+>
   <div class="col-1 px-0 mx-0"><%- include("../partials/sidebar") -%></div>
   <div class="col-8 d-flex justify-content-center h-100 mt-3">
     <div class="h-100 w-100" id="map"></div>
@@ -9,14 +12,14 @@
     id="right-col"
     class="col-3 d-flex flex-column justify-content-start mt-3 h-100"
   >
-    <div id="greeting" class="invisible">
+    <!-- <div id="greeting" class="invisible">
       <p id="greeting-name" class="fs-3 fw-semibold"></p>
       <p class="fs-6">Let's see who is nearby.</p>
-    </div>
+    </div> -->
     <div class="d-flex justify-content-start">
       <button
         type="button"
-        class="btn btn-outline-primary rounded-pill mb-1 invisible"
+        class="btn btn-primary rounded-pill mb-1 w-100"
         data-bs-toggle="offcanvas"
         data-bs-target="#filters-coffcanvas"
         id="filters-button"
@@ -100,68 +103,6 @@
         <div class="mb-5 px-5">
           <label for="interests" class="form-label fw-bold">Interests</label>
           <div id="interests-select"></div>
-          <!-- <div class="d-flex flex-column mb-3">
-            <div class="form-check mb-1">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                value="2"
-                id="reading-checkbox"
-                name="interests"
-              />
-              <label class="form-check-label" for="reading-checkbox">
-                Reading
-              </label>
-            </div>
-            <div class="form-check mb-1">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                value="1"
-                id="coffee-checkbox"
-                name="interests"
-              />
-              <label class="form-check-label" for="coffee-checkbox">
-                Coffee
-              </label>
-            </div>
-            <div class="form-check mb-1">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                value="4"
-                id="music-checkbox"
-                name="interests"
-              />
-              <label class="form-check-label" for="music-checkbox">
-                Music
-              </label>
-            </div>
-            <div class="form-check mb-1">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                value="5"
-                id="drama-checkbox"
-                name="interests"
-              />
-              <label class="form-check-label" for="drama-checkbox">
-                Drama
-              </label>
-            </div>
-            <div class="form-check mb-1">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                value="3"
-                id="anime-checkbox"
-                name="interests"
-              />
-              <label class="form-check-label" for="anime-checkbox">
-                Anime
-              </label>
-            </div>
-          </div> -->
         </div>
         <div class="px-5">
           <button
@@ -183,7 +124,7 @@
         </div>
       </div>
     </div>
-    <div
+    <!-- <div
       id="signin-signup-form"
       class="d-flex flex-column justify-content-between h-100"
     >
@@ -207,7 +148,7 @@
           Sign In
         </button>
       </div>
-    </div>
+    </div> -->
     <div id="user-cards-list-section" class="overflow-auto ps-3 pe-1"></div>
   </div>
 </div>
@@ -225,13 +166,9 @@
   href="https://d3efyzwqsfoubm.cloudfront.net/css/selectivity-jquery.min.css"
 />
 <script
-  src="https://kit.fontawesome.com/56e448c2cf.js"
-  crossorigin="anonymous"
-></script>
-<script
   id="map-script"
   type="module"
-  src="../../static/js/index.js"
+  src="../../static/js/map.js"
   google_api_key="<%= google_api_key%>"
   socket_host="<%= socket_host%>"
 ></script>

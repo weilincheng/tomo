@@ -42,24 +42,24 @@ const aggregateUsersLocation = (
   lngUR,
   zoomLevel
 ) => {
-  if (zoomLevel >= 17) {
+  if (zoomLevel >= 19) {
     return usersLocation;
   }
-  const factor = 5;
+  const factor = 6;
   const colNum = zoomLevel > factor ? zoomLevel - factor : 1;
   const rowNum = zoomLevel > factor ? zoomLevel - factor : 1;
-  if (latUR < 0 && latLL > 0) {
-    latUR = latUR + 360;
+  if (lngUR < lngLL) {
+    lngUR = lngUR + 360;
   }
-  const gridWidth = Math.abs(latUR - latLL) / colNum;
-  const gridHeight = Math.abs(lngUR - lngLL) / rowNum;
+  const gridHeight = Math.abs(latUR - latLL) / rowNum;
+  const gridWidth = Math.abs(lngUR - lngLL) / colNum;
 
   const usersLocationGrids = new Map([]);
   for (const userLocation of usersLocation) {
     const { geo_location_lat: userLat, geo_location_lng: userLng } =
       userLocation;
-    const rowIndex = Math.floor((userLng - lngLL) / gridHeight);
-    const colIndex = Math.floor((userLat - latLL) / gridWidth);
+    const colIndex = Math.floor((userLng - lngLL) / gridWidth);
+    const rowIndex = Math.floor((userLat - latLL) / gridHeight);
     if (!usersLocationGrids.has(`(${rowIndex}, ${colIndex})`)) {
       usersLocationGrids.set(`(${rowIndex}, ${colIndex})`, [userLocation]);
     } else {

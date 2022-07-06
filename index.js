@@ -24,8 +24,13 @@ app.set("socketio", io);
 app.use("/static", express.static(__dirname + "/public"));
 app.use(cors());
 app.set("view engine", "ejs");
+
 app.get("/", (req, res) => {
-  res.render("pages/index.ejs", {
+  res.render("pages/landing_page.ejs");
+});
+
+app.get("/map", (req, res) => {
+  res.render("pages/map.ejs", {
     google_api_key: GOOGLE_API_KEY,
     socket_host: SOCKET_HOST,
   });

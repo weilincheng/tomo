@@ -144,18 +144,22 @@ const checkAccessToken = async (accessToken) => {
     localStorage.setItem("bio", bio);
     localStorage.setItem("profileImage", profileImage);
     $(() => {
-      removeSignInSignUpForm();
-      displayGreetingAndSearch();
+      $("#main-content").removeClass("invisible");
+      // removeSignInSignUpForm();
+      // displayGreetingAndSearch();
       updateProfileIconLink(id);
     });
+  } else {
+    alert("Please sign in or sign up first");
+    window.location = "/signin";
   }
 };
 
-const displayGreetingAndSearch = () => {
-  $("#greeting-name").text(`Welcome, ${localStorage.getItem("nickname")}!`);
-  $("#greeting").removeClass("invisible");
-  $("#filters-button").removeClass("invisible");
-};
+// const displayGreetingAndSearch = () => {
+//   // $("#greeting-name").text(`Welcome, ${localStorage.getItem("nickname")}!`);
+//   $("#greeting").removeClass("invisible");
+//   $("#filters-button").removeClass("invisible");
+// };
 
 const removeSignInSignUpForm = () => {
   $("#signin-signup-form").remove();
@@ -525,8 +529,8 @@ const renderInterestsSelect = async () => {
       { text: "Outdoors", children: outdoorsInterests },
     ],
     multiple: true,
-    placeholder: "Type to search a interest",
-    backspaceHighlightsBeforeDelete: true,
+    placeholder: "Type to search interests",
+    backspaceHighlightsBeforeDelete: false,
   });
   $("#interests-select").children().addClass("bg-light");
   $("#interests-select").on("selectivity-selected", () => {

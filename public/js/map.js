@@ -70,6 +70,7 @@ function initMap() {
     panToCurrentLocationControlDiv
   );
   google.maps.event.addListener(map, "idle", () => {
+    zoomLevel = map.getZoom();
     visibleLatLL = map.getBounds().getSouthWest().lat();
     visibleLngLL = map.getBounds().getSouthWest().lng();
     visibleLatUR = map.getBounds().getNorthEast().lat();
@@ -78,15 +79,8 @@ function initMap() {
     if (accessToken) {
       const minAgeInput = $("#minAgeRangeInput").val();
       const maxAgeInput = $("#maxAgeRangeInput").val();
-      const interests = $("[id$=checkbox]");
       const gender = $("#gender").val();
-      const interestsArray = [];
-      for (const interest of interests) {
-        if (interest.checked) {
-          const interestName = interest.id.split("-")[0];
-          interestsArray.push(interestName);
-        }
-      }
+      const interestsArray = $("#interests-select").selectivity("value");
       const minAge = parseInt(minAgeInput);
       const maxAge = parseInt(maxAgeInput);
       renderUsersIcon(
@@ -145,24 +139,12 @@ const checkAccessToken = async (accessToken) => {
     localStorage.setItem("profileImage", profileImage);
     $(() => {
       $("#main-content").removeClass("invisible");
-      // removeSignInSignUpForm();
-      // displayGreetingAndSearch();
       updateProfileIconLink(id);
     });
   } else {
     alert("Please sign in or sign up first");
     window.location = "/signin";
   }
-};
-
-// const displayGreetingAndSearch = () => {
-//   // $("#greeting-name").text(`Welcome, ${localStorage.getItem("nickname")}!`);
-//   $("#greeting").removeClass("invisible");
-//   $("#filters-button").removeClass("invisible");
-// };
-
-const removeSignInSignUpForm = () => {
-  $("#signin-signup-form").remove();
 };
 
 const panToCurrentLocationControl = (controlDiv, map) => {
@@ -260,12 +242,13 @@ const getUsersLocation = async (
   visibleLngLL,
   visibleLatUR,
   visibleLngUR,
+  zoomLevel,
   minAge,
   maxAge,
   gender,
   interests
 ) => {
-  let targetUrl = `/api/v1/location/?latLL=${visibleLatLL}&lngLL=${visibleLngLL}&latUR=${visibleLatUR}&lngUR=${visibleLngUR}&min_age=${minAge}&max_age=${maxAge}`;
+  let targetUrl = `/api/v1/location/?latLL=${visibleLatLL}&lngLL=${visibleLngLL}&latUR=${visibleLatUR}&lngUR=${visibleLngUR}&zoomLevel=${zoomLevel}&min_age=${minAge}&max_age=${maxAge}`;
   if (gender) {
     targetUrl += `&gender=${gender}`;
   }
@@ -311,6 +294,7 @@ const renderUsersIcon = async (
     visibleLngLL,
     visibleLatUR,
     visibleLngUR,
+    zoomLevel,
     minAge,
     maxAge,
     gender,
@@ -343,6 +327,10 @@ const renderUsersIcon = async (
       }
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
+        clusterMarker.addListener("click", () => {
+          map.setCenter(pos);
+          map.setZoom(17);
+        });
         markers.push(clusterMarker);
       } else {
         const userIcon = createIcon(map, pos, profileUrl);
@@ -483,6 +471,7 @@ const attachApplyFilterListener = (map) => {
       visibleLngLL,
       visibleLatUR,
       visibleLngUR,
+      zoomLevel,
       20,
       100,
       "",
@@ -503,6 +492,7 @@ const attachApplyFilterListener = (map) => {
       visibleLngLL,
       visibleLatUR,
       visibleLngUR,
+      zoomLevel,
       minAge,
       maxAge,
       gender,
@@ -559,7 +549,8 @@ let map,
   visibleLatLL,
   visibleLngLL,
   visibleLatUR,
-  visibleLngUR;
+  visibleLngUR,
+  zoomLevel;
 window.initMap = initMap;
 
 $("#signin").click(() => {

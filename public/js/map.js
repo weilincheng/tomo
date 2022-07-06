@@ -15,8 +15,19 @@ const createInfowindow = (nickname, userId, bio) => {
 };
 
 const createClusterIcon = (map, pos, count) => {
+  const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net/asset";
+  let url = `${cloudfrontUrl}/m1.png`;
+  if (count > 10 && count <= 250) {
+    url = `${cloudfrontUrl}/m2.png`;
+  } else if (count > 250 && count <= 500) {
+    url = `${cloudfrontUrl}/m3.png`;
+  } else if (count > 500 && count <= 1000) {
+    url = `${cloudfrontUrl}/m4.png`;
+  } else if (count > 1000) {
+    url = `${cloudfrontUrl}/m5.png`;
+  }
   const clusterIcon = {
-    url: "https://d3efyzwqsfoubm.cloudfront.net/asset/marker_cluster_icon.png",
+    url: url,
     scaledSize: new google.maps.Size(50, 50), // scaled size
     origin: new google.maps.Point(0, 0), // origin
     anchor: new google.maps.Point(0, 0), // anchor
@@ -57,7 +68,7 @@ function initMap() {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   map = new google.maps.Map($("#map")[0], {
     center: appWorksSchool,
-    zoom: 15,
+    zoom: 7,
     mapId: "d91850b214eae5c9",
     fullscreenControl: false,
     streetViewControl: false,
@@ -230,7 +241,7 @@ const getCurrentLocaiton = async (map) => {
           });
         });
         map.setCenter(pos);
-        map.setZoom(15);
+        map.setZoom(19);
       });
     }
   }
@@ -328,8 +339,14 @@ const renderUsersIcon = async (
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
         clusterMarker.addListener("click", () => {
+          const zoomLevel = map.getZoom();
           map.setCenter(pos);
-          map.setZoom(17);
+          const noAggregationZoomLevel = 19;
+          if (zoomLevel <= noAggregationZoomLevel - 3) {
+            map.setZoom(zoomLevel + 3);
+          } else {
+            map.setZoom(noAggregationZoomLevel);
+          }
         });
         markers.push(clusterMarker);
       } else {

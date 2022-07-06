@@ -147,3 +147,5 @@ io.on("connection", (socket) => {
     io.emit("user disconnecting", { disconnectingUserId });
   });
 });
+
+module.exports = app;

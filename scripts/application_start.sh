@@ -8,4 +8,5 @@ export NVM_DIR="$HOME/.nvm"
 
 npm install
 #node index.js > app.out.log 2> app.err.log < /dev/null &
+npm run test
 pm2 start tomo

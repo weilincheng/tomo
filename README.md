@@ -331,6 +331,6 @@ v1
 ```
 {
   "type": "text",
-  "content": "Hello!"
+  "content": "Hello!!"
 }
 ```

@@ -1,16 +1,34 @@
 require("dotenv").config();
-const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_CONNECTION_LIMIT } =
-  process.env;
+const {
+  DB_HOST,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME,
+  DB_CONNECTION_LIMIT,
+  NODE_ENV,
+} = process.env;
 
 const mysql = require("mysql2/promise");
-const pool = mysql.createPool({
-  host: DB_HOST,
-  user: DB_USER,
-  password: DB_PASSWORD,
-  database: DB_NAME,
-  waitForConnections: true,
-  connectionLimit: DB_CONNECTION_LIMIT,
-  queueLimit: 0,
-});
+const config = {
+  development: {
+    host: DB_HOST,
+    user: DB_USER,
+    password: DB_PASSWORD,
+    database: DB_NAME,
+    waitForConnections: true,
+    connectionLimit: DB_CONNECTION_LIMIT,
+    queueLimit: 0,
+  },
+  test: {
+    host: DB_HOST,
+    user: DB_USER,
+    password: DB_PASSWORD,
+    database: "tomo_test",
+    waitForConnections: true,
+    connectionLimit: DB_CONNECTION_LIMIT,
+    queueLimit: 0,
+  },
+};
 
+const pool = mysql.createPool(config[NODE_ENV]);
 module.exports = { pool };

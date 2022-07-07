@@ -5,6 +5,7 @@ const user = require("./server/routes/user_route");
 const message = require("./server/routes/message_route");
 const notifications = require("./server/routes/notifications_route");
 const location = require("./server/routes/location_route");
+const interests = require("./server/routes/interests_route");
 const app = express();
 const cors = require("cors");
 const { PORT, API_VERSION } = process.env;
@@ -23,8 +24,13 @@ app.set("socketio", io);
 app.use("/static", express.static(__dirname + "/public"));
 app.use(cors());
 app.set("view engine", "ejs");
+
 app.get("/", (req, res) => {
-  res.render("pages/index.ejs", {
+  res.render("pages/landing_page.ejs");
+});
+
+app.get("/map", (req, res) => {
+  res.render("pages/map.ejs", {
     google_api_key: GOOGLE_API_KEY,
     socket_host: SOCKET_HOST,
   });
@@ -62,7 +68,13 @@ app.get("/notifications", (req, res) => {
   res.render("pages/notifications.ejs");
 });
 
-app.use(`/api/${API_VERSION}`, [user, message, notifications, location]);
+app.use(`/api/${API_VERSION}`, [
+  user,
+  message,
+  notifications,
+  location,
+  interests,
+]);
 app.use(`/api/${API_VERSION}`, (req, res) => {
   res.status(404).json({ error: `End point does not exist` });
 });
@@ -135,3 +147,5 @@ io.on("connection", (socket) => {
     io.emit("user disconnecting", { disconnectingUserId });
   });
 });
+
+module.exports = app;

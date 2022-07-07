@@ -21,7 +21,7 @@ const getUsersLocation = async (
       u.geo_location_lat,
       u.geo_location_lng,
       u.gender, 
-      JSON_ARRAYAGG(i.interest_name) as interests,
+      JSON_ARRAYAGG(i.name) as interests,
       DATE_FORMAT(FROM_DAYS(DATEDIFF(now(), u.birthdate)), '%Y')+0 AS age
       FROM users AS u 
     LEFT JOIN user_interests AS ui ON u.id = ui.user_id 
@@ -58,20 +58,25 @@ const getUsersLocation = async (
     if (Array.isArray(interests)) {
       for (const [index, interest] of interests.entries()) {
         if (index === 0) {
-          sql += " AND (i.interest_name = ? ";
+          sql += " AND (i.name = ? ";
         } else {
-          sql += " OR i.interest_name = ? ";
+          sql += " OR i.name = ? ";
         }
         sqlBindings.push(interest);
       }
       sql += ") ";
     } else {
-      sql += " AND i.interest_name = ?";
+      sql += " AND i.name = ?";
       sqlBindings.push(interests);
     }
   }
-  if (latLL && lngLL && latUR && lngUR) {
-    sql += ` AND u.geo_location_lat BETWEEN ? AND ? AND u.geo_location_lng BETWEEN ? AND ?`;
+  if (lngLL > 0 && lngUR < 0) {
+    sql += ` AND u.geo_location_lat BETWEEN ? AND ?
+             AND (u.geo_location_lng BETWEEN ? AND 180 OR u.geo_location_lng BETWEEN -180 AND ?)`;
+    sqlBindings.push(latLL, latUR, lngLL, lngUR);
+  } else {
+    sql += ` AND u.geo_location_lat BETWEEN ? AND ?
+             AND u.geo_location_lng BETWEEN ? AND ?`;
     sqlBindings.push(latLL, latUR, lngLL, lngUR);
   }
   const [result] = await pool.query(`${sql}${sqlCondition}`, sqlBindings);

@@ -85,7 +85,7 @@ const profile = (accessToken) => {
       verifyToken(accessToken);
     return { id, nickname, email, location, website, profileImage };
   } catch (error) {
-    return { status: 403, error: "Invalid Token" };
+    return { status: 401, error: "Login has expired. Please sign in." };
   }
 };
 
@@ -103,7 +103,7 @@ const getUserInfo = async (userId) => {
     u.display_geo_location,
     u.gender,
     u.birthdate,
-    JSON_ARRAYAGG(i.interest_name) as interests 
+    JSON_ARRAYAGG(i.name) as interests 
     FROM users AS u 
     LEFT JOIN user_interests AS ui ON u.id = ui.user_id
     LEFT JOIN interests AS i ON ui.interest_id = i.id

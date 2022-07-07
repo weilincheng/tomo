@@ -1,0 +1,22 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  install:
+    runtime-version:
+      nodejs: 16
+
+    commands:
+      - echo "Installing dependencies..."
+      - npm install
+
+  build:
+    commands:
+      - echo "Running test"
+      - npm run test
+
+  post_build:
+    commands:
+      - echo "DONE!!"

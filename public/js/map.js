@@ -15,8 +15,19 @@ const createInfowindow = (nickname, userId, bio) => {
 };
 
 const createClusterIcon = (map, pos, count) => {
+  const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net/asset";
+  let url = `${cloudfrontUrl}/m1.png`;
+  if (count > 10 && count <= 250) {
+    url = `${cloudfrontUrl}/m2.png`;
+  } else if (count > 250 && count <= 500) {
+    url = `${cloudfrontUrl}/m3.png`;
+  } else if (count > 500 && count <= 1000) {
+    url = `${cloudfrontUrl}/m4.png`;
+  } else if (count > 1000) {
+    url = `${cloudfrontUrl}/m5.png`;
+  }
   const clusterIcon = {
-    url: "https://d3efyzwqsfoubm.cloudfront.net/asset/marker_cluster_icon.png",
+    url: url,
     scaledSize: new google.maps.Size(50, 50), // scaled size
     origin: new google.maps.Point(0, 0), // origin
     anchor: new google.maps.Point(0, 0), // anchor
@@ -57,7 +68,7 @@ function initMap() {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   map = new google.maps.Map($("#map")[0], {
     center: appWorksSchool,
-    zoom: 15,
+    zoom: 7,
     mapId: "d91850b214eae5c9",
     fullscreenControl: false,
     streetViewControl: false,
@@ -70,6 +81,7 @@ function initMap() {
     panToCurrentLocationControlDiv
   );
   google.maps.event.addListener(map, "idle", () => {
+    zoomLevel = map.getZoom();
     visibleLatLL = map.getBounds().getSouthWest().lat();
     visibleLngLL = map.getBounds().getSouthWest().lng();
     visibleLatUR = map.getBounds().getNorthEast().lat();
@@ -78,15 +90,8 @@ function initMap() {
     if (accessToken) {
       const minAgeInput = $("#minAgeRangeInput").val();
       const maxAgeInput = $("#maxAgeRangeInput").val();
-      const interests = $("[id$=checkbox]");
       const gender = $("#gender").val();
-      const interestsArray = [];
-      for (const interest of interests) {
-        if (interest.checked) {
-          const interestName = interest.id.split("-")[0];
-          interestsArray.push(interestName);
-        }
-      }
+      const interestsArray = $("#interests-select").selectivity("value");
       const minAge = parseInt(minAgeInput);
       const maxAge = parseInt(maxAgeInput);
       renderUsersIcon(
@@ -120,6 +125,7 @@ const checkAccessToken = async (accessToken) => {
     if (resultJson.error) {
       alert(resultJson.error);
       localStorage.clear();
+      window.location = "/signin";
       return;
     }
     const userInfo = await fetch(`/api/v1/user/${resultJson.id}`, {
@@ -144,21 +150,13 @@ const checkAccessToken = async (accessToken) => {
     localStorage.setItem("bio", bio);
     localStorage.setItem("profileImage", profileImage);
     $(() => {
-      removeSignInSignUpForm();
-      displayGreetingAndSearch();
+      $("#main-content").removeClass("invisible");
       updateProfileIconLink(id);
     });
+  } else {
+    alert("Please sign in or sign up first");
+    window.location = "/signin";
   }
-};
-
-const displayGreetingAndSearch = () => {
-  $("#greeting-name").text(`Welcome, ${localStorage.getItem("nickname")}!`);
-  $("#greeting").removeClass("invisible");
-  $("#filters-button").removeClass("invisible");
-};
-
-const removeSignInSignUpForm = () => {
-  $("#signin-signup-form").remove();
 };
 
 const panToCurrentLocationControl = (controlDiv, map) => {
@@ -244,7 +242,7 @@ const getCurrentLocaiton = async (map) => {
           });
         });
         map.setCenter(pos);
-        map.setZoom(15);
+        map.setZoom(19);
       });
     }
   }
@@ -256,12 +254,13 @@ const getUsersLocation = async (
   visibleLngLL,
   visibleLatUR,
   visibleLngUR,
+  zoomLevel,
   minAge,
   maxAge,
   gender,
   interests
 ) => {
-  let targetUrl = `/api/v1/location/?latLL=${visibleLatLL}&lngLL=${visibleLngLL}&latUR=${visibleLatUR}&lngUR=${visibleLngUR}&min_age=${minAge}&max_age=${maxAge}`;
+  let targetUrl = `/api/v1/location/?latLL=${visibleLatLL}&lngLL=${visibleLngLL}&latUR=${visibleLatUR}&lngUR=${visibleLngUR}&zoomLevel=${zoomLevel}&min_age=${minAge}&max_age=${maxAge}`;
   if (gender) {
     targetUrl += `&gender=${gender}`;
   }
@@ -307,6 +306,7 @@ const renderUsersIcon = async (
     visibleLngLL,
     visibleLatUR,
     visibleLngUR,
+    zoomLevel,
     minAge,
     maxAge,
     gender,
@@ -339,6 +339,16 @@ const renderUsersIcon = async (
       }
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
+        clusterMarker.addListener("click", () => {
+          const zoomLevel = map.getZoom();
+          map.setCenter(pos);
+          const noAggregationZoomLevel = 19;
+          if (zoomLevel <= noAggregationZoomLevel - 3) {
+            map.setZoom(zoomLevel + 3);
+          } else {
+            map.setZoom(noAggregationZoomLevel);
+          }
+        });
         markers.push(clusterMarker);
       } else {
         const userIcon = createIcon(map, pos, profileUrl);
@@ -471,7 +481,7 @@ const attachApplyFilterListener = (map) => {
     $("#minAgeAmount").val(20);
     $("#maxAgeAmount").val(100);
     $("#gender").val("");
-    $("[id$=checkbox]").prop("checked", false);
+    $("#interests-select").selectivity("clear");
     const interestsArray = [];
     const filteredUsersLocation = await getUsersLocation(
       accessToken,
@@ -479,6 +489,7 @@ const attachApplyFilterListener = (map) => {
       visibleLngLL,
       visibleLatUR,
       visibleLngUR,
+      zoomLevel,
       20,
       100,
       "",
@@ -489,15 +500,8 @@ const attachApplyFilterListener = (map) => {
   $("#filters-apply-button").click(async () => {
     const minAgeInput = $("#minAgeRangeInput").val();
     const maxAgeInput = $("#maxAgeRangeInput").val();
-    const interests = $("[id$=checkbox]");
     const gender = $("#gender").val();
-    const interestsArray = [];
-    for (const interest of interests) {
-      if (interest.checked) {
-        const interestName = interest.id.split("-")[0];
-        interestsArray.push(interestName);
-      }
-    }
+    const interestsArray = $("#interests-select").selectivity("value");
     const minAge = parseInt(minAgeInput);
     const maxAge = parseInt(maxAgeInput);
     const filteredUsersLocation = await getUsersLocation(
@@ -506,12 +510,42 @@ const attachApplyFilterListener = (map) => {
       visibleLngLL,
       visibleLatUR,
       visibleLngUR,
+      zoomLevel,
       minAge,
       maxAge,
       gender,
       interestsArray
     );
     renderFilteredUsersIcon(map, filteredUsersLocation, markers);
+  });
+};
+
+const renderInterestsSelect = async () => {
+  const accessToken = localStorage.getItem("accessToken");
+  const result = await fetch(`/api/v1/interests`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const resultJson = await result.json();
+  const indoorsInterests = resultJson[0].interests;
+  const outdoorsInterests = resultJson[1].interests;
+  $("#interests-select").selectivity({
+    items: [
+      { text: "Indoors", children: indoorsInterests },
+      { text: "Outdoors", children: outdoorsInterests },
+    ],
+    multiple: true,
+    placeholder: "Type to search interests",
+    backspaceHighlightsBeforeDelete: false,
+  });
+  $("#interests-select").children().addClass("bg-light");
+  $("#interests-select").on("selectivity-selected", () => {
+    $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
+  });
+  $("#interests-select").on("sselectivity-open", () => {
+    $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
   });
 };
 
@@ -533,7 +567,8 @@ let map,
   visibleLatLL,
   visibleLngLL,
   visibleLatUR,
-  visibleLngUR;
+  visibleLngUR,
+  zoomLevel;
 window.initMap = initMap;
 
 $("#signin").click(() => {
@@ -542,3 +577,5 @@ $("#signin").click(() => {
 $("#signup").click(() => {
   window.location.href = "/signup";
 });
+
+renderInterestsSelect();

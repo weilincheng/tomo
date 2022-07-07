@@ -1,10 +1,17 @@
 const Location = require("../models/location_model");
-const colNum = 10.0,
-  rowNum = 10.0;
 
 const getUsersLocation = async (req, res) => {
-  const { min_age, max_age, gender, interests, latLL, lngLL, latUR, lngUR } =
-    req.query;
+  const {
+    min_age,
+    max_age,
+    gender,
+    interests,
+    latLL,
+    lngLL,
+    latUR,
+    lngUR,
+    zoomLevel,
+  } = req.query;
   const result = await Location.getUsersLocation(
     min_age,
     max_age,
@@ -15,32 +22,44 @@ const getUsersLocation = async (req, res) => {
     latUR,
     lngUR
   );
-
-  if (latLL & lngLL & latUR & lngUR) {
-    const aggregatedUsersLocation = aggregateUsersLocation(
-      result,
-      parseFloat(latLL),
-      parseFloat(lngLL),
-      parseFloat(latUR),
-      parseFloat(lngUR)
-    );
-    res.status(200).json(aggregatedUsersLocation);
-    return;
-  }
-
-  res.status(200).json(result);
+  const aggregatedUsersLocation = aggregateUsersLocation(
+    result,
+    parseFloat(latLL),
+    parseFloat(lngLL),
+    parseFloat(latUR),
+    parseFloat(lngUR),
+    parseInt(zoomLevel)
+  );
+  res.status(200).json(aggregatedUsersLocation);
   return;
 };
 
-const aggregateUsersLocation = (usersLocation, latLL, lngLL, latUR, lngUR) => {
-  const gridWidth = (latUR - latLL) / colNum;
-  const gridHeight = (lngUR - lngLL) / rowNum;
+const aggregateUsersLocation = (
+  usersLocation,
+  latLL,
+  lngLL,
+  latUR,
+  lngUR,
+  zoomLevel
+) => {
+  if (zoomLevel >= 19) {
+    return usersLocation;
+  }
+  const factor = 6;
+  const colNum = zoomLevel > factor ? zoomLevel - factor : 1;
+  const rowNum = zoomLevel > factor ? zoomLevel - factor : 1;
+  if (lngUR < lngLL) {
+    lngUR = lngUR + 360;
+  }
+  const gridHeight = Math.abs(latUR - latLL) / rowNum;
+  const gridWidth = Math.abs(lngUR - lngLL) / colNum;
+
   const usersLocationGrids = new Map([]);
   for (const userLocation of usersLocation) {
     const { geo_location_lat: userLat, geo_location_lng: userLng } =
       userLocation;
-    const rowIndex = Math.floor((userLng - lngLL) / gridHeight);
-    const colIndex = Math.floor((userLat - latLL) / gridWidth);
+    const colIndex = Math.floor((userLng - lngLL) / gridWidth);
+    const rowIndex = Math.floor((userLat - latLL) / gridHeight);
     if (!usersLocationGrids.has(`(${rowIndex}, ${colIndex})`)) {
       usersLocationGrids.set(`(${rowIndex}, ${colIndex})`, [userLocation]);
     } else {
@@ -53,8 +72,17 @@ const aggregateUsersLocation = (usersLocation, latLL, lngLL, latUR, lngUR) => {
       if (usersLocationGrids.has(`(${i}, ${j})`)) {
         const usersCount = usersLocationGrids.get(`(${i}, ${j})`).length;
         if (usersCount > 1) {
-          const clusterMarkerLat = latLL + gridWidth * j + gridWidth / 2;
-          const clusterMarkerLng = lngLL + gridHeight * i + gridHeight / 2;
+          let clusterMarkerLatSum = 0,
+            clusterMarkerLngSum = 0;
+          for (const userLocation of usersLocationGrids.get(`(${i}, ${j})`)) {
+            const { geo_location_lat: userLat, geo_location_lng: userLng } =
+              userLocation;
+            clusterMarkerLatSum += userLat;
+            clusterMarkerLngSum += userLng;
+          }
+          const clusterMarkerLat = clusterMarkerLatSum / usersCount;
+          const clusterMarkerLng = clusterMarkerLngSum / usersCount;
+
           result.push({
             type: "clusterMarker",
             geo_location_lat: clusterMarkerLat,
@@ -67,7 +95,6 @@ const aggregateUsersLocation = (usersLocation, latLL, lngLL, latUR, lngUR) => {
       }
     }
   }
-
   return result;
 };
 

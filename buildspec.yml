@@ -7,14 +7,15 @@ phases:
   install:
     runtime-version:
       nodejs: 16
+
     commands:
       - echo "Installing dependencies..."
       - npm install
 
-  test:
+  build:
     commands:
-      - echo "Running mocha"
-      - mocha --exit
+      - echo "Running test"
+      - npm run test
 
   post_build:
     commands:

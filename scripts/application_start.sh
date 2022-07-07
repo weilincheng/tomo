@@ -7,5 +7,4 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 npm install
-npm run test
 node index.js > app.out.log 2> app.err.log < /dev/null &

@@ -4,7 +4,8 @@
     "browser": true,
     "commonjs": true,
     "es2021": true,
-    "jquery": true
+    "jquery": true,
+    "mocha": true
   },
   "extends": ["eslint:recommended", "prettier"],
   "parserOptions": {

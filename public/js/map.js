@@ -125,6 +125,7 @@ const checkAccessToken = async (accessToken) => {
     if (resultJson.error) {
       alert(resultJson.error);
       localStorage.clear();
+      window.location = "/signin";
       return;
     }
     const userInfo = await fetch(`/api/v1/user/${resultJson.id}`, {

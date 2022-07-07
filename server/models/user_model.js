@@ -85,7 +85,7 @@ const profile = (accessToken) => {
       verifyToken(accessToken);
     return { id, nickname, email, location, website, profileImage };
   } catch (error) {
-    return { status: 403, error: "Invalid Token" };
+    return { status: 401, error: "Login has expired. Please sign in." };
   }
 };
 

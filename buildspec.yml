@@ -1,4 +1,4 @@
-version: 0.0
+version: 0.2
 
 env:
   shell: bash
@@ -6,7 +6,7 @@ env:
 phases:
   install:
     runtime-version:
-      nodejs: 16.x
+      nodejs: 16
     commands:
       - echo "Installing dependencies..."
       - npm install
@@ -14,7 +14,7 @@ phases:
   test:
     commands:
       - echo "Running mocha"
-      - npm run test
+      - mocha --exit
 
   post_build:
     commands:

@@ -3121,16 +3121,6 @@ fieldset:disabled .btn {
   opacity: 0.65;
 }
 
-/* .btn-primary {
-  color: #fff;
-  background-color: #1D809F;
-  border-color: #1D809F;
-}
-.btn-primary:hover {
-  color: #fff;
-  background-color: #196d87;
-  border-color: #17667f;
-} */
 .btn-check:focus + .btn-primary,
 .btn-primary:focus {
   color: #fff;
@@ -3159,6 +3149,10 @@ fieldset:disabled .btn {
   color: #fff;
   background-color: #1d809f;
   border-color: #1d809f;
+}
+
+.btn-primary {
+  background-color: #0773f4;
 }
 
 .btn-secondary {

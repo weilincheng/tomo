@@ -59,7 +59,7 @@ const renderNotifications = async () => {
     const month = new Intl.DateTimeFormat("en-US", options).format(date);
     const dateString = `${month} ${date.getDate()}`;
     const notificationCard = $(
-      '<div class="row border-bottom py-4 d-flex justify-content-between align-items-center">'
+      '<div class="ps-4 notification-card row border-bottom py-4 d-flex justify-content-between align-items-center">'
     );
     if (!hasRead) {
       notificationCard.css("background-color", "#79DAE8");

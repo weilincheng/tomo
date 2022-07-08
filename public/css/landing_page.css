@@ -1,15 +1,4 @@
 @charset "UTF-8";
-/*!
-* Start Bootstrap - Stylish Portfolio v6.0.5 (https://startbootstrap.com/theme/stylish-portfolio)
-* Copyright 2013-2022 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-stylish-portfolio/blob/master/LICENSE)
-*/
-/*!
- * Bootstrap v5.1.3 (https://getbootstrap.com/)
- * Copyright 2011-2021 The Bootstrap Authors
- * Copyright 2011-2021 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
- */
 :root {
   --bs-blue: #1d809f;
   --bs-indigo: #6610f2;
@@ -3132,16 +3121,6 @@ fieldset:disabled .btn {
   opacity: 0.65;
 }
 
-/* .btn-primary {
-  color: #fff;
-  background-color: #1D809F;
-  border-color: #1D809F;
-}
-.btn-primary:hover {
-  color: #fff;
-  background-color: #196d87;
-  border-color: #17667f;
-} */
 .btn-check:focus + .btn-primary,
 .btn-primary:focus {
   color: #fff;
@@ -3170,6 +3149,10 @@ fieldset:disabled .btn {
   color: #fff;
   background-color: #1d809f;
   border-color: #1d809f;
+}
+
+.btn-primary {
+  background-color: #0773f4;
 }
 
 .btn-secondary {

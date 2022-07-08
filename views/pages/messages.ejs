@@ -1,27 +1,35 @@
 <%- include("../partials/header") -%>
+<link rel="stylesheet" href="../../static/css/messages.css" />
 <div class="row h-100 w-100 pt-3">
   <div class="col-1 h-100 mx-0 px-0">
     <%- include("../partials/sidebar") -%>
   </div>
   <div class="col-8 h-100 d-flex flex-column justify-content-between pb-5">
-    <div id="messages-session" class="w-100 overflow-auto">
+    <div class="px-5 my-3" id="target-user-banner"></div>
+    <div
+      id="messages-session"
+      class="border-start border-end border-bottom h-100 overflow-auto ms-5 px-5"
+    >
       <p class="fs-3 fw-bold text-center">Select a message</p>
     </div>
-    <div class="row w-100">
-      <div class="col-11 d-flex justify-content-center align-items-center">
+    <div class="row w-100 pt-3 ps-5">
+      <div class="col d-flex justify-content-center align-items-center">
         <input
-          class="form-control"
+          class="px-3 form-control rounded-pill"
+          placeholder="Start a new message"
           id="message-content-input"
           autocomplete="off"
         />
       </div>
-      <div class="col-1 d-flex justify-content-center align-items-center">
-        <button id="send-message-button" class="btn btn-primary">Send</button>
+      <div class="col-auto d-flex justify-content-center align-items-center">
+        <a href="#">
+          <i class="fa-solid fa-paper-plane" id="send-message-button"></i>
+        </a>
       </div>
     </div>
   </div>
-  <div class="col-3 h-100 border border-light">
-    <p class="fs-4 fw-semibold text-center">Messages</p>
+  <div class="col-3 h-100">
+    <p class="fs-4 fw-bold text-center">Messages</p>
     <div id="user-messages-session" class="w-100 overflow-auto"></div>
   </div>
 </div>

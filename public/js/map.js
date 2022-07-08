@@ -80,7 +80,7 @@ function initMap() {
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(
     panToCurrentLocationControlDiv
   );
-  google.maps.event.addListener(map, "idle", () => {
+  const redrawUsersIcon = () => {
     zoomLevel = map.getZoom();
     visibleLatLL = map.getBounds().getSouthWest().lat();
     visibleLngLL = map.getBounds().getSouthWest().lng();
@@ -108,7 +108,9 @@ function initMap() {
         interestsArray
       );
     }
-  });
+  };
+  google.maps.event.addListener(map, "idle", redrawUsersIcon);
+  google.maps.event.addListener(map, "bounds_changed", redrawUsersIcon);
   attachAgeRangeListener();
   attachApplyFilterListener(map);
 }

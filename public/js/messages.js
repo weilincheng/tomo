@@ -82,7 +82,7 @@ const renderSenderUserCard = (
   senderUserLastMessage
 ) => {
   const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
-  const card = $('<div class="border-bottom row w-100 py-3 px-3"></div>');
+  const card = $('<div class="border-bottom row w-100 py-3 ps-4"></div>');
   card.attr("id", `senderUserCard-UserId-${senderUserId}`);
   const profileImageDiv = $(
     '<div class="col-2 d-flex align-self-center position-relative"></div>'
@@ -134,6 +134,16 @@ const renderSenderUserCard = (
     }
     $("#messages-session").attr("target-user-id", targetUserId);
     $("#messages-session").empty();
+    $("#target-user-banner").empty();
+    const userBanner = $('<div class="d-flex align-items-center">');
+    const profileImage = card.children().first().clone();
+    profileImage.empty();
+    profileImage.css({ width: "30px", height: "30px" });
+    const profileName = card.children().last().children().first().clone();
+    profileName.addClass("fs-3 fw-bold");
+    userBanner.append(profileImage);
+    userBanner.append(profileName);
+    $("#target-user-banner").append(userBanner);
     renderMessagesHistory(accessToken, currentUserId, targetUserId);
     const sendMessageButton = $("#send-message-button");
     const messageInput = $("#message-content-input");
@@ -163,6 +173,33 @@ const renderSenderUserCard = (
         currentDate
       );
       saveMessages(currentUserId, targetUserId, "text", content);
+    });
+    $("#message-content-input").on("keypress", (e) => {
+      if (e.which == 13) {
+        const content = $("#message-content-input").val();
+        if (content === "") {
+          return;
+        }
+        const currentDate = new Date();
+        const message = createMessage(
+          currentUserId,
+          targetUserId,
+          currentDate,
+          "text",
+          content
+        );
+        appendMessage(message, currentUserId);
+        $("#message-content-input").val("");
+        emitPrivateMessage(
+          localStorage.getItem("name"),
+          currentUserId,
+          targetUserId,
+          $(`#senderUserCard-UserId-${targetUserId}`).attr("socket-id"),
+          content,
+          currentDate
+        );
+        saveMessages(currentUserId, targetUserId, "text", content);
+      }
     });
   });
 };
@@ -226,7 +263,7 @@ const createMessage = (
     date.getSeconds(),
   ];
   const message = $("<div></div>");
-  const messageContent = $("<p class='btn fs-4 rounded-pill mb-0'></p>").text(
+  const messageContent = $("<p class='btn fs-5 rounded-pill mb-1'></p>").text(
     content
   );
   const messageTime = $("<p class='fs-6 fw-lighter px-3'></p>").text(

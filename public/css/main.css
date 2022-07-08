@@ -1,3 +1,6 @@
+.btn-primary {
+  background-color: #0773f4;
+}
 #content-container {
   display: flex;
   flex-wrap: wrap;

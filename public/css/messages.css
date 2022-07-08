@@ -1,0 +1,13 @@
+.btn-info {
+  background-color: #a7c7f9;
+  border: none;
+}
+
+/* .btn-light {
+  background-color: #dbe4fb;
+  border: none;
+} */
+
+[id^="senderUserCard-UserId-"]:hover {
+  background-color: #dbe4fb;
+}

@@ -55,15 +55,6 @@ const createIcon = (map, pos, profileImage, animation) => {
   });
 };
 
-const removeMarker = (socketId) => {
-  const marker = markersList.get(socketId);
-  if (marker) {
-    marker.setMap(null);
-    markersList.delete(socketId);
-  }
-  userIconClusterer.clearMarkers();
-};
-
 function initMap() {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   map = new google.maps.Map($("#map")[0], {
@@ -110,7 +101,6 @@ function initMap() {
     }
   };
   google.maps.event.addListener(map, "idle", redrawUsersIcon);
-  google.maps.event.addListener(map, "bounds_changed", redrawUsersIcon);
   attachAgeRangeListener();
   attachApplyFilterListener(map);
 }
@@ -401,6 +391,16 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       }
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
+        clusterMarker.addListener("click", () => {
+          const zoomLevel = map.getZoom();
+          map.setCenter(pos);
+          const noAggregationZoomLevel = 19;
+          if (zoomLevel <= noAggregationZoomLevel - 3) {
+            map.setZoom(zoomLevel + 3);
+          } else {
+            map.setZoom(noAggregationZoomLevel);
+          }
+        });
         markers.push(clusterMarker);
       } else {
         const userIcon = createIcon(map, pos, profileUrl);

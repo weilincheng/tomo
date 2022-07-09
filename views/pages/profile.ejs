@@ -41,7 +41,7 @@
           <button
             id="follow-button"
             type="button"
-            class="btn btn-outline-dark"
+            class="btn btn-outline-primary"
             data-mdb-ripple-color="dark"
             style="z-index: 1"
           >
@@ -50,7 +50,7 @@
           <button
             id="following-button"
             type="button"
-            class="btn btn-outline-dark"
+            class="btn btn-outline-primary"
             data-mdb-ripple-color="dark"
             style="z-index: 1"
             data-bs-toggle="modal"
@@ -180,26 +180,21 @@
       </div>
       <div class="p-4 text-black" style="background-color: #f8f9fa">
         <div class="mt-5">
-          <p class="fs-3" id="name"></p>
-          <p class="fs-6" id="bio"></p>
+          <p class="fs-3 fw-bold my-1" id="name"></p>
+          <p class="fs-6 my-1" id="bio"></p>
           <div class="d-flex justify-content-start align-items-center">
             <div class="d-flex align-items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                class="bi bi-link-45deg"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"
-                />
-                <path
-                  d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"
-                />
-              </svg>
-              <a class="fs-6 mx-1" id="website" href=""></a>
+              <div>
+                <i class="fa-solid fa-link"></i>
+                <a class="fs-6 mx-1" id="website" href=""></a>
+              </div>
+              <div class="ms-1 d-flex align-items-center">
+                <i
+                  id="interests-icon"
+                  class="fa-regular fa-heart invisible"
+                ></i>
+                <div id="interests-list"></div>
+              </div>
             </div>
           </div>
         </div>

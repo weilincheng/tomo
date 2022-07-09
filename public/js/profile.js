@@ -11,8 +11,10 @@ const getUserInfo = async (userId) => {
   if (blockStatusJson.targetUserBlockCurrentUser) {
     $("#alertModalToggleLabel").text("You are blocked by this user");
     $("#alertModalToggle").modal("show");
-    window.location = "/";
-    return;
+    $("#alertModalUnderstandButton").click(() => {
+      window.location = "/";
+      return;
+    });
   }
   $("body").show();
   const result = await fetch(`/api/v1/user/${userId}`, {
@@ -32,6 +34,7 @@ const getUserInfo = async (userId) => {
     profile_image: profileImage,
     background_image: backgroundImage,
     bio,
+    interests,
   } = resultJson;
   const userFollowInfo = await fetch(`/api/v1/user/follow/${userId}`, {
     method: "GET",
@@ -48,6 +51,7 @@ const getUserInfo = async (userId) => {
     following,
     followers,
     bio,
+    interests,
   };
 };
 
@@ -61,6 +65,7 @@ const updateUserInfo = async () => {
     following,
     followers,
     bio,
+    interests,
   } = await getUserInfo(userId);
   const placeholderImage = "https://via.placeholder.com/80";
   $("#name").text(nickname);
@@ -68,6 +73,15 @@ const updateUserInfo = async () => {
   $("#website").attr("href", `https://${website}`).text(website);
   $("#followers-count").text(followers.length);
   $("#following-count").text(following.length);
+  if (interests.length > 0) {
+    $("#interests-icon").removeClass("invisible");
+    for (const interest of interests) {
+      const interestElement = $(
+        `<span class="ms-1 badge rounded-pill text-bg-primary">${interest}</span>`
+      );
+      $("#interests-list").append(interestElement);
+    }
+  }
   if (profileImage) {
     if (profileImage.includes("http")) {
       $("#profile-image").attr("src", profileImage);

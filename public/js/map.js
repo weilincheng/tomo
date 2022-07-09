@@ -1,12 +1,22 @@
-const createInfowindow = (nickname, userId, bio) => {
-  const contentString = `<div id="content"> 
-    <div id="siteNotice">
-    </div>
-    <h5 id="firstHeading" class="firstHeading">${nickname}</h5>
-    <div id="bodyContent">
-    <a href="/user/${userId}" target="_blank">View Profile</a>
-    <p>${bio}</p>
-    </div>
+const createInfowindow = (nickname, userId, bio, interests) => {
+  const contentString = `
+    <div id="content" class="px-2 py-2"> 
+      <div class="d-flex align-items-center mb-2 justify-content-between">
+        <h5 id="firstHeading" class="firstHeading mb-0">${nickname}</h5>
+        <a class="infowindowProfileIcon ms-2 rounded-pill" href="/user/${userId}" target="_blank"><i class="fa-regular fa-user"></i></a>
+      </div>
+      <div id="bodyContent">
+        <div class="d-flex flex-column">
+          <div class="d-flex align-items-center mb-2">
+            <i class="fa-solid fa-circle-info"></i>
+            <p class="ms-1 my-0" >${bio}</p>
+          </div>
+          <div class="d-flex align-items-center">
+            <i class="fa-regular fa-heart"></i>
+            <p class="mx-1 my-0">${interests.join(" ")}</p>
+          </div>
+        </div>
+      </div>
     </div>`;
 
   return new google.maps.InfoWindow({
@@ -345,7 +355,12 @@ const renderUsersIcon = async (
       } else {
         const userIcon = createIcon(map, pos, profileUrl);
         markers.push(userIcon);
-        const iconInfowindow = createInfowindow(nickname, userId, bio);
+        const iconInfowindow = createInfowindow(
+          nickname,
+          userId,
+          bio,
+          interests
+        );
         userIcon.addListener("click", () => {
           iconInfowindow.open({
             anchor: userIcon,
@@ -416,7 +431,6 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       }
     }
   }
-  // userIconClusterer = new markerClusterer.MarkerClusterer({ map, markers });
 };
 
 const renderUserCard = async (userId, nickname, profileImage, bio) => {

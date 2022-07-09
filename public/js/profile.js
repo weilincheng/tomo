@@ -9,7 +9,8 @@ const getUserInfo = async (userId) => {
   });
   const blockStatusJson = await blockStatusResult.json();
   if (blockStatusJson.targetUserBlockCurrentUser) {
-    alert("You are blocked by this user");
+    $("#alertModalToggleLabel").text("You are blocked by this user");
+    $("#alertModalToggle").modal("show");
     window.location = "/";
     return;
   }
@@ -20,7 +21,8 @@ const getUserInfo = async (userId) => {
   });
   const resultJson = await result.json();
   if (resultJson.error) {
-    alert(resultJson.error);
+    $("#alertModalToggleLabel").text(resultJson.error);
+    $("#alertModalToggle").modal("show");
     return (window.location = "/");
   }
   const {
@@ -150,6 +152,7 @@ const attachFollowingButtonEvent = (targetUserId) => {
   );
   const confirmUnfollowButton = $("#confirm-unfollow-button");
   confirmUnfollowButton.click(async () => {
+    $("#confirmUnfollowModal").modal("hide");
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
@@ -159,7 +162,8 @@ const attachFollowingButtonEvent = (targetUserId) => {
     });
     const resultJson = await result.json();
     if (resultJson.error) {
-      alert(resultJson.error);
+      $("#alertModalToggleLabel").text(resultJson.error);
+      $("#alertModalToggle").modal("show");
     } else {
       const currentFollowersCount = $("#followers-count").text();
       $("#followers-count").text(parseInt(currentFollowersCount) - 1);
@@ -181,7 +185,8 @@ const attachFolloButtonEvent = (targetUserId) => {
     });
     const resultJson = await result.json();
     if (resultJson.error) {
-      alert(resultJson.error);
+      $("#alertModalToggleLabel").text(resultJson.error);
+      $("#alertModalToggle").modal("show");
     } else {
       const currentFollowersCount = $("#followers-count").text();
       $("#followers-count").text(parseInt(currentFollowersCount) + 1);
@@ -211,7 +216,8 @@ const attachBlockedButtonEvent = (targetUserId) => {
     });
     const resultJson = await result.json();
     if (resultJson.error) {
-      alert(resultJson.error);
+      $("#alertModalToggleLabel").text(resultJson.error);
+      $("#alertModalToggle").modal("show");
     } else {
       $("#block-button").show();
       $("#blocked-button").hide();
@@ -231,7 +237,8 @@ const attachBlockButtonEvent = (targetUserId) => {
     });
     const resultJson = await result.json();
     if (resultJson.error) {
-      alert(resultJson.error);
+      $("#alertModalToggleLabel").text(resultJson.error);
+      $("#alertModalToggle").modal("show");
     } else {
       $("#block-button").hide();
       $("#blocked-button").show();
@@ -434,6 +441,7 @@ const attachClickListeners = () => {
   });
 
   deletePostButton.click(async () => {
+    $("#onfirmDeletePostModal").modal("hide");
     const postId = $("#confirm-delete-post-button").attr("post-id");
     const accessToken = localStorage.getItem("accessToken");
     const result = await fetch(
@@ -446,7 +454,8 @@ const attachClickListeners = () => {
       }
     );
     const resultJson = await result.json();
-    alert(resultJson.status);
+    $("#alertModalToggleLabel").text(resultJson.status);
+    $("#alertModalToggle").modal("show");
     $(`#post-div-${postId}`).remove();
   });
 };

@@ -1,5 +1,5 @@
 const createInfowindow = (nickname, userId, bio, interests) => {
-  const contentString = `
+  let contentString = `
     <div id="content" class="px-2 py-2"> 
       <div class="d-flex align-items-center mb-2 justify-content-between">
         <h5 id="firstHeading" class="firstHeading mb-0">${nickname}</h5>
@@ -7,13 +7,25 @@ const createInfowindow = (nickname, userId, bio, interests) => {
       </div>
       <div id="bodyContent">
         <div class="d-flex flex-column">
+  `;
+  if (bio) {
+    contentString += `
           <div class="d-flex align-items-center mb-2">
             <i class="fa-solid fa-circle-info"></i>
             <p class="ms-1 my-0" >${bio}</p>
           </div>
           <div class="d-flex align-items-center">
-            <i class="fa-regular fa-heart"></i>
-            <p class="mx-1 my-0">${interests.join(" ")}</p>
+          `;
+  }
+  if (interests.length > 0 && interests[0] !== null) {
+    contentString += `<i class="fa-regular fa-heart"></i>`;
+    for (const interest of interests) {
+      contentString += `
+        <span class="ms-1 badge rounded-pill text-bg-primary py-1">${interest}</span>
+      `;
+    }
+  }
+  contentString += `
           </div>
         </div>
       </div>
@@ -420,7 +432,12 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       } else {
         const userIcon = createIcon(map, pos, profileUrl);
         markers.push(userIcon);
-        const iconInfowindow = createInfowindow(nickname, userId, bio);
+        const iconInfowindow = createInfowindow(
+          nickname,
+          userId,
+          bio,
+          interests
+        );
         userIcon.addListener("click", () => {
           iconInfowindow.open({
             anchor: userIcon,

@@ -73,7 +73,7 @@ const updateUserInfo = async () => {
   $("#website").attr("href", `https://${website}`).text(website);
   $("#followers-count").text(followers.length);
   $("#following-count").text(following.length);
-  if (interests.length > 0) {
+  if (interests.length > 0 && interests[0] !== null) {
     $("#interests-icon").removeClass("invisible");
     for (const interest of interests) {
       const interestElement = $(

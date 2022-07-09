@@ -129,7 +129,9 @@ const renderSenderUserCard = (
     const targetUserId = card.attr("id").split("-")[2];
     const blockStatus = await getBlockStatus(accessToken, targetUserId);
     if (blockStatus.targetUserBlockCurrentUser) {
-      alert("You are blocked by this user.");
+      $("#alertModalToggleLabel").text("You are blocked by this user.");
+      $("alertModalToggle").modal("show");
+      // alert("You are blocked by this user.");
       return;
     }
     $("#messages-session").attr("target-user-id", targetUserId);
@@ -401,7 +403,7 @@ const initializeSenderSocket = async () => {
   );
 };
 
-const accessToken = localStorage.getItem("accessToken");
+// const accessToken = localStorage.getItem("accessToken");
 if (!accessToken) {
   alert("Please log in first!");
   window.location.href = "/";

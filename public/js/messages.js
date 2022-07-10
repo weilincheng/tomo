@@ -131,7 +131,6 @@ const renderSenderUserCard = (
     if (blockStatus.targetUserBlockCurrentUser) {
       $("#alertModalToggleLabel").text("You are blocked by this user.");
       $("alertModalToggle").modal("show");
-      // alert("You are blocked by this user.");
       return;
     }
     $("#messages-session").attr("target-user-id", targetUserId);
@@ -143,6 +142,11 @@ const renderSenderUserCard = (
     profileImage.css({ width: "30px", height: "30px" });
     const profileName = card.children().last().children().first().clone();
     profileName.addClass("fs-3 fw-bold");
+    let text = profileName.text();
+    console.log(name.text());
+    profileName.html(
+      `<a class='text-decoration-none fw-bold' style='color: #0773f4;' href='/user/${senderUserId}' target='_blank'>${name.text()}</a>`
+    );
     userBanner.append(profileImage);
     userBanner.append(profileName);
     $("#target-user-banner").append(userBanner);

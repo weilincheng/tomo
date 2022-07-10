@@ -452,9 +452,8 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
 
 const renderUserCard = async (userId, nickname, profileImage, bio) => {
   const user = $(
-    '<div class="row w-100 mb-4 user-card text-decoration-none align-items-center"></div>'
+    '<div class="row w-100 mb-4 px-3 rounded-pill user-card text-decoration-none align-items-center"></div>'
   );
-  // user.attr("href", `/user/${userId}`);
   const profileImageDiv = $('<div class="col-2 d-flex "></div>');
   profileImageDiv.css({
     display: "inline-block",
@@ -480,7 +479,7 @@ const renderUserCard = async (userId, nickname, profileImage, bio) => {
     '<div class="col-10 d-flex flex-column justify-content-center my-2"></div>'
   );
   const username = $(
-    '<a class="text-decoration-none"><p class="fs-5 fw-semibold my-0 px-2 text-muted "></p></a>'
+    '<a class="text-decoration-none" style="color: #0773f4;" target="_blank"><p class="fs-5 fw-semibold my-0 px-2"></p></a>'
   );
   username.children().text(nickname);
   username.attr("href", `/user/${userId}`);

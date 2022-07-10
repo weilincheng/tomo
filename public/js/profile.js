@@ -363,7 +363,6 @@ const renderFollowList = async (userId, type) => {
   });
   const resultJson = await result.json();
   const followList = resultJson[type];
-  console.log(followList);
   for (let i = 0; i < followList.length; i++) {
     const { follower_user_id, followed_user_id, nickname, profile_image } =
       followList[i];

@@ -109,7 +109,7 @@ const renderNotifications = async () => {
     notificationSummary.html(
       text.replace(
         `${nickname}`,
-        `<a class='text-decoration-none fw-bold' style='color: #0773f4;' href='/user/${senderUserId}'>${nickname}</a>`
+        `<a class='text-decoration-none fw-bold' style='color: #0773f4;' href='/user/${senderUserId}' target='_blank'>${nickname}</a>`
       )
     );
     const notificationContent = $('<div class="fs-6 text-secondary"></div>');

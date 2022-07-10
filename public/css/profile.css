@@ -1,3 +1,7 @@
 [id^="post-div-"]:hover {
   background-color: #dbe4fb;
 }
+
+.follow-card:hover {
+  background-color: #dbe4fb;
+}

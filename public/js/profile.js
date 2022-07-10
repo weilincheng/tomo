@@ -363,13 +363,12 @@ const renderFollowList = async (userId, type) => {
   });
   const resultJson = await result.json();
   const followList = resultJson[type];
+  console.log(followList);
   for (let i = 0; i < followList.length; i++) {
     const { follower_user_id, followed_user_id, nickname, profile_image } =
       followList[i];
-    const follow = $('<a class="row w-100 mb-4 px-3"></a>');
-    follow.attr(
-      "href",
-      `/user/${follower_user_id ? follower_user_id : followed_user_id}`
+    const follow = $(
+      '<div class="rounded-pill row w-100 mb-2 px-3 py-3 follow-card"></div>'
     );
     const profileImage = $(
       '<div class="col-5 d-flex align-items-center"></div>'
@@ -393,8 +392,12 @@ const renderFollowList = async (userId, type) => {
     const followInfoCol = $(
       '<div class="col-7 d-flex flex-column justify-content-center my-2"></div>'
     );
-    const followName = $('<p class="fs-5 my-0 px-2"></p>').text(nickname);
-    followInfoCol.append(followName);
+    const followNameLink = $(
+      `<a class="fs-5 my-0 px-2 text-decoration-none" style="color: #0773f4;" href="/user/${
+        follower_user_id ? follower_user_id : followed_user_id
+      }" target="_blank" ></a>`
+    ).text(nickname);
+    followInfoCol.append(followNameLink);
     follow.append(profileImage);
     follow.append(followInfoCol);
     $("#follow-list-details").append(follow);

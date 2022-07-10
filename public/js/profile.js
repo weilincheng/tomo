@@ -8,15 +8,15 @@ const getUserInfo = async (userId) => {
     headers,
   });
   const blockStatusJson = await blockStatusResult.json();
-  if (blockStatusJson.targetUserBlockCurrentUser) {
+  const blocked = blockStatusJson.targetUserBlockCurrentUser;
+  if (blocked) {
     $("#alertModalToggleLabel").text("You are blocked by this user");
     $("#alertModalToggle").modal("show");
     $("#alertModalUnderstandButton").click(() => {
-      window.location = "/";
       return;
     });
   }
-  $("body").show();
+
   const result = await fetch(`/api/v1/user/${userId}`, {
     method: "GET",
     headers,
@@ -52,6 +52,7 @@ const getUserInfo = async (userId) => {
     followers,
     bio,
     interests,
+    blocked,
   };
 };
 
@@ -66,7 +67,12 @@ const updateUserInfo = async () => {
     followers,
     bio,
     interests,
+    blocked,
   } = await getUserInfo(userId);
+  if (blocked) {
+    return;
+  }
+  $("#profile-center-column").removeClass("invisible");
   const placeholderImage = "https://via.placeholder.com/80";
   $("#name").text(nickname);
   $("#location").text(location);
@@ -478,7 +484,6 @@ const attachClickListeners = () => {
 
 const userId = $("#profile-script").attr("userId");
 const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
-$("body").hide();
 updateUserInfo();
 
 $(document).ready(() => {

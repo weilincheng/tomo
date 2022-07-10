@@ -5,122 +5,138 @@
   id="main-content"
 >
   <div class="col-1 px-0 mx-0"><%- include("../partials/sidebar") -%></div>
-  <div class="col-8 d-flex justify-content-center h-100 mt-3">
+  <div class="col-11 d-flex justify-content-center h-100 mt-3">
     <div class="h-100 w-100" id="map"></div>
   </div>
   <div
-    id="right-col"
-    class="col-3 d-flex flex-column justify-content-start mt-3 h-100"
+    class="offcanvas offcanvas-end border my-4 rounded"
+    data-bs-scroll="true"
+    data-bs-backdrop="false"
+    tabindex="-1"
+    id="offcanvasUserList"
+    aria-labelledby="offcanvasUserListLabel"
   >
-    <div class="d-flex justify-content-start">
+    <div class="offcanvas-header">
+      <div class="d-flex align-items-center">
+        <h5 class="offcanvas-title fw-bold" id="offcanvasUserListLabel">
+          Users List
+        </h5>
+        <i
+          class="fa-solid fa-filter ms-1"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#filters-coffcanvas"
+          id="filters-button"
+          style="color: #0773f4"
+        ></i>
+      </div>
       <button
         type="button"
-        class="mx-1 btn btn-primary rounded-pill mb-2 w-100"
-        data-bs-toggle="offcanvas"
-        data-bs-target="#filters-coffcanvas"
-        id="filters-button"
-      >
-        Filters
-      </button>
+        class="btn-close"
+        data-bs-dismiss="offcanvas"
+        aria-label="Close"
+      ></button>
     </div>
     <div
-      class="offcanvas offcanvas-end"
-      id="filters-coffcanvas"
-      tabindex="-1"
-      aria-labelledby="filters-coffcanvas"
-      aria-hidden="true"
-      data-bs-backdrop="static"
-      data-bs-keyboard="false"
-    >
-      <div class="offcanvas-header">
-        <h4 class="offcanvas-title" id="filters-coffcanvas-label">Filters</h4>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="offcanvas"
-          aria-label="Close"
-        ></button>
+      id="user-cards-list-section"
+      class="offcanvas-body overflow-auto ps-3 pe-1"
+    ></div>
+  </div>
+  <div
+    class="offcanvas offcanvas-end my-5 rounded"
+    id="filters-coffcanvas"
+    tabindex="-1"
+    aria-labelledby="filters-coffcanvas"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+  >
+    <div class="offcanvas-header">
+      <h4 class="offcanvas-title" id="filters-coffcanvas-label">Filters</h4>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="offcanvas"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="mb-5 px-5">
+        <label for="gender" class="form-label fw-bold">Gender</label>
+        <select required id="gender" class="form-select" name="gender">
+          <option value="">Select the gender</option>
+          <option value="pnts">Prefer Not to Say</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="neutral">Neutral</option>
+        </select>
       </div>
-      <div class="offcanvas-body">
-        <div class="mb-5 px-5">
-          <label for="gender" class="form-label fw-bold">Gender</label>
-          <select required id="gender" class="form-select" name="gender">
-            <option value="">Select the gender</option>
-            <option value="pnts">Prefer Not to Say</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="neutral">Neutral</option>
-          </select>
-        </div>
-        <div class="mb-5 px-5">
-          <label for="min-age" class="form-label fw-bold">Min Age</label>
-          <div class="row">
-            <div class="col-11">
-              <input
-                type="range"
-                class="form-range"
-                min="20"
-                max="100"
-                step="5"
-                id="minAgeRangeInput"
-                name="minAgeRangeInput"
-                value="20"
-                oninput="minAgeAmount.value=minAgeRangeInput.value"
-              />
-            </div>
-            <div class="col-1">
-              <output id="minAgeAmount" name="minAgeAmount" class="col-2"
-                >20</output
-              >
-            </div>
+      <div class="mb-5 px-5">
+        <label for="min-age" class="form-label fw-bold">Min Age</label>
+        <div class="row">
+          <div class="col-11">
+            <input
+              type="range"
+              class="form-range"
+              min="20"
+              max="100"
+              step="5"
+              id="minAgeRangeInput"
+              name="minAgeRangeInput"
+              value="20"
+              oninput="minAgeAmount.value=minAgeRangeInput.value"
+            />
           </div>
-          <label for="max-age" class="form-label fw-bold">Max Age</label>
-          <div class="row">
-            <div class="col-11">
-              <input
-                type="range"
-                class="form-range"
-                min="20"
-                max="100"
-                step="5"
-                value="100"
-                id="maxAgeRangeInput"
-                name="maxAgeRangeInput"
-                oninput="maxAgeAmount.value=maxAgeRangeInput.value"
-              />
-            </div>
-            <div class="col-1">
-              <output id="maxAgeAmount" name="maxAgeAmount" class="col-2"
-                >100</output
-              >
-            </div>
+          <div class="col-1">
+            <output id="minAgeAmount" name="minAgeAmount" class="col-2"
+              >20</output
+            >
           </div>
         </div>
-        <div class="mb-5 px-5">
-          <label for="interests" class="form-label fw-bold">Interests</label>
-          <div id="interests-select"></div>
+        <label for="max-age" class="form-label fw-bold">Max Age</label>
+        <div class="row">
+          <div class="col-11">
+            <input
+              type="range"
+              class="form-range"
+              min="20"
+              max="100"
+              step="5"
+              value="100"
+              id="maxAgeRangeInput"
+              name="maxAgeRangeInput"
+              oninput="maxAgeAmount.value=maxAgeRangeInput.value"
+            />
+          </div>
+          <div class="col-1">
+            <output id="maxAgeAmount" name="maxAgeAmount" class="col-2"
+              >100</output
+            >
+          </div>
         </div>
-        <div class="px-5">
-          <button
-            id="filters-apply-button"
-            type="button"
-            class="btn btn-primary"
-            data-bs-dismiss="offcanvas"
-          >
-            Apply
-          </button>
-          <button
-            id="filters-clear-button"
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="offcanvas"
-          >
-            Clear Filters
-          </button>
-        </div>
+      </div>
+      <div class="mb-5 px-5">
+        <label for="interests" class="form-label fw-bold">Interests</label>
+        <div id="interests-select"></div>
+      </div>
+      <div class="px-5">
+        <button
+          id="filters-apply-button"
+          type="button"
+          class="btn btn-primary"
+          data-bs-dismiss="offcanvas"
+        >
+          Apply
+        </button>
+        <button
+          id="filters-clear-button"
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="offcanvas"
+        >
+          Clear Filters
+        </button>
       </div>
     </div>
-    <div id="user-cards-list-section" class="overflow-auto ps-3 pe-1"></div>
   </div>
 </div>
 <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>

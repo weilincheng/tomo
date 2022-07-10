@@ -88,14 +88,14 @@ function initMap() {
     mapTypeControl: false,
   });
 
+  const userListControlDiv = document.createElement("div");
+  userListControl(userListControlDiv);
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(userListControlDiv);
   const panToCurrentLocationControlDiv = document.createElement("div");
   panToCurrentLocationControl(panToCurrentLocationControlDiv, map);
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(
     panToCurrentLocationControlDiv
   );
-  const userListControlDiv = document.createElement("div");
-  userListControl(userListControlDiv);
-  map.controls[google.maps.ControlPosition.TOP_CENTER].push(userListControlDiv);
 
   const redrawUsersIcon = () => {
     zoomLevel = map.getZoom();
@@ -219,7 +219,7 @@ const userListControl = (controlDiv) => {
   controlUI.style.marginBottom = "22px";
   controlUI.style.textAlign = "center";
   controlUI.title = "Click to show users list";
-  controlUI.classList.add("ms-1");
+  controlUI.classList.add("me-2");
   controlUI.setAttribute("data-bs-toggle", "offcanvas");
   controlUI.setAttribute("data-bs-target", "#offcanvasUserList");
   controlDiv.appendChild(controlUI);

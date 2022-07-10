@@ -452,7 +452,7 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
 
 const renderUserCard = async (userId, nickname, profileImage, bio) => {
   const user = $(
-    '<div class="row w-100 mb-4 user-card text-decoration-none align-items-center"></div>'
+    '<div class="row w-100 mb-4 px-3 rounded-pill user-card text-decoration-none align-items-center"></div>'
   );
   // user.attr("href", `/user/${userId}`);
   const profileImageDiv = $('<div class="col-2 d-flex "></div>');

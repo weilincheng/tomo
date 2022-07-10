@@ -94,7 +94,7 @@ function initMap() {
     panToCurrentLocationControlDiv
   );
   const userListControlDiv = document.createElement("div");
-  userListControl(userListControlDiv, map);
+  userListControl(userListControlDiv);
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(userListControlDiv);
 
   const redrawUsersIcon = () => {
@@ -207,15 +207,8 @@ const panToCurrentLocationControl = (controlDiv, map) => {
   controlUI.addEventListener("click", clickShareLocation);
 };
 
-const userListControl = (controlDiv, map) => {
+const userListControl = (controlDiv) => {
   const controlUI = document.createElement("div");
-  // controlUI.innerHTML = `<i
-  //   class="fa-solid fa-users"
-  //   data-bs-toggle="offcanvas"
-  //   data-bs-target="#offcanvasUserList"
-  //   id="offcanvasUserListButton"
-  //   style="color: #0773f4; margin-top: 8px; margin-bottom: 20px; cursor: pointer;"
-  // ></i><p>Users List</p>`;
   controlUI.style.color = "#0773f4";
   controlUI.style.border = "2px solid #fff";
   controlUI.style.backgroundColor = "#fff";
@@ -225,7 +218,7 @@ const userListControl = (controlDiv, map) => {
   controlUI.style.marginTop = "8px";
   controlUI.style.marginBottom = "22px";
   controlUI.style.textAlign = "center";
-  controlUI.title = "Users List";
+  controlUI.title = "Click to show users list";
   controlUI.classList.add("ms-1");
   controlUI.setAttribute("data-bs-toggle", "offcanvas");
   controlUI.setAttribute("data-bs-target", "#offcanvasUserList");
@@ -270,6 +263,7 @@ const getCurrentLocaiton = async (map) => {
         id,
         bio,
         profile_image: profileImage,
+        interests,
       } = userInfoJson;
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
@@ -286,7 +280,12 @@ const getCurrentLocaiton = async (map) => {
           profileUrl,
           google.maps.Animation.DROP
         );
-        const currentUserInfowindow = createInfowindow(nickname, id, bio);
+        const currentUserInfowindow = createInfowindow(
+          nickname,
+          id,
+          bio,
+          interests
+        );
         currentUserIcon.addListener("click", () => {
           currentUserInfowindow.open({
             anchor: currentUserIcon,

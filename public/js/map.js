@@ -93,6 +93,10 @@ function initMap() {
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(
     panToCurrentLocationControlDiv
   );
+  const userListControlDiv = document.createElement("div");
+  userListControl(userListControlDiv, map);
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(userListControlDiv);
+
   const redrawUsersIcon = () => {
     zoomLevel = map.getZoom();
     visibleLatLL = map.getBounds().getSouthWest().lat();
@@ -201,6 +205,41 @@ const panToCurrentLocationControl = (controlDiv, map) => {
     controlUI.removeEventListener("click", clickShareLocation, false);
   };
   controlUI.addEventListener("click", clickShareLocation);
+};
+
+const userListControl = (controlDiv, map) => {
+  const controlUI = document.createElement("div");
+  // controlUI.innerHTML = `<i
+  //   class="fa-solid fa-users"
+  //   data-bs-toggle="offcanvas"
+  //   data-bs-target="#offcanvasUserList"
+  //   id="offcanvasUserListButton"
+  //   style="color: #0773f4; margin-top: 8px; margin-bottom: 20px; cursor: pointer;"
+  // ></i><p>Users List</p>`;
+  controlUI.style.color = "#0773f4";
+  controlUI.style.border = "2px solid #fff";
+  controlUI.style.backgroundColor = "#fff";
+  controlUI.style.borderRadius = "3px";
+  controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+  controlUI.style.cursor = "pointer";
+  controlUI.style.marginTop = "8px";
+  controlUI.style.marginBottom = "22px";
+  controlUI.style.textAlign = "center";
+  controlUI.title = "Users List";
+  controlUI.classList.add("ms-1");
+  controlUI.setAttribute("data-bs-toggle", "offcanvas");
+  controlUI.setAttribute("data-bs-target", "#offcanvasUserList");
+  controlDiv.appendChild(controlUI);
+
+  const controlText = document.createElement("div");
+  controlText.style.color = "rgb(25,25,25)";
+  controlText.style.fontFamily = "Roboto,Arial,sans-serif";
+  controlText.style.fontSize = "16px";
+  controlText.style.lineHeight = "38px";
+  controlText.style.paddingLeft = "5px";
+  controlText.style.paddingRight = "5px";
+  controlText.innerHTML = "Users List";
+  controlUI.appendChild(controlText);
 };
 
 const getCurrentLocaiton = async (map) => {
@@ -528,6 +567,7 @@ const attachApplyFilterListener = (map) => {
       interestsArray
     );
     renderFilteredUsersIcon(map, filteredUsersLocation, markers);
+    $("#offcanvasUserList").offcanvas("show");
   });
   $("#filters-apply-button").click(async () => {
     const minAgeInput = $("#minAgeRangeInput").val();
@@ -549,6 +589,7 @@ const attachApplyFilterListener = (map) => {
       interestsArray
     );
     renderFilteredUsersIcon(map, filteredUsersLocation, markers);
+    $("#offcanvasUserList").offcanvas("show");
   });
 };
 

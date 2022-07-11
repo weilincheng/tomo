@@ -1,8 +1,10 @@
 require("dotenv").config();
 const {
   DB_HOST,
+  DB_HOST_PRODUCTION,
   DB_USER,
   DB_PASSWORD,
+  DB_PASSWORD_PRODUCTION,
   DB_NAME,
   DB_CONNECTION_LIMIT,
   NODE_ENV,
@@ -24,6 +26,15 @@ const config = {
     user: DB_USER,
     password: DB_PASSWORD,
     database: "tomo_test",
+    waitForConnections: true,
+    connectionLimit: DB_CONNECTION_LIMIT,
+    queueLimit: 0,
+  },
+  production: {
+    host: DB_HOST_PRODUCTION,
+    user: DB_USER,
+    password: DB_PASSWORD_PRODUCTION,
+    database: DB_NAME,
     waitForConnections: true,
     connectionLimit: DB_CONNECTION_LIMIT,
     queueLimit: 0,

@@ -159,9 +159,7 @@ const attachClickEventEditPage = () => {
   $("#save-button").click(() => {
     const formData = new FormData(document.getElementById("profile-form"));
     const interests = $("#interests-select").selectivity("value");
-    console.log(interests);
     formData.append("interests", interests);
-    // console.log(formData);
     sendPutFormData(formData);
   });
   $("#cancel-button").click(() => {

@@ -298,6 +298,30 @@ const getCurrentLocaiton = async (map) => {
         });
         map.setCenter(pos);
         map.setZoom(19);
+        currentUserIcon.addListener("mouseout", function () {
+          setTimeout(function () {
+            if (!mouseOverInfoWindow) {
+              currentUserInfowindow.close();
+            }
+          }, 200);
+        });
+        google.maps.event.addListener(
+          currentUserInfowindow,
+          "domready",
+          function () {
+            $(".infowindow-content").mouseover(() => {
+              mouseOverInfoWindow = true;
+            });
+            $(".infowindow-content").mouseout(() => {
+              mouseOverInfoWindow = false;
+              setTimeout(function () {
+                if (!mouseOverInfoWindow) {
+                  currentUserInfowindow.close();
+                }
+              }, 50);
+            });
+          }
+        );
       });
     }
   }
@@ -499,11 +523,31 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
           bio,
           interests
         );
-        userIcon.addListener("click", () => {
+        userIcon.addListener("mouseover", () => {
           iconInfowindow.open({
             anchor: userIcon,
             map,
             shouldFocus: false,
+          });
+        });
+        userIcon.addListener("mouseout", function () {
+          setTimeout(function () {
+            if (!mouseOverInfoWindow) {
+              iconInfowindow.close();
+            }
+          }, 200);
+        });
+        google.maps.event.addListener(iconInfowindow, "domready", function () {
+          $(".infowindow-content").mouseover(() => {
+            mouseOverInfoWindow = true;
+          });
+          $(".infowindow-content").mouseout(() => {
+            mouseOverInfoWindow = false;
+            setTimeout(function () {
+              if (!mouseOverInfoWindow) {
+                iconInfowindow.close();
+              }
+            }, 50);
           });
         });
       }
@@ -624,8 +668,8 @@ const renderInterestsSelect = async () => {
     },
   });
   const resultJson = await result.json();
-  const indoorsInterests = resultJson[0].interests;
-  const outdoorsInterests = resultJson[1].interests;
+  const indoorsInterests = resultJson[0].interests.sort();
+  const outdoorsInterests = resultJson[1].interests.sort();
   $("#interests-select").selectivity({
     items: [
       { text: "Indoors", children: indoorsInterests },

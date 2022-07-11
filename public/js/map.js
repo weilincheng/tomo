@@ -170,7 +170,8 @@ const checkAccessToken = async (accessToken) => {
     localStorage.setItem("userId", id);
     localStorage.setItem("bio", bio);
     localStorage.setItem("profileImage", profileImage);
-    $(() => {
+    $(async () => {
+      await renderInterestsSelect();
       $("#main-content").removeClass("invisible");
       updateProfileIconLink(id);
     });
@@ -690,7 +691,7 @@ const renderInterestsSelect = async () => {
 
 const accessToken = localStorage.getItem("accessToken");
 checkAccessToken(accessToken);
-renderInterestsSelect();
+
 const google_api_key = $("#map-script").attr("google_api_key");
 const script = $("<script></script>", {
   src: `https://maps.googleapis.com/maps/api/js?key=${google_api_key}&map_ids=d91850b214eae5c9&callback=initMap`,

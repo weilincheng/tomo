@@ -45,7 +45,7 @@ const aggregateUsersLocation = (
   if (zoomLevel >= 19) {
     return usersLocation;
   }
-  const factor = 6;
+  const factor = 5;
   const colNum = zoomLevel > factor ? zoomLevel - factor : 1;
   const rowNum = zoomLevel > factor ? zoomLevel - factor : 1;
   if (lngUR < lngLL) {

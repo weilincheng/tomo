@@ -63,7 +63,8 @@ const renderNotifications = async () => {
       '<div class="ps-4 notification-card row border-bottom py-4 d-flex justify-content-between align-items-center">'
     );
     if (!hasRead) {
-      notificationCard.css("background-color", "#79DAE8");
+      // notificationCard.css("background-color", "#E2E8FC");
+      notificationCard.addClass("text-bg-light");
     }
     const notificationLeftColumn = $(
       '<div class="col-1 d-flex justify-content-center">'

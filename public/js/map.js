@@ -1,6 +1,6 @@
 const createInfowindow = (nickname, userId, bio, interests) => {
   let contentString = `
-    <div id="content" class="px-2 py-2"> 
+    <div id="content" class="px-2 py-2 infowindow-content"> 
       <div class="d-flex align-items-center mb-2 justify-content-between">
         <h5 id="firstHeading" class="firstHeading mb-0">${nickname}</h5>
         <a class="infowindowProfileIcon ms-2 rounded-pill" href="/user/${userId}" target="_blank"><i class="fa-regular fa-user"></i></a>
@@ -64,7 +64,7 @@ const createClusterIcon = (map, pos, count) => {
 
 const createIcon = (map, pos, profileImage, animation) => {
   const icon = {
-    url: `${profileImage}`,
+    url: `${profileImage}` + "#custom_marker",
     scaledSize: new google.maps.Size(50, 50), // scaled size
     origin: new google.maps.Point(0, 0), // origin
     anchor: new google.maps.Point(0, 0), // anchor
@@ -289,7 +289,7 @@ const getCurrentLocaiton = async (map) => {
           bio,
           interests
         );
-        currentUserIcon.addListener("click", () => {
+        currentUserIcon.addListener("mouseover", () => {
           currentUserInfowindow.open({
             anchor: currentUserIcon,
             map,
@@ -414,18 +414,38 @@ const renderUsersIcon = async (
           bio,
           interests
         );
-        userIcon.addListener("click", () => {
+        userIcon.addListener("mouseover", () => {
           iconInfowindow.open({
             anchor: userIcon,
             map,
             shouldFocus: false,
           });
         });
+        userIcon.addListener("mouseout", function () {
+          setTimeout(function () {
+            if (!mouseOverInfoWindow) {
+              iconInfowindow.close();
+            }
+          }, 200);
+        });
+        google.maps.event.addListener(iconInfowindow, "domready", function () {
+          $(".infowindow-content").mouseover(() => {
+            mouseOverInfoWindow = true;
+          });
+          $(".infowindow-content").mouseout(() => {
+            mouseOverInfoWindow = false;
+            setTimeout(function () {
+              if (!mouseOverInfoWindow) {
+                iconInfowindow.close();
+              }
+            }, 50);
+          });
+        });
       }
     }
   }
 };
-
+let mouseOverInfoWindow = false;
 const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
   while (markers.length > 0) {
     const marker = markers.pop();

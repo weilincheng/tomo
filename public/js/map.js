@@ -198,8 +198,8 @@ const panToCurrentLocationControl = (controlDiv, map) => {
   controlText.style.fontFamily = "Roboto,Arial,sans-serif";
   controlText.style.fontSize = "16px";
   controlText.style.lineHeight = "38px";
-  controlText.style.paddingLeft = "5px";
-  controlText.style.paddingRight = "5px";
+  controlText.style.paddingLeft = "10px";
+  controlText.style.paddingRight = "10px";
   controlText.innerHTML = "Pan to Current Location";
   controlUI.appendChild(controlText);
 
@@ -232,8 +232,8 @@ const userListControl = (controlDiv) => {
   controlText.style.fontFamily = "Roboto,Arial,sans-serif";
   controlText.style.fontSize = "16px";
   controlText.style.lineHeight = "38px";
-  controlText.style.paddingLeft = "5px";
-  controlText.style.paddingRight = "5px";
+  controlText.style.paddingLeft = "10px";
+  controlText.style.paddingRight = "10px";
   controlText.innerHTML = "Users List";
   controlUI.appendChild(controlText);
 };
@@ -513,7 +513,7 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
 
 const renderUserCard = async (userId, nickname, profileImage, bio) => {
   const user = $(
-    '<div class="row w-100 mb-4 px-3 rounded-pill user-card text-decoration-none align-items-center"></div>'
+    '<div class="row w-100 px-3 py-2 user-card text-decoration-none align-items-center"></div>'
   );
   const profileImageDiv = $('<div class="col-2 d-flex "></div>');
   profileImageDiv.css({

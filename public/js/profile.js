@@ -136,6 +136,7 @@ const updateEditFollowBlockButton = (
   $("#blocked-button").hide();
   if (profileUserId === loggedInUserId) {
     $("#edit-profile-button").show();
+    $("#edit-profile-button").removeClass("invisible");
   } else {
     let isFollowing = false;
     for (let follower of profileUserFollowers) {
@@ -144,14 +145,18 @@ const updateEditFollowBlockButton = (
       }
     }
     if (isFollowing) {
+      $("#following-button").removeClass("invisible");
       $("#following-button").show();
     } else {
       $("#follow-button").show();
+      $("#follow-button").removeClass("invisible");
     }
     if (blockStatus) {
       $("#blocked-button").show();
+      $("#blocked-button").removeClass("invisible");
     } else {
       $("#block-button").show();
+      $("#block-button").removeClass("invisible");
     }
   }
   attachFollowingButtonEvent(profileUserId);
@@ -188,7 +193,9 @@ const attachFollowingButtonEvent = (targetUserId) => {
       const currentFollowersCount = $("#followers-count").text();
       $("#followers-count").text(parseInt(currentFollowersCount) - 1);
       $("#follow-button").show();
+      $("#follow-button").removeClass("invisible");
       $("#following-button").hide();
+      $("#following-button").addClass("invisible");
     }
   });
 };
@@ -210,6 +217,8 @@ const attachFolloButtonEvent = (targetUserId) => {
     } else {
       const currentFollowersCount = $("#followers-count").text();
       $("#followers-count").text(parseInt(currentFollowersCount) + 1);
+      $("#follow-button").addClass("invisible");
+      $("#following-button").removeClass("invisible");
       $("#follow-button").hide();
       $("#following-button").show();
     }
@@ -239,6 +248,8 @@ const attachBlockedButtonEvent = (targetUserId) => {
       $("#alertModalToggleLabel").text(resultJson.error);
       $("#alertModalToggle").modal("show");
     } else {
+      $("#block-button").removeClass("invisible");
+      $("#blocked-button").addClass("invisible");
       $("#block-button").show();
       $("#blocked-button").hide();
     }
@@ -260,6 +271,8 @@ const attachBlockButtonEvent = (targetUserId) => {
       $("#alertModalToggleLabel").text(resultJson.error);
       $("#alertModalToggle").modal("show");
     } else {
+      $("#block-button").addClass("invisible");
+      $("#blocked-button").removeClass("invisible");
       $("#block-button").hide();
       $("#blocked-button").show();
     }

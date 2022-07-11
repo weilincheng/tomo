@@ -690,6 +690,7 @@ const renderInterestsSelect = async () => {
 
 const accessToken = localStorage.getItem("accessToken");
 checkAccessToken(accessToken);
+renderInterestsSelect();
 const google_api_key = $("#map-script").attr("google_api_key");
 const script = $("<script></script>", {
   src: `https://maps.googleapis.com/maps/api/js?key=${google_api_key}&map_ids=d91850b214eae5c9&callback=initMap`,
@@ -708,7 +709,6 @@ let map,
   visibleLatUR,
   visibleLngUR,
   zoomLevel;
-renderInterestsSelect();
 window.initMap = initMap;
 
 $("#signin").click(() => {

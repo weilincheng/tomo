@@ -6,3 +6,7 @@
 [id^="senderUserCard-UserId-"]:hover {
   background-color: #dbe4fb;
 }
+
+.selected-user-card {
+  background-color: #dbe4fb;
+}

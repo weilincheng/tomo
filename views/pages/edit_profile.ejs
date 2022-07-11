@@ -1,10 +1,5 @@
 <%- include("../partials/header") -%>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script
-  id="map-script"
-  google_api_key="<%= google_api_key%>"
-  src="../../static/js/edit_profile.js"
-></script>
 
 <div class="row justify-content-center vh-75 w-100 pt-3">
   <div class="col-1 px-0 mx-0"><%- include("../partials/sidebar") -%></div>
@@ -116,7 +111,8 @@
       </div>
       <div class="mb-3">
         <label for="interests" class="form-label fw-bold">Interests</label>
-        <div class="d-flex flex-wrap justify-content-between">
+        <div id="interests-select"></div>
+        <!-- <div class="d-flex flex-wrap justify-content-between">
           <div class="form-check">
             <input
               class="form-check-input"
@@ -171,7 +167,7 @@
             />
             <label class="form-check-label" for="anime-checkbox"> Anime </label>
           </div>
-        </div>
+        </div> -->
       </div>
       <div class="mb-3">
         <label for="bio" class="form-label fw-bold">Bio</label>
@@ -209,7 +205,7 @@
         <button
           id="save-button"
           type="button"
-          class="btn btn-primary rounded-pill px-5"
+          class="btn btn-primary rounded-pill px-5 fw-bold"
         >
           Save
         </button>
@@ -223,5 +219,15 @@
     <div id="map" class="h-75 my-1"></div>
   </div>
 </div>
+<script src="https://d3efyzwqsfoubm.cloudfront.net/src/selectivity.js"></script>
+<link
+  rel="stylesheet"
+  href="https://d3efyzwqsfoubm.cloudfront.net/css/selectivity-jquery.min.css"
+/>
+<script
+  id="map-script"
+  google_api_key="<%= google_api_key%>"
+  src="../../static/js/edit_profile.js"
+></script>
 
 <%- include("../partials/footer") -%>

@@ -1,18 +1,18 @@
-const verifyToken = async (accessToken) => {
-  const result = await fetch("/api/v1/user/profile", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const resultJson = await result.json();
-  if (resultJson.error) {
-    alert(resultJson.error);
-    localStorage.clear();
-    return;
-  }
-  return resultJson;
-};
+// const verifyToken = async (accessToken) => {
+//   const result = await fetch("/api/v1/user/profile", {
+//     method: "GET",
+//     headers: {
+//       Authorization: `Bearer ${accessToken}`,
+//     },
+//   });
+//   const resultJson = await result.json();
+//   if (resultJson.error) {
+//     alert(resultJson.error);
+//     localStorage.clear();
+//     return;
+//   }
+//   return resultJson;
+// };
 
 const getUserInfo = async (userId) => {
   const accessToken = localStorage.getItem("accessToken");
@@ -115,9 +115,7 @@ const renderUserProfile = async () => {
   if (birthdate) {
     $("#birthdate").val(`${year}-${month}-${day}`);
   }
-  for (const interest of interests) {
-    $(`#${interest}-checkbox`).prop("checked", true);
-  }
+  renderInterestsSelect(interests);
 };
 
 const sendPutFormData = async (formData) => {
@@ -135,7 +133,7 @@ const sendPutFormData = async (formData) => {
   window.location = `/user/${userId}`;
 };
 
-const attachClickEvent = () => {
+const attachClickEventEditPage = () => {
   $("#profile-image").on("change", (evt) => {
     const [file] = evt.target.files;
     if (file.size > 1000000) {
@@ -160,6 +158,10 @@ const attachClickEvent = () => {
   });
   $("#save-button").click(() => {
     const formData = new FormData(document.getElementById("profile-form"));
+    const interests = $("#interests-select").selectivity("value");
+    console.log(interests);
+    formData.append("interests", interests);
+    // console.log(formData);
     sendPutFormData(formData);
   });
   $("#cancel-button").click(() => {
@@ -175,7 +177,7 @@ const attachClickEvent = () => {
   });
 };
 
-const attachTypeEvent = () => {
+const attachTypeEventEditPage = () => {
   $("#nickname").keyup(() => {
     let characterCount = $("#nickname").val().length,
       current = $("#nickname-current");
@@ -280,10 +282,6 @@ const createPlacesMarker = (place) => {
   const marker = new google.maps.Marker({
     map,
     position: place.geometry.location,
-    // label: {
-    //   text: place.name,
-    //   color: "green",
-    // },
     icon: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
   });
 
@@ -305,11 +303,44 @@ const createCustomMarker = (map, pos, name) => {
   });
 };
 
+const renderInterestsSelect = async (interests) => {
+  const accessToken = localStorage.getItem("accessToken");
+  const result = await fetch(`/api/v1/interests`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const resultJson = await result.json();
+  const indoorsInterests = resultJson[0].interests;
+  const outdoorsInterests = resultJson[1].interests;
+  $("#interests-select").selectivity({
+    items: [
+      { text: "Indoors", children: indoorsInterests },
+      { text: "Outdoors", children: outdoorsInterests },
+    ],
+    multiple: true,
+    placeholder: "Type to search interests",
+    backspaceHighlightsBeforeDelete: false,
+  });
+  $("#interests-select").children().addClass("bg-light");
+  $("#interests-select").on("selectivity-selected", () => {
+    $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
+  });
+  $("#interests-select").on("sselectivity-open", () => {
+    $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
+  });
+  if (interests[0] !== null) {
+    $("#interests-select").selectivity("value", interests);
+    $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
+  }
+};
+
 renderUserProfile();
 
 $(() => {
-  attachClickEvent();
-  attachTypeEvent();
+  attachClickEventEditPage();
+  attachTypeEventEditPage();
 });
 
 const google_api_key = $("#map-script").attr("google_api_key");

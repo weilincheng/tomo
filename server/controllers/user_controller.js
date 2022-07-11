@@ -146,7 +146,12 @@ const updateUserInfo = async (req, res) => {
     birthdate ? birthdate : null,
     gender
   );
-  User.updateUserInterests(userId, interests);
+  const [interestNameIdMapResult] = await User.getInterestsNameMap();
+  const interestNameIdMap = interestNameIdMapResult.nameIdMap;
+  const interestsId = interests.split(",").map((name) => {
+    return interestNameIdMap[name];
+  });
+  User.updateUserInterests(userId, interestsId);
   return res.status(200).json({ status: "Save successfully" });
 };
 

@@ -4,7 +4,8 @@ const uuid = require("uuid").v4;
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { truncateTable } = require("../test/truncate_fake_data");
-const { ExistingObjectReplication } = require("@aws-sdk/client-s3");
+require("dotenv").config();
+const { NODE_ENV } = process.env;
 
 const insertUsers = async (sql, sqlBindings) => {
   const [result] = await pool.query(sql, [sqlBindings]);
@@ -79,7 +80,8 @@ const insertFakeData = async (lastInterestId, usersCount, coordinate) => {
 };
 
 const main = async () => {
-  const usersCount = 10;
+  console.log("Inserting database ", NODE_ENV);
+  const usersCount = 5000;
   const coordinates = {
     Taipei: [25.034820140317443, 121.52168912178846],
     Taoyuan: [24.96780130276039, 121.22577282690152],
@@ -90,6 +92,7 @@ const main = async () => {
   await truncateTable("interests");
   const lastInterestId = (await insertInterests()) + 24;
   for (let city in coordinates) {
+    console.log("Inserting ", city);
     insertFakeData(lastInterestId, usersCount, coordinates[city]);
   }
 };

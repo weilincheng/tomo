@@ -79,9 +79,10 @@ const createIcon = (map, pos, profileImage, animation) => {
 
 function initMap() {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
+  const NANTOU = { lat: 23.961, lng: 120.9719 };
   map = new google.maps.Map($("#map")[0], {
-    center: appWorksSchool,
-    zoom: 7,
+    center: NANTOU,
+    zoom: 8,
     mapId: "d91850b214eae5c9",
     fullscreenControl: false,
     streetViewControl: false,
@@ -105,25 +106,27 @@ function initMap() {
     visibleLngUR = map.getBounds().getNorthEast().lng();
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
-      const minAgeInput = $("#minAgeRangeInput").val();
-      const maxAgeInput = $("#maxAgeRangeInput").val();
-      const gender = $("#gender").val();
-      const interestsArray = $("#interests-select").selectivity("value");
-      const minAge = parseInt(minAgeInput);
-      const maxAge = parseInt(maxAgeInput);
-      renderUsersIcon(
-        accessToken,
-        map,
-        markers,
-        visibleLatLL,
-        visibleLngLL,
-        visibleLatUR,
-        visibleLngUR,
-        minAge,
-        maxAge,
-        gender,
-        interestsArray
-      );
+      $(() => {
+        const minAgeInput = $("#minAgeRangeInput").val();
+        const maxAgeInput = $("#maxAgeRangeInput").val();
+        const gender = $("#gender").val();
+        const interestsArray = $("#interests-select").selectivity("value");
+        const minAge = parseInt(minAgeInput);
+        const maxAge = parseInt(maxAgeInput);
+        renderUsersIcon(
+          accessToken,
+          map,
+          markers,
+          visibleLatLL,
+          visibleLngLL,
+          visibleLatUR,
+          visibleLngUR,
+          minAge,
+          maxAge,
+          gender,
+          interestsArray
+        );
+      });
     }
   };
   google.maps.event.addListener(map, "idle", redrawUsersIcon);

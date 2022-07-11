@@ -644,6 +644,7 @@ let map,
   visibleLatUR,
   visibleLngUR,
   zoomLevel;
+renderInterestsSelect();
 window.initMap = initMap;
 
 $("#signin").click(() => {
@@ -652,5 +653,3 @@ $("#signin").click(() => {
 $("#signup").click(() => {
   window.location.href = "/signup";
 });
-
-renderInterestsSelect();

@@ -77,7 +77,8 @@ const createIcon = (map, pos, profileImage, animation) => {
   });
 };
 
-function initMap() {
+async function initMap() {
+  await renderInterestsSelect();
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   const NANTOU = { lat: 23.961, lng: 120.9719 };
   map = new google.maps.Map($("#map")[0], {
@@ -170,8 +171,7 @@ const checkAccessToken = async (accessToken) => {
     localStorage.setItem("userId", id);
     localStorage.setItem("bio", bio);
     localStorage.setItem("profileImage", profileImage);
-    $(async () => {
-      await renderInterestsSelect();
+    $(() => {
       $("#main-content").removeClass("invisible");
       updateProfileIconLink(id);
     });

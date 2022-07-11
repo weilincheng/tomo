@@ -16,8 +16,11 @@ CREATE TABLE `users`(
     `geo_location_lng` DOUBLE,
     `display_geo_location` BOOLEAN DEFAULT TRUE,
     `gender` ENUM('pnts', 'male', 'female', 'neutral') DEFAULT 'neutral',
-    `birthdate` DATETIME
+    `birthdate` DATETIME,
+    INDEX geo_location_index (geo_location_lat, geo_location_lng)
 );
+
+CREATE INDEX geo_location_index ON users(geo_location_lat, geo_location_lng);
 
 DROP TABLE IF EXISTS `relationships`;
 CREATE TABLE `relationships`(

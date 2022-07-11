@@ -128,19 +128,25 @@ const renderSenderUserCard = (
   card.click(async () => {
     const targetUserId = card.attr("id").split("-")[2];
     const blockStatus = await getBlockStatus(accessToken, targetUserId);
+    $("#messages-session").empty();
+    $("#target-user-banner").empty();
     if (blockStatus.targetUserBlockCurrentUser) {
-      alert("You are blocked by this user.");
+      $("#messages-session").addClass("invisible");
+      $("#alertModalToggleLabel").text("You are blocked by this user.");
+      $("#alertModalToggle").modal("show");
       return;
     }
     $("#messages-session").attr("target-user-id", targetUserId);
-    $("#messages-session").empty();
-    $("#target-user-banner").empty();
+    $("#messages-session").removeClass("invisible");
     const userBanner = $('<div class="d-flex align-items-center">');
     const profileImage = card.children().first().clone();
     profileImage.empty();
     profileImage.css({ width: "30px", height: "30px" });
     const profileName = card.children().last().children().first().clone();
     profileName.addClass("fs-3 fw-bold");
+    profileName.html(
+      `<a class='text-decoration-none fw-bold' style='color: #0773f4;' href='/user/${senderUserId}' target='_blank'>${name.text()}</a>`
+    );
     userBanner.append(profileImage);
     userBanner.append(profileName);
     $("#target-user-banner").append(userBanner);
@@ -351,10 +357,13 @@ const initializeSenderSocket = async () => {
   });
 
   socket.on("users", (users) => {
-    users.forEach((user) => {
+    users.forEach(async (user) => {
       const { userId, socketId } = user;
       updateSocketId(userId, socketId);
-      updateOnlinStatus(userId, true);
+      const blockStatus = await getBlockStatus(accessToken, userId);
+      if (!blockStatus.targetUserBlockCurrentUser) {
+        updateOnlinStatus(userId, true);
+      }
     });
   });
 
@@ -401,7 +410,6 @@ const initializeSenderSocket = async () => {
   );
 };
 
-const accessToken = localStorage.getItem("accessToken");
 if (!accessToken) {
   alert("Please log in first!");
   window.location.href = "/";

@@ -1,12 +1,34 @@
-const createInfowindow = (nickname, userId, bio) => {
-  const contentString = `<div id="content"> 
-    <div id="siteNotice">
-    </div>
-    <h5 id="firstHeading" class="firstHeading">${nickname}</h5>
-    <div id="bodyContent">
-    <a href="/user/${userId}" target="_blank">View Profile</a>
-    <p>${bio}</p>
-    </div>
+const createInfowindow = (nickname, userId, bio, interests) => {
+  let contentString = `
+    <div id="content" class="px-2 py-2"> 
+      <div class="d-flex align-items-center mb-2 justify-content-between">
+        <h5 id="firstHeading" class="firstHeading mb-0">${nickname}</h5>
+        <a class="infowindowProfileIcon ms-2 rounded-pill" href="/user/${userId}" target="_blank"><i class="fa-regular fa-user"></i></a>
+      </div>
+      <div id="bodyContent">
+        <div class="d-flex flex-column">
+  `;
+  if (bio) {
+    contentString += `
+          <div class="d-flex align-items-center mb-2">
+            <i class="fa-solid fa-circle-info"></i>
+            <p class="ms-1 my-0" >${bio}</p>
+          </div>
+          <div class="d-flex align-items-center">
+          `;
+  }
+  if (interests.length > 0 && interests[0] !== null) {
+    contentString += `<i class="fa-regular fa-heart"></i>`;
+    for (const interest of interests) {
+      contentString += `
+        <span class="ms-1 badge rounded-pill text-bg-primary py-1">${interest}</span>
+      `;
+    }
+  }
+  contentString += `
+          </div>
+        </div>
+      </div>
     </div>`;
 
   return new google.maps.InfoWindow({
@@ -55,31 +77,27 @@ const createIcon = (map, pos, profileImage, animation) => {
   });
 };
 
-const removeMarker = (socketId) => {
-  const marker = markersList.get(socketId);
-  if (marker) {
-    marker.setMap(null);
-    markersList.delete(socketId);
-  }
-  userIconClusterer.clearMarkers();
-};
-
 function initMap() {
   const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
+  const NANTOU = { lat: 23.961, lng: 120.9719 };
   map = new google.maps.Map($("#map")[0], {
-    center: appWorksSchool,
-    zoom: 7,
+    center: NANTOU,
+    zoom: 8,
     mapId: "d91850b214eae5c9",
     fullscreenControl: false,
     streetViewControl: false,
     mapTypeControl: false,
   });
 
+  const userListControlDiv = document.createElement("div");
   const panToCurrentLocationControlDiv = document.createElement("div");
+  userListControl(userListControlDiv);
   panToCurrentLocationControl(panToCurrentLocationControlDiv, map);
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(
     panToCurrentLocationControlDiv
   );
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(userListControlDiv);
+
   const redrawUsersIcon = () => {
     zoomLevel = map.getZoom();
     visibleLatLL = map.getBounds().getSouthWest().lat();
@@ -88,29 +106,30 @@ function initMap() {
     visibleLngUR = map.getBounds().getNorthEast().lng();
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
-      const minAgeInput = $("#minAgeRangeInput").val();
-      const maxAgeInput = $("#maxAgeRangeInput").val();
-      const gender = $("#gender").val();
-      const interestsArray = $("#interests-select").selectivity("value");
-      const minAge = parseInt(minAgeInput);
-      const maxAge = parseInt(maxAgeInput);
-      renderUsersIcon(
-        accessToken,
-        map,
-        markers,
-        visibleLatLL,
-        visibleLngLL,
-        visibleLatUR,
-        visibleLngUR,
-        minAge,
-        maxAge,
-        gender,
-        interestsArray
-      );
+      $(() => {
+        const minAgeInput = $("#minAgeRangeInput").val();
+        const maxAgeInput = $("#maxAgeRangeInput").val();
+        const gender = $("#gender").val();
+        const interestsArray = $("#interests-select").selectivity("value");
+        const minAge = parseInt(minAgeInput);
+        const maxAge = parseInt(maxAgeInput);
+        renderUsersIcon(
+          accessToken,
+          map,
+          markers,
+          visibleLatLL,
+          visibleLngLL,
+          visibleLatUR,
+          visibleLngUR,
+          minAge,
+          maxAge,
+          gender,
+          interestsArray
+        );
+      });
     }
   };
   google.maps.event.addListener(map, "idle", redrawUsersIcon);
-  google.maps.event.addListener(map, "bounds_changed", redrawUsersIcon);
   attachAgeRangeListener();
   attachApplyFilterListener(map);
 }
@@ -191,6 +210,34 @@ const panToCurrentLocationControl = (controlDiv, map) => {
   controlUI.addEventListener("click", clickShareLocation);
 };
 
+const userListControl = (controlDiv) => {
+  const controlUI = document.createElement("div");
+  controlUI.style.color = "#0773f4";
+  controlUI.style.border = "2px solid #fff";
+  controlUI.style.backgroundColor = "#fff";
+  controlUI.style.borderRadius = "3px";
+  controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+  controlUI.style.cursor = "pointer";
+  controlUI.style.marginTop = "8px";
+  controlUI.style.marginBottom = "22px";
+  controlUI.style.textAlign = "center";
+  controlUI.title = "Click to show users list";
+  controlUI.classList.add("ms-2");
+  controlUI.setAttribute("data-bs-toggle", "offcanvas");
+  controlUI.setAttribute("data-bs-target", "#offcanvasUserList");
+  controlDiv.appendChild(controlUI);
+
+  const controlText = document.createElement("div");
+  controlText.style.color = "rgb(25,25,25)";
+  controlText.style.fontFamily = "Roboto,Arial,sans-serif";
+  controlText.style.fontSize = "16px";
+  controlText.style.lineHeight = "38px";
+  controlText.style.paddingLeft = "5px";
+  controlText.style.paddingRight = "5px";
+  controlText.innerHTML = "Users List";
+  controlUI.appendChild(controlText);
+};
+
 const getCurrentLocaiton = async (map) => {
   if (navigator.geolocation) {
     if (accessToken) {
@@ -219,6 +266,7 @@ const getCurrentLocaiton = async (map) => {
         id,
         bio,
         profile_image: profileImage,
+        interests,
       } = userInfoJson;
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
@@ -235,7 +283,12 @@ const getCurrentLocaiton = async (map) => {
           profileUrl,
           google.maps.Animation.DROP
         );
-        const currentUserInfowindow = createInfowindow(nickname, id, bio);
+        const currentUserInfowindow = createInfowindow(
+          nickname,
+          id,
+          bio,
+          interests
+        );
         currentUserIcon.addListener("click", () => {
           currentUserInfowindow.open({
             anchor: currentUserIcon,
@@ -355,7 +408,12 @@ const renderUsersIcon = async (
       } else {
         const userIcon = createIcon(map, pos, profileUrl);
         markers.push(userIcon);
-        const iconInfowindow = createInfowindow(nickname, userId, bio);
+        const iconInfowindow = createInfowindow(
+          nickname,
+          userId,
+          bio,
+          interests
+        );
         userIcon.addListener("click", () => {
           iconInfowindow.open({
             anchor: userIcon,
@@ -401,11 +459,26 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       }
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
+        clusterMarker.addListener("click", () => {
+          const zoomLevel = map.getZoom();
+          map.setCenter(pos);
+          const noAggregationZoomLevel = 19;
+          if (zoomLevel <= noAggregationZoomLevel - 3) {
+            map.setZoom(zoomLevel + 3);
+          } else {
+            map.setZoom(noAggregationZoomLevel);
+          }
+        });
         markers.push(clusterMarker);
       } else {
         const userIcon = createIcon(map, pos, profileUrl);
         markers.push(userIcon);
-        const iconInfowindow = createInfowindow(nickname, userId, bio);
+        const iconInfowindow = createInfowindow(
+          nickname,
+          userId,
+          bio,
+          interests
+        );
         userIcon.addListener("click", () => {
           iconInfowindow.open({
             anchor: userIcon,
@@ -416,14 +489,12 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       }
     }
   }
-  // userIconClusterer = new markerClusterer.MarkerClusterer({ map, markers });
 };
 
 const renderUserCard = async (userId, nickname, profileImage, bio) => {
   const user = $(
-    '<div class="row w-100 mb-4 user-card text-decoration-none align-items-center"></div>'
+    '<div class="row w-100 mb-4 px-3 rounded-pill user-card text-decoration-none align-items-center"></div>'
   );
-  // user.attr("href", `/user/${userId}`);
   const profileImageDiv = $('<div class="col-2 d-flex "></div>');
   profileImageDiv.css({
     display: "inline-block",
@@ -449,7 +520,7 @@ const renderUserCard = async (userId, nickname, profileImage, bio) => {
     '<div class="col-10 d-flex flex-column justify-content-center my-2"></div>'
   );
   const username = $(
-    '<a class="text-decoration-none"><p class="fs-5 fw-semibold my-0 px-2 text-muted "></p></a>'
+    '<a class="text-decoration-none" style="color: #0773f4;" target="_blank"><p class="fs-5 fw-semibold my-0 px-2"></p></a>'
   );
   username.children().text(nickname);
   username.attr("href", `/user/${userId}`);
@@ -498,6 +569,7 @@ const attachApplyFilterListener = (map) => {
       interestsArray
     );
     renderFilteredUsersIcon(map, filteredUsersLocation, markers);
+    $("#offcanvasUserList").offcanvas("show");
   });
   $("#filters-apply-button").click(async () => {
     const minAgeInput = $("#minAgeRangeInput").val();
@@ -519,6 +591,7 @@ const attachApplyFilterListener = (map) => {
       interestsArray
     );
     renderFilteredUsersIcon(map, filteredUsersLocation, markers);
+    $("#offcanvasUserList").offcanvas("show");
   });
 };
 

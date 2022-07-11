@@ -7,7 +7,8 @@ const verifyToken = async (accessToken) => {
   });
   const resultJson = await result.json();
   if (resultJson.error) {
-    alert("resultJson.error");
+    $("#alertModalToggleLabel").text(resultJson.error);
+    $("#alertModalToggle").modal("show");
     localStorage.clear();
     window.location = "/";
   }
@@ -30,13 +31,19 @@ const attachImageEvent = () => {
     const files = evt.target.files;
     for (const file of files) {
       if (file.size > 1000000) {
-        alert("File size is too large. Max size is 1MB.");
+        $("#alertModalToggleLabel").text(
+          "File size is too large. Max size is 1MB."
+        );
+        $("#alertModalToggle").modal("show");
         $("#post-images").prop("value", "");
         return;
       }
     }
     if (files.length > 4) {
-      alert("You can only upload a maximum of 4 files");
+      $("#alertModalToggleLabel").text(
+        "You can only upload a maximum of 4 files"
+      );
+      $("#alertModalToggle").modal("show");
       $("#post-button").attr("disabled", true);
       return;
     }
@@ -51,7 +58,8 @@ const attachImageEvent = () => {
 const attachPostEvent = () => {
   $("#post-button").click(() => {
     if ($("#post-content").val().length === 0) {
-      alert("Please enter some content");
+      $("#alertModalToggleLabel").text("Please enter some content");
+      $("#alertModalToggle").modal("show");
       return;
     }
     const formData = new FormData(document.getElementById("post-form"));
@@ -59,13 +67,8 @@ const attachPostEvent = () => {
   });
 };
 
-const attachCancelEvent = () => {
-  $("#cancel-button").click(() => {
-    window.location = `/user/${localStorage.getItem("userId")}`;
-  });
-};
-
 const sendPostFormData = async (formData) => {
+  $("#newPostModal").modal("hide");
   const accessToken = localStorage.getItem("accessToken");
   const userId = localStorage.getItem("userId");
   const result = await fetch(`/api/v1/user/${userId}/posts`, {
@@ -76,23 +79,23 @@ const sendPostFormData = async (formData) => {
     body: formData,
   });
   const resultJson = await result.json();
-  alert(resultJson.status);
-  window.location = `/user/${userId}`;
+  $("#alertModalToggleLabel").text(resultJson.status);
+  $("#alertModalToggle").modal("show");
 };
 
 const accessToken = localStorage.getItem("accessToken");
 if (accessToken) {
   verifyToken(localStorage.getItem("accessToken"));
 } else {
-  alert("Please log in first!");
+  $("#alertModalToggleLabel").text("Please log in first!");
+  $("#alertModalToggle").modal("show");
   window.location = "/";
 }
-const userId = localStorage.getItem("userId");
 
 $(() => {
+  const userId = localStorage.getItem("userId");
   updateProfileIconLink(userId);
   attachTypeEvent();
   attachImageEvent();
   attachPostEvent();
-  attachCancelEvent();
 });

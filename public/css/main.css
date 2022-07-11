@@ -1,16 +1,20 @@
 .btn-primary {
   background-color: #0773f4;
 }
+
+.text-bg-primary {
+  background-color: #0773f4;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0773f4;
+}
+
 #content-container {
   display: flex;
   flex-wrap: wrap;
   height: 90%;
 }
-
-/* #map {
-  width: 80%;
-  height: 100%;
-} */
 
 #signin-signup-form {
   display: flex;

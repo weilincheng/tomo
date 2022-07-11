@@ -53,6 +53,7 @@ const renderNotifications = async () => {
       type,
       has_read: hasRead,
       created_at: createdAt,
+      sender_user_id: senderUserId,
     } = notification;
     const date = new Date(createdAt);
     const options = { month: "long" };
@@ -64,7 +65,9 @@ const renderNotifications = async () => {
     if (!hasRead) {
       notificationCard.css("background-color", "#79DAE8");
     }
-    const notificationLeftColumn = $('<div class="col-1">');
+    const notificationLeftColumn = $(
+      '<div class="col-1 d-flex justify-content-center">'
+    );
     const notificationMiddleColumn = $('<div class="col-10 pe-3">');
     const notificationRightColumn = $('<div class="col-1">');
     const profileImageDiv = $('<div class="col-2 d-flex "></div>');
@@ -93,7 +96,7 @@ const renderNotifications = async () => {
     ).text(dateString);
     const notificationSummary = $('<div class="fs-5"></div>');
     if (type === "follow") {
-      notificationSummary.text(`${nickname} followed you`);
+      notificationSummary.append(`${nickname} followed you`);
     } else if (type === "post") {
       notificationSummary.text(`${nickname} published a new post`);
     } else if (type === "message") {
@@ -102,6 +105,13 @@ const renderNotifications = async () => {
       );
       notificationSummary.css("white-space", "pre-line");
     }
+    let text = notificationSummary.text();
+    notificationSummary.html(
+      text.replace(
+        `${nickname}`,
+        `<a class='text-decoration-none fw-bold' style='color: #0773f4;' href='/user/${senderUserId}' target='_blank'>${nickname}</a>`
+      )
+    );
     const notificationContent = $('<div class="fs-6 text-secondary"></div>');
     notificationContent.text(content);
     notificationLeftColumn.append(profileImageDiv);

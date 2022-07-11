@@ -8,19 +8,23 @@ const getUserInfo = async (userId) => {
     headers,
   });
   const blockStatusJson = await blockStatusResult.json();
-  if (blockStatusJson.targetUserBlockCurrentUser) {
-    alert("You are blocked by this user");
-    window.location = "/";
-    return;
+  const blocked = blockStatusJson.targetUserBlockCurrentUser;
+  if (blocked) {
+    $("#alertModalToggleLabel").text("You are blocked by this user");
+    $("#alertModalToggle").modal("show");
+    $("#alertModalUnderstandButton").click(() => {
+      return;
+    });
   }
-  $("body").show();
+
   const result = await fetch(`/api/v1/user/${userId}`, {
     method: "GET",
     headers,
   });
   const resultJson = await result.json();
   if (resultJson.error) {
-    alert(resultJson.error);
+    $("#alertModalToggleLabel").text(resultJson.error);
+    $("#alertModalToggle").modal("show");
     return (window.location = "/");
   }
   const {
@@ -30,6 +34,7 @@ const getUserInfo = async (userId) => {
     profile_image: profileImage,
     background_image: backgroundImage,
     bio,
+    interests,
   } = resultJson;
   const userFollowInfo = await fetch(`/api/v1/user/follow/${userId}`, {
     method: "GET",
@@ -46,6 +51,8 @@ const getUserInfo = async (userId) => {
     following,
     followers,
     bio,
+    interests,
+    blocked,
   };
 };
 
@@ -59,13 +66,28 @@ const updateUserInfo = async () => {
     following,
     followers,
     bio,
+    interests,
+    blocked,
   } = await getUserInfo(userId);
+  if (blocked) {
+    return;
+  }
+  $("#profile-center-column").removeClass("invisible");
   const placeholderImage = "https://via.placeholder.com/80";
   $("#name").text(nickname);
   $("#location").text(location);
   $("#website").attr("href", `https://${website}`).text(website);
   $("#followers-count").text(followers.length);
   $("#following-count").text(following.length);
+  if (interests.length > 0 && interests[0] !== null) {
+    $("#interests-icon").removeClass("invisible");
+    for (const interest of interests) {
+      const interestElement = $(
+        `<span class="ms-1 badge rounded-pill text-bg-primary">${interest}</span>`
+      );
+      $("#interests-list").append(interestElement);
+    }
+  }
   if (profileImage) {
     if (profileImage.includes("http")) {
       $("#profile-image").attr("src", profileImage);
@@ -150,6 +172,7 @@ const attachFollowingButtonEvent = (targetUserId) => {
   );
   const confirmUnfollowButton = $("#confirm-unfollow-button");
   confirmUnfollowButton.click(async () => {
+    $("#confirmUnfollowModal").modal("hide");
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
@@ -159,7 +182,8 @@ const attachFollowingButtonEvent = (targetUserId) => {
     });
     const resultJson = await result.json();
     if (resultJson.error) {
-      alert(resultJson.error);
+      $("#alertModalToggleLabel").text(resultJson.error);
+      $("#alertModalToggle").modal("show");
     } else {
       const currentFollowersCount = $("#followers-count").text();
       $("#followers-count").text(parseInt(currentFollowersCount) - 1);
@@ -181,7 +205,8 @@ const attachFolloButtonEvent = (targetUserId) => {
     });
     const resultJson = await result.json();
     if (resultJson.error) {
-      alert(resultJson.error);
+      $("#alertModalToggleLabel").text(resultJson.error);
+      $("#alertModalToggle").modal("show");
     } else {
       const currentFollowersCount = $("#followers-count").text();
       $("#followers-count").text(parseInt(currentFollowersCount) + 1);
@@ -211,7 +236,8 @@ const attachBlockedButtonEvent = (targetUserId) => {
     });
     const resultJson = await result.json();
     if (resultJson.error) {
-      alert(resultJson.error);
+      $("#alertModalToggleLabel").text(resultJson.error);
+      $("#alertModalToggle").modal("show");
     } else {
       $("#block-button").show();
       $("#blocked-button").hide();
@@ -231,7 +257,8 @@ const attachBlockButtonEvent = (targetUserId) => {
     });
     const resultJson = await result.json();
     if (resultJson.error) {
-      alert(resultJson.error);
+      $("#alertModalToggleLabel").text(resultJson.error);
+      $("#alertModalToggle").modal("show");
     } else {
       $("#block-button").hide();
       $("#blocked-button").show();
@@ -345,10 +372,8 @@ const renderFollowList = async (userId, type) => {
   for (let i = 0; i < followList.length; i++) {
     const { follower_user_id, followed_user_id, nickname, profile_image } =
       followList[i];
-    const follow = $('<a class="row w-100 mb-4 px-3"></a>');
-    follow.attr(
-      "href",
-      `/user/${follower_user_id ? follower_user_id : followed_user_id}`
+    const follow = $(
+      '<div class="rounded-pill row w-100 mb-2 px-3 py-3 follow-card"></div>'
     );
     const profileImage = $(
       '<div class="col-5 d-flex align-items-center"></div>'
@@ -372,8 +397,12 @@ const renderFollowList = async (userId, type) => {
     const followInfoCol = $(
       '<div class="col-7 d-flex flex-column justify-content-center my-2"></div>'
     );
-    const followName = $('<p class="fs-5 my-0 px-2"></p>').text(nickname);
-    followInfoCol.append(followName);
+    const followNameLink = $(
+      `<a class="fs-5 my-0 px-2 text-decoration-none" style="color: #0773f4;" href="/user/${
+        follower_user_id ? follower_user_id : followed_user_id
+      }" target="_blank" ></a>`
+    ).text(nickname);
+    followInfoCol.append(followNameLink);
     follow.append(profileImage);
     follow.append(followInfoCol);
     $("#follow-list-details").append(follow);
@@ -434,6 +463,7 @@ const attachClickListeners = () => {
   });
 
   deletePostButton.click(async () => {
+    $("#onfirmDeletePostModal").modal("hide");
     const postId = $("#confirm-delete-post-button").attr("post-id");
     const accessToken = localStorage.getItem("accessToken");
     const result = await fetch(
@@ -446,14 +476,14 @@ const attachClickListeners = () => {
       }
     );
     const resultJson = await result.json();
-    alert(resultJson.status);
+    $("#alertModalToggleLabel").text(resultJson.status);
+    $("#alertModalToggle").modal("show");
     $(`#post-div-${postId}`).remove();
   });
 };
 
 const userId = $("#profile-script").attr("userId");
 const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
-$("body").hide();
 updateUserInfo();
 
 $(document).ready(() => {

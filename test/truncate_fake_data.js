@@ -15,11 +15,11 @@ const truncateFakeData = async () => {
     "users",
   ];
   for (const table of tables) {
-    await truncateTalbe(table);
+    await truncateTable(table);
   }
 };
 
-const truncateTalbe = async (table) => {
+const truncateTable = async (table) => {
   const db = await pool.getConnection();
   await db.query("START TRANSACTION");
   await db.query("SET FOREIGN_KEY_CHECKS = ?", 0);
@@ -30,4 +30,4 @@ const truncateTalbe = async (table) => {
   return;
 };
 
-module.exports = { truncateFakeData };
+module.exports = { truncateFakeData, truncateTable };

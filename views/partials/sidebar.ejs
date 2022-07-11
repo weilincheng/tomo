@@ -39,8 +39,10 @@
       data-toggle="tooltip"
       data-placement="right"
       title="Post"
+      data-bs-toggle="modal"
+      data-bs-target="#newPostModal"
     >
-      <a class="nav-link" href="/user/newpost">
+      <a class="nav-link">
         <i class="fa-regular fa-pen-to-square"></i>
       </a>
     </li>
@@ -66,4 +68,105 @@
     </li>
   </ul>
 </div>
+<div
+  class="modal fade"
+  id="newPostModal"
+  tabindex="-1"
+  aria-labelledby="newPostModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="d-flex justify-content-end">
+          <button
+            type="button"
+            class="btn-close text-end"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <form class="w-100 h-100" enctype="multipart/form-data" id="post-form">
+          <div class="mb-3 px-5">
+            <label for="post-content" class="form-label fs-4 fw-bold"
+              >What's happening?</label
+            >
+            <textarea
+              type="text"
+              class="col-auto form-control"
+              id="post-content"
+              name="post-content"
+              rows="4"
+              maxlength="280"
+            ></textarea>
+            <div class="text-end" id="the-count">
+              <span id="current">0</span>
+              <span id="maximum">/ 280</span>
+            </div>
+          </div>
+          <div class="mb-3 px-5 pb-3">
+            <div class="d-flex flex-column">
+              <label for="post-images" class="form-label fs-6 fw-bold"
+                >Add some images?</label
+              >
+              <div class="flex" id="post-images-container"></div>
+            </div>
+            <input
+              type="file"
+              class="col-auto form-control form-control-sm"
+              id="post-images"
+              name="post-images"
+              multiple
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="w-25 d-flex justify-content-end">
+          <button
+            id="post-button"
+            type="button"
+            class="btn btn-primary w-100 px-5 rounded-pill"
+            data-bs-dismiss="modal"
+          >
+            Post
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="alertModalToggle"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="alertModalToggleLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="alertModalToggleLabel"></h6>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-footer">
+        <button
+          id="alertModalUnderstandButton"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+        >
+          Understand
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="../../static/js/sidebar.js"></script>
+<script src="../../static/js/new_post.js"></script>

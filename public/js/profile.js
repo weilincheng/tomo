@@ -275,7 +275,7 @@ const renderPosts = async (userId, profileImage) => {
     const month = new Intl.DateTimeFormat("en-US", options).format(date);
     const dateString = `${month} ${date.getDate()}`;
     const post = $(
-      '<div class="border border-light rounded d-flex w-100 py-2 px-2 align-items-center"></div>'
+      '<div class="border border-light d-flex w-100 py-2 px-2 align-items-center"></div>'
     );
     post.attr("id", `post-div-${id}`);
     const profileImageDiv = $('<div class="col-1 "></div>');

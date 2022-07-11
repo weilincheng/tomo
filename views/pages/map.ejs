@@ -15,6 +15,7 @@
     tabindex="-1"
     id="offcanvasUserList"
     aria-labelledby="offcanvasUserListLabel"
+    style="width: 450px"
   >
     <div class="offcanvas-header">
       <div class="d-flex align-items-center">
@@ -51,7 +52,9 @@
     data-bs-keyboard="false"
   >
     <div class="offcanvas-header">
-      <h4 class="offcanvas-title" id="filters-coffcanvas-label">Filters</h4>
+      <h5 class="fw-bold offcanvas-title" id="filters-coffcanvas-label">
+        Filters
+      </h5>
       <button
         type="button"
         class="btn-close"
@@ -60,7 +63,7 @@
       ></button>
     </div>
     <div class="offcanvas-body">
-      <div class="mb-5 px-5">
+      <div class="mb-5 px-4">
         <label for="gender" class="form-label fw-bold">Gender</label>
         <select required id="gender" class="form-select" name="gender">
           <option value="">Select the gender</option>
@@ -70,7 +73,7 @@
           <option value="neutral">Neutral</option>
         </select>
       </div>
-      <div class="mb-5 px-5">
+      <div class="mb-5 px-4">
         <label for="min-age" class="form-label fw-bold">Min Age</label>
         <div class="row">
           <div class="col-11">
@@ -114,15 +117,15 @@
           </div>
         </div>
       </div>
-      <div class="mb-5 px-5">
+      <div class="mb-5 px-4">
         <label for="interests" class="form-label fw-bold">Interests</label>
         <div id="interests-select"></div>
       </div>
-      <div class="px-5">
+      <div class="px-4 d-flex justify-content-between">
         <button
           id="filters-apply-button"
           type="button"
-          class="btn btn-primary"
+          class="btn btn-primary rounded-pill px-5 fw-bold"
           data-bs-dismiss="offcanvas"
         >
           Apply
@@ -130,16 +133,15 @@
         <button
           id="filters-clear-button"
           type="button"
-          class="btn btn-secondary"
+          class="btn btn-secondary rounded-pill px-5 fw-bold"
           data-bs-dismiss="offcanvas"
         >
-          Clear Filters
+          Clear
         </button>
       </div>
     </div>
   </div>
 </div>
-<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 <script src="https://d3efyzwqsfoubm.cloudfront.net/src/selectivity.js"></script>
 <link
   rel="stylesheet"

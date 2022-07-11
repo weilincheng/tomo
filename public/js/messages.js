@@ -82,7 +82,9 @@ const renderSenderUserCard = (
   senderUserLastMessage
 ) => {
   const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
-  const card = $('<div class="border-bottom row w-100 py-3 ps-4"></div>');
+  const card = $(
+    '<div class="row w-100 py-2 ps-4" style="min-height:100px"></div>'
+  );
   card.attr("id", `senderUserCard-UserId-${senderUserId}`);
   const profileImageDiv = $(
     '<div class="col-2 d-flex align-self-center position-relative"></div>'
@@ -126,6 +128,8 @@ const renderSenderUserCard = (
   card.append(nameMessageCol);
   $("#user-messages-session").append(card);
   card.click(async () => {
+    $("[id^=senderUserCard-UserId]").removeClass("selected-user-card");
+    card.addClass("selected-user-card");
     const targetUserId = card.attr("id").split("-")[2];
     const blockStatus = await getBlockStatus(accessToken, targetUserId);
     $("#messages-session").empty();

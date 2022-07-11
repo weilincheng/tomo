@@ -167,6 +167,12 @@ const updateUserInterests = async (userId, interests) => {
   return result;
 };
 
+const getInterestsNameMap = async () => {
+  const sql = `select JSON_OBJECTAGG(name, id) as nameIdMap from interests;`;
+  const [result] = await pool.query(sql);
+  return result;
+};
+
 const getPosts = async (userId) => {
   const sql = `SELECT p.id, p.text, p.created_at, JSON_ARRAYAGG(i.image) AS images FROM posts AS p LEFT JOIN post_images AS i ON p.id = i.post_id WHERE p.user_id = ?`;
   const sqlBindings = [userId];
@@ -283,6 +289,7 @@ module.exports = {
   getUserInfo,
   updateUserInfo,
   updateUserInterests,
+  getInterestsNameMap,
   getPosts,
   addPost,
   removePost,

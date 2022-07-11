@@ -1,6 +1,6 @@
 const createInfowindow = (nickname, userId, bio, interests) => {
   let contentString = `
-    <div id="content" class="px-2 py-2"> 
+    <div id="content" class="px-2 py-2 infowindow-content"> 
       <div class="d-flex align-items-center mb-2 justify-content-between">
         <h5 id="firstHeading" class="firstHeading mb-0">${nickname}</h5>
         <a class="infowindowProfileIcon ms-2 rounded-pill" href="/user/${userId}" target="_blank"><i class="fa-regular fa-user"></i></a>
@@ -64,7 +64,7 @@ const createClusterIcon = (map, pos, count) => {
 
 const createIcon = (map, pos, profileImage, animation) => {
   const icon = {
-    url: `${profileImage}`,
+    url: `${profileImage}` + "#custom_marker",
     scaledSize: new google.maps.Size(50, 50), // scaled size
     origin: new google.maps.Point(0, 0), // origin
     anchor: new google.maps.Point(0, 0), // anchor
@@ -198,8 +198,8 @@ const panToCurrentLocationControl = (controlDiv, map) => {
   controlText.style.fontFamily = "Roboto,Arial,sans-serif";
   controlText.style.fontSize = "16px";
   controlText.style.lineHeight = "38px";
-  controlText.style.paddingLeft = "5px";
-  controlText.style.paddingRight = "5px";
+  controlText.style.paddingLeft = "10px";
+  controlText.style.paddingRight = "10px";
   controlText.innerHTML = "Pan to Current Location";
   controlUI.appendChild(controlText);
 
@@ -232,8 +232,8 @@ const userListControl = (controlDiv) => {
   controlText.style.fontFamily = "Roboto,Arial,sans-serif";
   controlText.style.fontSize = "16px";
   controlText.style.lineHeight = "38px";
-  controlText.style.paddingLeft = "5px";
-  controlText.style.paddingRight = "5px";
+  controlText.style.paddingLeft = "10px";
+  controlText.style.paddingRight = "10px";
   controlText.innerHTML = "Users List";
   controlUI.appendChild(controlText);
 };
@@ -289,7 +289,7 @@ const getCurrentLocaiton = async (map) => {
           bio,
           interests
         );
-        currentUserIcon.addListener("click", () => {
+        currentUserIcon.addListener("mouseover", () => {
           currentUserInfowindow.open({
             anchor: currentUserIcon,
             map,
@@ -414,18 +414,38 @@ const renderUsersIcon = async (
           bio,
           interests
         );
-        userIcon.addListener("click", () => {
+        userIcon.addListener("mouseover", () => {
           iconInfowindow.open({
             anchor: userIcon,
             map,
             shouldFocus: false,
           });
         });
+        userIcon.addListener("mouseout", function () {
+          setTimeout(function () {
+            if (!mouseOverInfoWindow) {
+              iconInfowindow.close();
+            }
+          }, 200);
+        });
+        google.maps.event.addListener(iconInfowindow, "domready", function () {
+          $(".infowindow-content").mouseover(() => {
+            mouseOverInfoWindow = true;
+          });
+          $(".infowindow-content").mouseout(() => {
+            mouseOverInfoWindow = false;
+            setTimeout(function () {
+              if (!mouseOverInfoWindow) {
+                iconInfowindow.close();
+              }
+            }, 50);
+          });
+        });
       }
     }
   }
 };
-
+let mouseOverInfoWindow = false;
 const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
   while (markers.length > 0) {
     const marker = markers.pop();
@@ -493,7 +513,7 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
 
 const renderUserCard = async (userId, nickname, profileImage, bio) => {
   const user = $(
-    '<div class="row w-100 mb-4 px-3 rounded-pill user-card text-decoration-none align-items-center"></div>'
+    '<div class="row w-100 px-3 py-2 user-card text-decoration-none align-items-center"></div>'
   );
   const profileImageDiv = $('<div class="col-2 d-flex "></div>');
   profileImageDiv.css({
@@ -644,6 +664,7 @@ let map,
   visibleLatUR,
   visibleLngUR,
   zoomLevel;
+renderInterestsSelect();
 window.initMap = initMap;
 
 $("#signin").click(() => {
@@ -652,5 +673,3 @@ $("#signin").click(() => {
 $("#signup").click(() => {
   window.location.href = "/signup";
 });
-
-renderInterestsSelect();

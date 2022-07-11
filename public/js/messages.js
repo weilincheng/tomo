@@ -83,7 +83,7 @@ const renderSenderUserCard = (
 ) => {
   const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
   const card = $(
-    '<div class="row w-100 py-3 ps-4" style="min-height:100px"></div>'
+    '<div class="row w-100 py-2 ps-4" style="min-height:100px"></div>'
   );
   card.attr("id", `senderUserCard-UserId-${senderUserId}`);
   const profileImageDiv = $(

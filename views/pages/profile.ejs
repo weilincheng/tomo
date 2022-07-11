@@ -7,9 +7,7 @@
   userId="<%= userId%>"
 ></script>
 <div class="row h-100 w-100 pt-3">
-  <div class="col-1 px-0 mx-0">
-    <%- include("../partials/sidebar") -%>
-  </div>
+  <div class="col-1 px-0 mx-0"><%- include("../partials/sidebar") -%></div>
   <div
     class="invisible col-10 d-flex justify-content-center"
     id="profile-center-column"
@@ -37,7 +35,7 @@
           <button
             id="edit-profile-button"
             type="button"
-            class="btn btn-outline-primary rounded-pill"
+            class="btn btn-outline-primary rounded-pill invisible"
             data-mdb-ripple-color="dark"
             style="z-index: 1"
           >
@@ -46,7 +44,7 @@
           <button
             id="follow-button"
             type="button"
-            class="btn btn-outline-primary rounded-pill
+            class="btn btn-outline-primary rounded-pill invisible"
             data-mdb-ripple-color="dark"
             style="z-index: 1"
           >
@@ -55,7 +53,7 @@
           <button
             id="following-button"
             type="button"
-            class="btn btn-outline-primary rounded-pill"
+            class="btn btn-outline-primary rounded-pill invisible"
             data-mdb-ripple-color="dark"
             style="z-index: 1"
             data-bs-toggle="modal"
@@ -120,7 +118,7 @@
           <button
             id="block-button"
             type="button"
-            class="btn btn-outline-danger rounded-pill"
+            class="btn btn-outline-danger rounded-pill invisible"
             data-mdb-ripple-color="dark"
             style="z-index: 1"
             data-bs-toggle="modal"
@@ -131,7 +129,7 @@
           <button
             id="blocked-button"
             type="button"
-            class="btn btn-outline-danger rounded-pill"
+            class="btn btn-outline-danger rounded-pill invisible"
             data-mdb-ripple-color="dark"
             style="z-index: 1"
           >

@@ -62,6 +62,7 @@ const attachPostEvent = () => {
       $("#alertModalToggle").modal("show");
       return;
     }
+    $("#post-content").val("");
     const formData = new FormData(document.getElementById("post-form"));
     sendPostFormData(formData);
   });

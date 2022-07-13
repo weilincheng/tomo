@@ -57,7 +57,6 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
         id,
         nickname,
         email,
-        location,
         profile_image: profileImage,
         background_image: backgroundImage,
       },

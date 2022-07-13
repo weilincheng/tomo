@@ -76,7 +76,15 @@ const updateUserInfo = async () => {
   const placeholderImage = "https://via.placeholder.com/80";
   $("#name").text(nickname);
   $("#location").text(location);
-  $("#website").attr("href", `https://${website}`).text(website);
+  if (website) {
+    $("#website-icon").removeClass("invisible");
+    if (website.includes("http")) {
+      $("#website").attr("href", website);
+    } else {
+      $("#website").attr("href", `http://${website}`).text(website);
+    }
+  }
+
   $("#followers-count").text(followers.length);
   $("#following-count").text(following.length);
   if (interests.length > 0 && interests[0] !== null) {

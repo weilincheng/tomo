@@ -116,7 +116,7 @@ const updateUserInfo = async (req, res) => {
   }
   const { "profile-image": profileImage, "background-image": backgroundImage } =
     req.files;
-  const {
+  let {
     nickname,
     bio,
     "geo-location-lat": geoLocationLat,
@@ -136,12 +136,16 @@ const updateUserInfo = async (req, res) => {
     const result = await s3Upload(backgroundImage);
     backgroundImageName = result;
   }
+  if (website) {
+    website = website.replace(/^https?:\/\//, "");
+  }
+
   User.updateUserInfo(
     userId,
     nickname,
     bio,
-    geoLocationLat,
-    geoLocationLng,
+    geoLocationLat ? parseFloat(geoLocationLat) : null,
+    geoLocationLng ? parseFloat(geoLocationLng) : null,
     displayGeoLocation === "on" ? true : false,
     website,
     profileImageName,

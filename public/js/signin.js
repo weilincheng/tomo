@@ -29,7 +29,7 @@ $("#signin-button").click(async (event) => {
   }
   const { access_token } = resultJson;
   localStorage.setItem("accessToken", access_token);
-  return (window.location = "/");
+  return (window.location = "/map");
 });
 
 $(".nav-item").click((event) => {

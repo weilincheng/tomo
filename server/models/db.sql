@@ -112,3 +112,13 @@ CREATE TABLE `notification_content`(
     `content` VARCHAR(255) NOT NULL,
     FOREIGN KEY(`notification_id`) REFERENCES `notifications`(`id`)
 );
+
+SELECT u.id, u.nickname, u.created_at, u.website, u.profile_image, u.bio, u.geo_location_lat, u.geo_location_lng, u.gender,  
+    DATE_FORMAT(FROM_DAYS(DATEDIFF(now(), u.birthdate)), '%Y')+0 AS age,
+    JSON_ARRAYAGG(i.name) as interests
+FROM users AS u
+LEFT JOIN user_interests AS ui ON u.id = ui.user_id
+LEFT JOIN interests AS i ON ui.interest_id = i.id
+WHERE u.display_geo_location = true AND u.geo_location_lat BETWEEN 25.029807317238774 AND 25.030333479713914 AND u.geo_location_lng BETWEEN  121.53521727816917 AND 121.53606820897915 
+AND "Pilates" IN (SELECT i.name FROM user_interests AS ui LEFT JOIN interests AS i ON ui.interest_id = i.id WHERE ui.user_id = u.id)
+GROUP BY u.id;

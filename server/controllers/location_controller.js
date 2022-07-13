@@ -1,17 +1,11 @@
 const Location = require("../models/location_model");
 
 const getUsersLocation = async (req, res) => {
-  const {
-    min_age,
-    max_age,
-    gender,
-    interests,
-    latLL,
-    lngLL,
-    latUR,
-    lngUR,
-    zoomLevel,
-  } = req.query;
+  const { gender, interests, latLL, lngLL, latUR, lngUR, zoomLevel } =
+    req.query;
+  let { min_age, max_age } = req.query;
+  min_age = parseInt(min_age) === 20 ? null : parseInt(min_age);
+  max_age = parseInt(max_age) === 100 ? null : parseInt(max_age);
   const result = await Location.getUsersLocation(
     min_age,
     max_age,

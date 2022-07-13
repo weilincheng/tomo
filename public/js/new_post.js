@@ -57,7 +57,7 @@ const attachImageEvent = () => {
 
 const attachPostEvent = () => {
   $("#post-button").click(() => {
-    if ($("#post-content").val().length === 0) {
+    if ($("#post-content").val().trim.length === 0) {
       $("#alertModalToggleLabel").text("Please enter some content");
       $("#alertModalToggle").modal("show");
       return;

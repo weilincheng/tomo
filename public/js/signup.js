@@ -35,5 +35,13 @@ $("#signup-button").click(async (event) => {
   }
   const { access_token } = resultJson;
   localStorage.setItem("accessToken", access_token);
-  return (window.location = "/");
+  return (window.location = "/map");
+});
+
+$(".nav-item").click((event) => {
+  event.preventDefault();
+  $(".nav-item").attr("data-bs-target", "#alertModalToggle");
+  $(".nav-item").attr("data-bs-toggle", "modal");
+  $("#alertModalToggleLabel").text("Please sign in first!");
+  $("#alertModalToggle").modal("show");
 });

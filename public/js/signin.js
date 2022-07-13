@@ -16,6 +16,11 @@ const signIn = async () => {
 
 $("#signin-button").click(async (event) => {
   event.preventDefault();
+  if ($("#email").val().trim() === "" || $("#password").val().trim() === "") {
+    $("#alertModalToggleLabel").text("Email or Password is empty");
+    $("#alertModalToggle").modal("show");
+    return;
+  }
   const result = await signIn();
   const resultJson = await result.json();
   if (resultJson.error) {

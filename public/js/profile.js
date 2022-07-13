@@ -78,8 +78,9 @@ const updateUserInfo = async () => {
   $("#location").text(location);
   if (website) {
     $("#website-icon").removeClass("invisible");
+    $("#website-icon").show();
     if (website.includes("http")) {
-      $("#website").attr("href", website);
+      $("#website").attr("href", website).text(website);
     } else {
       $("#website").attr("href", `http://${website}`).text(website);
     }
@@ -517,5 +518,6 @@ updateUserInfo();
 
 $(document).ready(() => {
   $("#send-message-link").hide();
+  $("#website-icon").hide();
   attachClickListeners();
 });

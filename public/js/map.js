@@ -18,7 +18,7 @@ const createInfowindow = (nickname, userId, bio, interests) => {
           `;
   }
   if (interests.length > 0 && interests[0] !== null) {
-    contentString += `<i class="fa-regular fa-heart"></i>`;
+    contentString += `<i class="fa-solid fa-heart"></i>`;
     for (const interest of interests) {
       contentString += `
         <span class="ms-1 badge rounded-pill text-bg-primary py-1">${interest}</span>

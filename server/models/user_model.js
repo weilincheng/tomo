@@ -4,19 +4,13 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { generateToken, verifyToken } = require("../../utilities/utilities");
 
-const signUp = async (name, email, password, location, website) => {
-  const sql = `INSERT INTO users (nickname, email, password, location, website) VALUES (?, ?, ?, ?, ?)`;
+const signUp = async (name, email, password, profileImage, backgroundImage) => {
+  const sql = `INSERT INTO users (nickname, email, password, profile_image, background_image) VALUES (?, ?, ?, ?, ?)`;
   const hash = await bcrypt.hash(password, saltRounds);
-  const sqlBindings = [name, email, hash, location, website];
+  const sqlBindings = [name, email, hash, profileImage, backgroundImage];
   try {
     const [result] = await pool.query(sql, sqlBindings);
-    const access_token = generateToken(
-      result.insertId,
-      name,
-      email,
-      location,
-      website
-    );
+    const access_token = generateToken(result.insertId, name, email);
     return {
       access_token,
       access_expiration: TOKEN_EXPIRATION,
@@ -45,9 +39,8 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
     nickname,
     email,
     password,
-    location,
-    website,
     profile_image: profileImage,
+    background_image: backgroundImage,
   } = result[0];
   const match = await bcrypt.compare(signInPassword, password);
   if (!match) {
@@ -56,14 +49,7 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
       status: 403,
     };
   } else {
-    const access_token = generateToken(
-      id,
-      nickname,
-      signInEmail,
-      location,
-      website,
-      profileImage
-    );
+    const access_token = generateToken(id, nickname, signInEmail, profileImage);
     return {
       access_token,
       access_expiration: TOKEN_EXPIRATION,
@@ -72,8 +58,8 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
         nickname,
         email,
         location,
-        website,
         profile_image: profileImage,
+        background_image: backgroundImage,
       },
     };
   }
@@ -81,9 +67,9 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
 
 const profile = (accessToken) => {
   try {
-    const { id, nickname, email, location, website, profileImage } =
+    const { id, nickname, email, profileImage, backgroundImage } =
       verifyToken(accessToken);
-    return { id, nickname, email, location, website, profileImage };
+    return { id, nickname, email, profileImage, backgroundImage };
   } catch (error) {
     return { status: 401, error: "Login has expired. Please sign in." };
   }

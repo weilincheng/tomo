@@ -37,3 +37,11 @@ $("#signup-button").click(async (event) => {
   localStorage.setItem("accessToken", access_token);
   return (window.location = "/");
 });
+
+$(".nav-item").click((event) => {
+  event.preventDefault();
+  $(".nav-item").attr("data-bs-target", "#alertModalToggle");
+  $(".nav-item").attr("data-bs-toggle", "modal");
+  $("#alertModalToggleLabel").text("Please sign in first!");
+  $("#alertModalToggle").modal("show");
+});

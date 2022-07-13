@@ -13,7 +13,7 @@ const checkUserIdExist = (targetUserId, req, res) => {
 };
 
 const signUp = async (req, res) => {
-  const { name, email, password, location, website } = req.body;
+  const { name, email, password } = req.body;
   if (!name || !password || !email) {
     res.status(400).json({ error: "Name, password, email are required" });
     return;
@@ -23,11 +23,16 @@ const signUp = async (req, res) => {
     return;
   }
 
-  if (website && !validator.isURL(website)) {
-    res.status(400).json({ error: "Website is invalid" });
-    return;
-  }
-  const result = await User.signUp(name, email, password, location, website);
+  const profileImage = `asset/default_profile.png`;
+  const backgroundImage = `asset/default_background.jpg`;
+
+  const result = await User.signUp(
+    name,
+    email,
+    password,
+    profileImage,
+    backgroundImage
+  );
   if (result.status === 403) {
     res.status(403).json({ error: result.error });
     return;
@@ -39,8 +44,6 @@ const signUp = async (req, res) => {
       id: result.id,
       nickname: name,
       email,
-      location,
-      website,
     },
   });
 };

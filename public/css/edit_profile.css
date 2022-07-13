@@ -1,0 +1,7 @@
+img[src$="#custom_marker"] {
+  border-radius: 50%;
+}
+
+#profile-image-source {
+  border-radius: 50%;
+}

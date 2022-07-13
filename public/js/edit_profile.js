@@ -80,9 +80,13 @@ const renderUserProfile = async () => {
   $("#geo-location-lat").val(geoLocationLat);
   $("#geo-location-lng").val(geoLocationLng);
   $("#display-geo-location").prop("checked", displayGeoLocation);
-  $("#bio-current").text(bio.length);
+  if (bio) {
+    $("#bio-current").text(bio.length);
+  }
   $("#website").val(website);
-  $("#website-current").text(website.length);
+  if (website) {
+    $("#website-current").text(website.length);
+  }
   $("#profile-image-source").attr(
     "src",
     profileImage

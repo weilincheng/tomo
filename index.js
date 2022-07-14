@@ -17,6 +17,7 @@ const io = new Server(server, {
     origin: "*",
   },
 });
+const { rateLimiter } = require("./utilities/rate_limiting.js");
 
 app.use(express.json());
 app.set("json spaces", 2);
@@ -24,6 +25,8 @@ app.set("socketio", io);
 app.use("/static", express.static(__dirname + "/public"));
 app.use(cors());
 app.set("view engine", "ejs");
+
+app.use(rateLimiter());
 
 app.get("/", (req, res) => {
   res.render("pages/landing_page.ejs");

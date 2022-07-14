@@ -1,7 +1,7 @@
 const { pool } = require("./mysql_connection");
 
 const getMessages = async (currentUserId, targetUserId) => {
-  const sqlLimitCondition = `ORDER BY created_at DESC LIMIT 20`;
+  const sqlLimitCondition = `ORDER BY created_at DESC LIMIT 100`;
   if (targetUserId === "all") {
     const sql1 = `SELECT u.nickname, u.profile_image, m.sender_user_id, m.receiver_user_id, m.created_at, mc.type, mc.content FROM messages AS m INNER JOIN message_content AS mc INNER JOIN users AS u ON m.id = mc.message_id AND m.sender_user_id = u.id`;
     const sqlWhereCondition1 = `WHERE receiver_user_id = ?`;

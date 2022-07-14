@@ -9,8 +9,8 @@ const getBlockStatus = async (accessToken, targetUserId) => {
   return resultJson;
 };
 let timeout = false;
-let curTime = new Date();
-let lastCreatedDate = new Date("1971-01-01T23:50:21.817Z");
+let lastTime = new Date();
+let lastProfileImage = false;
 const renderMessagesHistory = async (
   accessToken,
   currentUserId,
@@ -133,6 +133,7 @@ const renderSenderUserCard = (
   card.append(nameMessageCol);
   $("#user-messages-session").append(card);
   card.click(async () => {
+    lastTime = new Date();
     $("[id^=senderUserCard-UserId]").removeClass("selected-user-card");
     card.addClass("selected-user-card");
     const targetUserId = card.attr("id").split("-")[2];
@@ -276,7 +277,7 @@ const createMessage = (
   ];
   const message = $("<div></div>");
   const messageContent = $(
-    "<p class='fs-5 rounded-pill mb-1 px-3 py-2' style='cursor: default'></p>"
+    "<p class='fs-5 rounded mb-1 px-4 py-3' style='cursor: default; max-width: 60%'></p>"
   ).text(content);
   const messageTime = $(
     "<p class='fs-6 lh-sm text-secondary text-opacity-75'></p>"
@@ -297,15 +298,35 @@ const prependMessage = (message, createdDate, sender_user_id) => {
     const profileImage = $("#target-user-profile-image").clone();
     profileImage.removeClass("align-self-center");
     profileImage.addClass("align-self-start me-2");
-    profileImage.css({ width: "46px", height: "46px" });
-    message.addClass("d-flex align-items-start flex-column");
+    profileImage.css({ width: "62px", height: "62px" });
+    message.addClass("w-100 d-flex align-items-start flex-column");
     message.children().first().addClass("bg-light");
     messageWithProfile.append(profileImage);
     messageWithProfile.append(message);
-    if (Date(createdDate) - lastCreatedDate < 60000) {
+    const [year1, month1, day1, hour1, minutes1] = [
+      new Date(lastTime).getFullYear(),
+      new Date(lastTime).getMonth(),
+      new Date(lastTime).getDate(),
+      new Date(lastTime).getHours(),
+      new Date(lastTime).getMinutes(),
+    ];
+    const [year2, month2, day2, hour2, minutes2] = [
+      new Date(createdDate).getFullYear(),
+      new Date(createdDate).getMonth(),
+      new Date(createdDate).getDate(),
+      new Date(createdDate).getHours(),
+      new Date(createdDate).getMinutes(),
+    ];
+    if (
+      year1 === year2 &&
+      month1 === month2 &&
+      day1 === day2 &&
+      hour1 === hour2 &&
+      minutes1 === minutes2
+    ) {
       profileImage.addClass("invisible");
     } else {
-      lastCreatedDate = Date(createdDate);
+      lastTime = new Date(createdDate).getTime();
     }
     $("#messages-session").prepend(messageWithProfile);
   }
@@ -319,22 +340,42 @@ const appendMessage = (message, currentDate, sender_user_id) => {
     );
     message.children().first().addClass("btn-info");
   } else {
-    const messageWithProfile = $("<div class='d-flex'></div>");
+    const messageWithProfile = $("<div class='d-flex w-100'></div>");
     const profileImage = $("#target-user-profile-image").clone();
     profileImage.removeClass("align-self-center");
     profileImage.addClass("align-self-start me-2");
-    profileImage.css({ width: "46px", height: "46px" });
-    message.addClass("d-flex align-items-start flex-column");
+    profileImage.css({ width: "62px", height: "62px" });
+    message.addClass("w-100 d-flex align-items-start flex-column");
     message.children().first().addClass("bg-light");
     messageWithProfile.append(profileImage);
     messageWithProfile.append(message);
-    console.log(Date.now() - curTime);
-    if (Date.now() - curTime < 60000) {
-      profileImage.addClass("invisible");
-      message.children().last().addClass("invisible");
-      message.children().last().hide();
+    const [year1, month1, day1, hour1, minutes1] = [
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate(),
+      new Date().getHours(),
+      new Date().getMinutes(),
+    ];
+    const [year2, month2, day2, hour2, minutes2] = [
+      new Date(lastTime).getFullYear(),
+      new Date(lastTime).getMonth(),
+      new Date(lastTime).getDate(),
+      new Date(lastTime).getHours(),
+      new Date(lastTime).getMinutes(),
+    ];
+
+    if (
+      year1 === year2 &&
+      month1 === month2 &&
+      day1 === day2 &&
+      hour1 === hour2 &&
+      minutes1 === minutes2
+    ) {
+      lastProfileImage.addClass("invisible");
+      lastProfileImage = profileImage;
     } else {
-      curTime = Date.now();
+      lastProfileImage = profileImage;
+      lastTime = new Date().getTime();
     }
     $("#messages-session").append(messageWithProfile);
   }

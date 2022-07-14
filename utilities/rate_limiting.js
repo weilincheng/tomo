@@ -21,8 +21,9 @@ const rateLimiter = () => {
       } else {
         next();
       }
+    } else {
+      next();
     }
-    next();
   };
 };
 

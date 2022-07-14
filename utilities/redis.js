@@ -1,11 +1,29 @@
 const { createClient } = require("redis");
 require("dotenv").config();
+const {
+  REDIS_USER_PRODUCTION,
+  REDIS_HOST_PRODUCTION,
+  REDIS_PASSWORD_PRODUCTION,
+  REDIS_USER_DEVELOPMENT,
+  REDIS_HOST_DEVELOPMENT,
+  REDIS_PASSWORD_DEVELOPMENT,
+  REDIS_PORT,
+  NODE_ENV,
+} = process.env;
 
-const client = createClient({
-  url: `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-});
+const config = {
+  production: {
+    url: `redis://${REDIS_USER_PRODUCTION}:${REDIS_PASSWORD_PRODUCTION}@${REDIS_HOST_PRODUCTION}:${REDIS_PORT}`,
+  },
+  development: {
+    url: `redis://${REDIS_USER_DEVELOPMENT}:${REDIS_PASSWORD_DEVELOPMENT}@${REDIS_HOST_DEVELOPMENT}:${REDIS_PORT}`,
+  },
+};
+
+const client = createClient(config[NODE_ENV]);
 
 client.ready = false;
+client.connect();
 
 client.on("connect", () => {
   console.log("Connecting to Redis server...");
@@ -16,9 +34,11 @@ client.on("ready", () => {
   console.log("Redis connected");
 });
 
-client.on("error", (err) => {
+client.on("error", () => {
   client.ready = false;
-  console.log("Not able to connect Redis: ", err);
+  if (NODE_ENV === "production") {
+    console.log("Not able to connect Redis");
+  }
 });
 
 client.on("end", () => {

@@ -86,7 +86,7 @@ const renderSenderUserCard = (
 ) => {
   const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
   const card = $(
-    '<div class="row w-100 py-2 ps-4" style="min-height:100px"></div>'
+    '<div class="row w-100 py-2 ps-4" style="min-height:100px; cursor:pointer;"></div>'
   );
   card.attr("id", `senderUserCard-UserId-${senderUserId}`);
   const profileImageDiv = $(
@@ -149,6 +149,7 @@ const renderSenderUserCard = (
     const profileImage = card.children().first().clone();
     profileImage.empty();
     profileImage.css({ width: "30px", height: "30px" });
+    profileImage.attr("id", "target-user-profile-image");
     const profileName = card.children().last().children().first().clone();
     profileName.addClass("fs-3 fw-bold");
     profileName.html(
@@ -250,20 +251,34 @@ const createMessage = (
 ) => {
   const date = new Date(createdAt);
   const [month, day, year, hour, minutes, seconds] = [
-    date.getMonth() + 1,
+    date.getMonth(),
     date.getDate(),
     date.getFullYear(),
     date.getHours(),
     date.getMinutes() >= 10 ? date.getMinutes() : "0" + date.getMinutes(),
     date.getSeconds(),
   ];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const message = $("<div></div>");
-  const messageContent = $("<p class='btn fs-5 rounded-pill mb-1'></p>").text(
-    content
-  );
-  const messageTime = $("<p class='fs-6 fw-lighter px-3'></p>").text(
-    `${month}/${day}/${year} ${hour}:${minutes}:${seconds}`
-  );
+  const messageContent = $(
+    "<p class='fs-5 rounded-pill mb-1 px-3 py-2' style='cursor: default'></p>"
+  ).text(content);
+  const messageTime = $(
+    "<p class='fs-6 lh-sm text-secondary text-opacity-75'></p>"
+  ).text(`${months[month]} ${day}, ${year}, ${hour}:${minutes}`);
   message.append(messageContent);
   message.append(messageTime);
   return message;
@@ -276,10 +291,16 @@ const prependMessage = (message, sender_user_id) => {
     );
     message.children().first().addClass("btn-info");
   } else {
-    $("#messages-session").prepend(
-      message.addClass("d-flex align-items-start flex-column")
-    );
-    message.children().first().addClass("btn-light");
+    const messageWithProfile = $("<div class='d-flex'></div>");
+    const profileImage = $("#target-user-profile-image").clone();
+    profileImage.removeClass("align-self-center");
+    profileImage.addClass("align-self-start me-2");
+    profileImage.css({ width: "46px", height: "46px" });
+    message.addClass("d-flex align-items-start flex-column");
+    message.children().first().addClass("bg-light");
+    messageWithProfile.append(profileImage);
+    messageWithProfile.append(message);
+    $("#messages-session").prepend(messageWithProfile);
   }
 };
 

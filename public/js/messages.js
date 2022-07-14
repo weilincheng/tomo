@@ -312,10 +312,16 @@ const appendMessage = (message, sender_user_id) => {
     );
     message.children().first().addClass("btn-info");
   } else {
-    messageSession.append(
-      message.addClass("d-flex align-items-start flex-column")
-    );
-    message.children().first().addClass("btn-light");
+    const messageWithProfile = $("<div class='d-flex'></div>");
+    const profileImage = $("#target-user-profile-image").clone();
+    profileImage.removeClass("align-self-center");
+    profileImage.addClass("align-self-start me-2");
+    profileImage.css({ width: "46px", height: "46px" });
+    message.addClass("d-flex align-items-start flex-column");
+    message.children().first().addClass("bg-light");
+    messageWithProfile.append(profileImage);
+    messageWithProfile.append(message);
+    $("#messages-session").append(messageWithProfile);
   }
   clearTimeout(timeout);
   timeout = setTimeout(() => {

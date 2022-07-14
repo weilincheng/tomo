@@ -130,7 +130,14 @@ async function initMap() {
       });
     }
   };
-  google.maps.event.addListener(map, "idle", redrawUsersIcon);
+
+  let timeout = false,
+    delay = 250;
+
+  google.maps.event.addListener(map, "idle", () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(redrawUsersIcon, delay);
+  });
   attachAgeRangeListener();
   attachApplyFilterListener(map);
 }

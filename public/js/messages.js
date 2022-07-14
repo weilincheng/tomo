@@ -8,7 +8,7 @@ const getBlockStatus = async (accessToken, targetUserId) => {
   const resultJson = await result.json();
   return resultJson;
 };
-
+let timeout = false;
 const renderMessagesHistory = async (
   accessToken,
   currentUserId,
@@ -41,10 +41,13 @@ const renderMessagesHistory = async (
     prependMessage(message, sender_user_id);
   }
   const messageSession = $("#messages-session");
-  messageSession.animate(
-    { scrollTop: messageSession.prop("scrollHeight") },
-    1000
-  );
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    messageSession.animate(
+      { scrollTop: messageSession.prop("scrollHeight") },
+      1000
+    );
+  }, 250);
 };
 
 const renderSenderUser = async (accessToken, currentUserId) => {
@@ -293,10 +296,17 @@ const appendMessage = (message, sender_user_id) => {
     );
     message.children().first().addClass("btn-light");
   }
-  messageSession.animate(
-    { scrollTop: messageSession.prop("scrollHeight") },
-    1000
-  );
+  // messageSession.animate(
+  //   { scrollTop: messageSession.prop("scrollHeight") },
+  //   1000
+  // );
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    messageSession.animate(
+      { scrollTop: messageSession.prop("scrollHeight") },
+      1000
+    );
+  }, 250);
 };
 
 const saveMessages = async (currentUserId, targetUserId, type, content) => {

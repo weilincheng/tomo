@@ -9,6 +9,8 @@ const getBlockStatus = async (accessToken, targetUserId) => {
   return resultJson;
 };
 let timeout = false;
+let curTime = new Date();
+let lastCreatedDate = new Date("1971-01-01T23:50:21.817Z");
 const renderMessagesHistory = async (
   accessToken,
   currentUserId,
@@ -38,7 +40,7 @@ const renderMessagesHistory = async (
       content,
       $("#messages-session")
     );
-    prependMessage(message, sender_user_id);
+    prependMessage(message, created_at, sender_user_id);
   }
   const messageSession = $("#messages-session");
   clearTimeout(timeout);
@@ -187,7 +189,7 @@ const emitSaveMessages = (currentUserId, targetUserId) => {
     "text",
     content
   );
-  appendMessage(message, currentUserId);
+  appendMessage(message, currentDate, currentUserId);
   $("#message-content-input").val("");
   emitPrivateMessage(
     localStorage.getItem("name"),
@@ -284,7 +286,7 @@ const createMessage = (
   return message;
 };
 
-const prependMessage = (message, sender_user_id) => {
+const prependMessage = (message, createdDate, sender_user_id) => {
   if (sender_user_id === parseInt(currentUserId)) {
     $("#messages-session").prepend(
       message.addClass("d-flex align-items-end flex-column")
@@ -300,11 +302,16 @@ const prependMessage = (message, sender_user_id) => {
     message.children().first().addClass("bg-light");
     messageWithProfile.append(profileImage);
     messageWithProfile.append(message);
+    if (Date(createdDate) - lastCreatedDate < 60000) {
+      profileImage.addClass("invisible");
+    } else {
+      lastCreatedDate = Date(createdDate);
+    }
     $("#messages-session").prepend(messageWithProfile);
   }
 };
 
-const appendMessage = (message, sender_user_id) => {
+const appendMessage = (message, currentDate, sender_user_id) => {
   const messageSession = $("#messages-session");
   if (parseInt(sender_user_id) === parseInt(currentUserId)) {
     messageSession.append(
@@ -321,6 +328,14 @@ const appendMessage = (message, sender_user_id) => {
     message.children().first().addClass("bg-light");
     messageWithProfile.append(profileImage);
     messageWithProfile.append(message);
+    console.log(Date.now() - curTime);
+    if (Date.now() - curTime < 60000) {
+      profileImage.addClass("invisible");
+      message.children().last().addClass("invisible");
+      message.children().last().hide();
+    } else {
+      curTime = Date.now();
+    }
     $("#messages-session").append(messageWithProfile);
   }
   clearTimeout(timeout);
@@ -422,7 +437,7 @@ const initializeSenderSocket = async () => {
           parseInt($("#messages-session").attr("target-user-id")) ===
           parseInt(senderUserId)
         ) {
-          appendMessage(message, senderUserId);
+          appendMessage(message, currentDate, senderUserId);
         }
       }
     }

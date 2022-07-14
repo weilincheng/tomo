@@ -8,7 +8,7 @@ const getBlockStatus = async (accessToken, targetUserId) => {
   const resultJson = await result.json();
   return resultJson;
 };
-
+let timeout = false;
 const renderMessagesHistory = async (
   accessToken,
   currentUserId,
@@ -41,10 +41,13 @@ const renderMessagesHistory = async (
     prependMessage(message, sender_user_id);
   }
   const messageSession = $("#messages-session");
-  messageSession.animate(
-    { scrollTop: messageSession.prop("scrollHeight") },
-    1000
-  );
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    messageSession.animate(
+      { scrollTop: messageSession.prop("scrollHeight") },
+      1000
+    );
+  }, 250);
 };
 
 const renderSenderUser = async (accessToken, currentUserId) => {
@@ -160,58 +163,40 @@ const renderSenderUserCard = (
     sendMessageButton.show();
     messageInput.show();
     sendMessageButton.click(() => {
-      const content = $("#message-content-input").val();
-      if (content === "") {
-        return;
-      }
-      const currentDate = new Date();
-      const message = createMessage(
-        currentUserId,
-        targetUserId,
-        currentDate,
-        "text",
-        content
-      );
-      appendMessage(message, currentUserId);
-      $("#message-content-input").val("");
-      emitPrivateMessage(
-        localStorage.getItem("name"),
-        currentUserId,
-        targetUserId,
-        $(`#senderUserCard-UserId-${targetUserId}`).attr("socket-id"),
-        content,
-        currentDate
-      );
-      saveMessages(currentUserId, targetUserId, "text", content);
+      emitSaveMessages(currentUserId, targetUserId);
     });
     $("#message-content-input").on("keypress", (e) => {
       if (e.which == 13) {
-        const content = $("#message-content-input").val();
-        if (content === "") {
-          return;
-        }
-        const currentDate = new Date();
-        const message = createMessage(
-          currentUserId,
-          targetUserId,
-          currentDate,
-          "text",
-          content
-        );
-        appendMessage(message, currentUserId);
-        $("#message-content-input").val("");
-        emitPrivateMessage(
-          localStorage.getItem("name"),
-          currentUserId,
-          targetUserId,
-          $(`#senderUserCard-UserId-${targetUserId}`).attr("socket-id"),
-          content,
-          currentDate
-        );
-        saveMessages(currentUserId, targetUserId, "text", content);
+        emitSaveMessages(currentUserId, targetUserId);
       }
     });
   });
+};
+
+const emitSaveMessages = (currentUserId, targetUserId) => {
+  const content = $("#message-content-input").val().trim();
+  if (content === "") {
+    return;
+  }
+  const currentDate = new Date();
+  const message = createMessage(
+    currentUserId,
+    targetUserId,
+    currentDate,
+    "text",
+    content
+  );
+  appendMessage(message, currentUserId);
+  $("#message-content-input").val("");
+  emitPrivateMessage(
+    localStorage.getItem("name"),
+    currentUserId,
+    targetUserId,
+    $(`#senderUserCard-UserId-${targetUserId}`).attr("socket-id"),
+    content,
+    currentDate
+  );
+  saveMessages(currentUserId, targetUserId, "text", content);
 };
 
 const emitPrivateMessage = (
@@ -311,10 +296,13 @@ const appendMessage = (message, sender_user_id) => {
     );
     message.children().first().addClass("btn-light");
   }
-  messageSession.animate(
-    { scrollTop: messageSession.prop("scrollHeight") },
-    1000
-  );
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    messageSession.animate(
+      { scrollTop: messageSession.prop("scrollHeight") },
+      1000
+    );
+  }, 250);
 };
 
 const saveMessages = async (currentUserId, targetUserId, type, content) => {

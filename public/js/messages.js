@@ -160,58 +160,40 @@ const renderSenderUserCard = (
     sendMessageButton.show();
     messageInput.show();
     sendMessageButton.click(() => {
-      const content = $("#message-content-input").val();
-      if (content === "") {
-        return;
-      }
-      const currentDate = new Date();
-      const message = createMessage(
-        currentUserId,
-        targetUserId,
-        currentDate,
-        "text",
-        content
-      );
-      appendMessage(message, currentUserId);
-      $("#message-content-input").val("");
-      emitPrivateMessage(
-        localStorage.getItem("name"),
-        currentUserId,
-        targetUserId,
-        $(`#senderUserCard-UserId-${targetUserId}`).attr("socket-id"),
-        content,
-        currentDate
-      );
-      saveMessages(currentUserId, targetUserId, "text", content);
+      emitSaveMessages(currentUserId, targetUserId);
     });
     $("#message-content-input").on("keypress", (e) => {
       if (e.which == 13) {
-        const content = $("#message-content-input").val();
-        if (content === "") {
-          return;
-        }
-        const currentDate = new Date();
-        const message = createMessage(
-          currentUserId,
-          targetUserId,
-          currentDate,
-          "text",
-          content
-        );
-        appendMessage(message, currentUserId);
-        $("#message-content-input").val("");
-        emitPrivateMessage(
-          localStorage.getItem("name"),
-          currentUserId,
-          targetUserId,
-          $(`#senderUserCard-UserId-${targetUserId}`).attr("socket-id"),
-          content,
-          currentDate
-        );
-        saveMessages(currentUserId, targetUserId, "text", content);
+        emitSaveMessages(currentUserId, targetUserId);
       }
     });
   });
+};
+
+const emitSaveMessages = (currentUserId, targetUserId) => {
+  const content = $("#message-content-input").val().trim();
+  if (content === "") {
+    return;
+  }
+  const currentDate = new Date();
+  const message = createMessage(
+    currentUserId,
+    targetUserId,
+    currentDate,
+    "text",
+    content
+  );
+  appendMessage(message, currentUserId);
+  $("#message-content-input").val("");
+  emitPrivateMessage(
+    localStorage.getItem("name"),
+    currentUserId,
+    targetUserId,
+    $(`#senderUserCard-UserId-${targetUserId}`).attr("socket-id"),
+    content,
+    currentDate
+  );
+  saveMessages(currentUserId, targetUserId, "text", content);
 };
 
 const emitPrivateMessage = (

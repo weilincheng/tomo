@@ -296,10 +296,6 @@ const appendMessage = (message, sender_user_id) => {
     );
     message.children().first().addClass("btn-light");
   }
-  // messageSession.animate(
-  //   { scrollTop: messageSession.prop("scrollHeight") },
-  //   1000
-  // );
   clearTimeout(timeout);
   timeout = setTimeout(() => {
     messageSession.animate(

@@ -10,9 +10,10 @@ describe("Get users' location", function () {
       const res = await requester
         .get("/api/v1/location")
         .set("Authorization", `Bearer ${accessToken}`)
-        .query({ latLL: 24, latUR: 26, lngLL: 121, lngUR: 122 });
+        .query({ latLL: 24, latUR: 26, lngLL: 121, lngUR: 122, zoomLevel: 1 });
       const { type, clusterSize } = res.body[0];
       should.exist(res.body);
+      console.log(res.body);
       res.body.should.have.lengthOf(1);
       clusterSize.should.equal(10);
       type.should.equal("clusterMarker");
@@ -26,7 +27,7 @@ describe("Get users' location", function () {
       const res = await requester
         .get("/api/v1/location")
         .set("Authorization", `Bearer ${accessToken}`)
-        .query({ latLL: 24, latUR: 26, lngLL: 121, lngUR: 122, zoomLevel: 19 });
+        .query({ latLL: 24, latUR: 26, lngLL: 121, lngUR: 122, zoomLevel: 20 });
       should.exist(res.body);
       res.body.should.have.lengthOf(10);
     });

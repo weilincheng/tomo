@@ -56,16 +56,25 @@ const attachImageEvent = () => {
 };
 
 const attachPostEvent = () => {
-  $("#post-button").click(() => {
-    if ($("#post-content").val().trim.length === 0) {
+  $("#post-button").click(async () => {
+    if ($("#post-content").val().trim().length === 0) {
       $("#alertModalToggleLabel").text("Please enter some content");
       $("#alertModalToggle").modal("show");
       return;
     }
     const formData = new FormData(document.getElementById("post-form"));
-    sendPostFormData(formData);
+    const loggedInUserId = localStorage.getItem("userId");
+    const currentUserId = $("#profile-script").attr("userId");
+    await sendPostFormData(formData);
     $("#post-content").val("");
     $("#newPostModal").modal("hide");
+    if (loggedInUserId && currentUserId) {
+      if (loggedInUserId === currentUserId) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 300);
+      }
+    }
   });
 };
 

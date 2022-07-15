@@ -429,12 +429,16 @@ const renderUsersIcon = async (
         clusterMarker.addListener("click", () => {
           const zoomLevel = map.getZoom();
           map.setCenter(pos);
-          const noAggregationZoomLevel = 19;
-          if (zoomLevel <= noAggregationZoomLevel - 3) {
+          // const noAggregationZoomLevel = 20;
+          // if (zoomLevel <= noAggregationZoomLevel - 3) {
+          if (zoomLevel < 16) {
             map.setZoom(zoomLevel + 3);
           } else {
-            map.setZoom(noAggregationZoomLevel);
+            map.setZoom(zoomLevel + 1);
           }
+          // } else {
+          //   map.setZoom(noAggregationZoomLevel);
+          // }
         });
         markers.push(clusterMarker);
       } else {
@@ -515,8 +519,8 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
           const zoomLevel = map.getZoom();
           map.setCenter(pos);
           const noAggregationZoomLevel = 19;
-          if (zoomLevel <= noAggregationZoomLevel - 3) {
-            map.setZoom(zoomLevel + 3);
+          if (zoomLevel <= noAggregationZoomLevel - 2) {
+            map.setZoom(zoomLevel + 2);
           } else {
             map.setZoom(noAggregationZoomLevel);
           }

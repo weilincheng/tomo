@@ -18,6 +18,9 @@ const config = {
   development: {
     url: `redis://${REDIS_USER_DEVELOPMENT}:${REDIS_PASSWORD_DEVELOPMENT}@${REDIS_HOST_DEVELOPMENT}:${REDIS_PORT}`,
   },
+  test: {
+    url: `redis://${REDIS_USER_DEVELOPMENT}:${REDIS_PASSWORD_DEVELOPMENT}@${REDIS_HOST_DEVELOPMENT}:${REDIS_PORT}`,
+  },
 };
 
 const client = createClient(config[NODE_ENV]);

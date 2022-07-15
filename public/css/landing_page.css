@@ -249,4 +249,6 @@ html {
 
 #services {
   background-color: #0773f4 !important;
+  color: black;
+  /* background-color: #dbe4fb !important; */
 }

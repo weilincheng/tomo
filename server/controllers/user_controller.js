@@ -13,7 +13,7 @@ const checkUserIdExist = (targetUserId, req, res) => {
 };
 
 const signUp = async (req, res) => {
-  const { name, email, password, location, website } = req.body;
+  const { name, email, password } = req.body;
   if (!name || !password || !email) {
     res.status(400).json({ error: "Name, password, email are required" });
     return;
@@ -23,11 +23,16 @@ const signUp = async (req, res) => {
     return;
   }
 
-  if (website && !validator.isURL(website)) {
-    res.status(400).json({ error: "Website is invalid" });
-    return;
-  }
-  const result = await User.signUp(name, email, password, location, website);
+  const profileImage = `asset/default_profile.png`;
+  const backgroundImage = `asset/default_background.jpg`;
+
+  const result = await User.signUp(
+    name,
+    email,
+    password,
+    profileImage,
+    backgroundImage
+  );
   if (result.status === 403) {
     res.status(403).json({ error: result.error });
     return;
@@ -39,8 +44,6 @@ const signUp = async (req, res) => {
       id: result.id,
       nickname: name,
       email,
-      location,
-      website,
     },
   });
 };
@@ -113,7 +116,7 @@ const updateUserInfo = async (req, res) => {
   }
   const { "profile-image": profileImage, "background-image": backgroundImage } =
     req.files;
-  const {
+  let {
     nickname,
     bio,
     "geo-location-lat": geoLocationLat,
@@ -133,12 +136,16 @@ const updateUserInfo = async (req, res) => {
     const result = await s3Upload(backgroundImage);
     backgroundImageName = result;
   }
+  if (website) {
+    website = website.replace(/^https?:\/\//, "");
+  }
+
   User.updateUserInfo(
     userId,
     nickname,
     bio,
-    geoLocationLat,
-    geoLocationLng,
+    geoLocationLat ? parseFloat(geoLocationLat) : null,
+    geoLocationLng ? parseFloat(geoLocationLng) : null,
     displayGeoLocation === "on" ? true : false,
     website,
     profileImageName,
@@ -146,12 +153,14 @@ const updateUserInfo = async (req, res) => {
     birthdate ? birthdate : null,
     gender
   );
-  const [interestNameIdMapResult] = await User.getInterestsNameMap();
-  const interestNameIdMap = interestNameIdMapResult.nameIdMap;
-  const interestsId = interests.split(",").map((name) => {
-    return interestNameIdMap[name];
-  });
-  User.updateUserInterests(userId, interestsId);
+  if (interests) {
+    const [interestNameIdMapResult] = await User.getInterestsNameMap();
+    const interestNameIdMap = interestNameIdMapResult.nameIdMap;
+    const interestsId = interests.split(",").map((name) => {
+      return interestNameIdMap[name];
+    });
+    User.updateUserInterests(userId, interestsId);
+  }
   return res.status(200).json({ status: "Save successfully" });
 };
 

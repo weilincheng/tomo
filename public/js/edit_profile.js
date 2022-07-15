@@ -1,19 +1,3 @@
-// const verifyToken = async (accessToken) => {
-//   const result = await fetch("/api/v1/user/profile", {
-//     method: "GET",
-//     headers: {
-//       Authorization: `Bearer ${accessToken}`,
-//     },
-//   });
-//   const resultJson = await result.json();
-//   if (resultJson.error) {
-//     alert(resultJson.error);
-//     localStorage.clear();
-//     return;
-//   }
-//   return resultJson;
-// };
-
 const getUserInfo = async (userId) => {
   const accessToken = localStorage.getItem("accessToken");
   const headers = {
@@ -96,9 +80,13 @@ const renderUserProfile = async () => {
   $("#geo-location-lat").val(geoLocationLat);
   $("#geo-location-lng").val(geoLocationLng);
   $("#display-geo-location").prop("checked", displayGeoLocation);
-  $("#bio-current").text(bio.length);
+  if (bio) {
+    $("#bio-current").text(bio.length);
+  }
   $("#website").val(website);
-  $("#website-current").text(website.length);
+  if (website) {
+    $("#website-current").text(website.length);
+  }
   $("#profile-image-source").attr(
     "src",
     profileImage
@@ -250,9 +238,9 @@ const getCurrentLocaiton = (map) => {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       const pos = { lat: latitude, lng: longitude };
-      createCustomMarker(map, pos, "You are here");
+      createCustomMarker(map, pos);
       map.setCenter(pos);
-      map.setZoom(15);
+      map.setZoom(16);
       getNearybyPlaces(map, pos, "park");
     });
   }
@@ -261,7 +249,7 @@ const getCurrentLocaiton = (map) => {
 const getNearybyPlaces = async (map, pos, type) => {
   const request = {
     location: pos,
-    radius: "15000",
+    radius: "50000",
     type: [type],
   };
   service = new google.maps.places.PlacesService(map);
@@ -286,18 +274,25 @@ const createPlacesMarker = (place) => {
   google.maps.event.addListener(marker, "click", () => {
     $("#geo-location-lat").val(place.geometry.location.lat);
     $("#geo-location-lng").val(place.geometry.location.lng);
+    const toastLiveExample = document.getElementById("liveToast");
+    const toast = new bootstrap.Toast(toastLiveExample);
+    toast.show();
   });
 };
 
-const createCustomMarker = (map, pos, name) => {
+const createCustomMarker = (map, pos) => {
+  const profileImage = $("#profile-image-source").attr("src");
+  const icon = {
+    url: `${profileImage}` + "#custom_marker",
+    scaledSize: new google.maps.Size(50, 50), // scaled size
+    origin: new google.maps.Point(0, 0), // origin
+    anchor: new google.maps.Point(0, 0), // anchor
+  };
   new google.maps.Marker({
     position: pos,
-    map: map,
-    label: {
-      color: "blue",
-      fontWeight: "bold",
-      text: name ? name : "annonymous",
-    },
+    animation: google.maps.Animation.DROP,
+    map,
+    icon,
   });
 };
 
@@ -310,8 +305,8 @@ const renderInterestsSelect = async (interests) => {
     },
   });
   const resultJson = await result.json();
-  const indoorsInterests = resultJson[0].interests;
-  const outdoorsInterests = resultJson[1].interests;
+  const indoorsInterests = resultJson[0].interests.sort();
+  const outdoorsInterests = resultJson[1].interests.sort();
   $("#interests-select").selectivity({
     items: [
       { text: "Indoors", children: indoorsInterests },

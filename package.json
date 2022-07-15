@@ -2,19 +2,23 @@
   "scripts": {
     "test": "NODE_ENV=test mocha --exit",
     "insert_fake_data_on_development": "node utilities/insert_fake_data.js",
-    "insert_fake_data_on_production": "NODE_ENV=production node utilities/insert_fake_data.js"
+    "insert_fake_data_on_production": "NODE_ENV=production node utilities/insert_fake_data.js",
+    "production_db": "NODE_ENV=production node index.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.117.0",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
+    "density-clustering": "^1.3.0",
     "dotenv": "^16.0.1",
     "ejs": "^3.1.8",
     "express": "^4.18.1",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^2.3.3",
+    "redis": "^4.2.0",
     "selectivity": "^3.1.0",
+    "skmeans": "^0.11.3",
     "socket.io": "^4.5.1",
     "validator": "^13.7.0"
   },

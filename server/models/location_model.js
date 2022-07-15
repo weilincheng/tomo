@@ -58,15 +58,18 @@ const getUsersLocation = async (
     if (Array.isArray(interests)) {
       for (const [index, interest] of interests.entries()) {
         if (index === 0) {
-          sql += " AND (i.name = ? ";
+          sql += " AND ( ? ";
         } else {
-          sql += " OR i.name = ? ";
+          sql += " OR ? ";
         }
         sqlBindings.push(interest);
       }
       sql += ") ";
+      sql +=
+        "IN (SELECT i.name FROM user_interests AS ui LEFT JOIN interests AS i ON ui.interest_id = i.id WHERE ui.user_id = u.id)";
     } else {
-      sql += " AND i.name = ?";
+      sql +=
+        " AND ? IN (SELECT i.name FROM user_interests AS ui LEFT JOIN interests AS i ON ui.interest_id = i.id WHERE ui.user_id = u.id)";
       sqlBindings.push(interests);
     }
   }

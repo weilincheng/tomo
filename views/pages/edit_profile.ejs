@@ -17,6 +17,7 @@
           class="col-auto form-control"
           id="profile-image"
           name="profile-image"
+          accept="image/*"
         />
       </div>
       <div class="mb-3">
@@ -31,6 +32,7 @@
           class="col-auto form-control"
           id="background-image"
           name="background-image"
+          accept="image/*"
         />
       </div>
       <div class="mb-3">
@@ -215,8 +217,29 @@
   <div
     class="col-7 d-flex flex-column justify-content-start overflow-auto vh-100"
   >
-    <p class="fs-5 fw-bold">Select a flag as your virtual location</p>
+    <p class="fs-6 fw-bold">Select a flag as your virtual location</p>
     <div id="map" class="h-75 my-1"></div>
+  </div>
+</div>
+<div class="toast-container p-3 bottom-0 end-0">
+  <div
+    id="liveToast"
+    class="toast"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+  >
+    <div class="toast-header d-flex justify-content-between">
+      <i style="color: #0773f4" class="fa-solid fa-circle-info"></i>
+      <strong style="color: #0773f4" class="ms-1 me-auto">Information</strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div class="toast-body">New virtual geo location has been selected.</div>
   </div>
 </div>
 <script src="https://d3efyzwqsfoubm.cloudfront.net/src/selectivity.js"></script>
@@ -229,5 +252,6 @@
   google_api_key="<%= google_api_key%>"
   src="../../static/js/edit_profile.js"
 ></script>
+<link rel="stylesheet" href="../../static/css/edit_profile.css" />
 
 <%- include("../partials/footer") -%>

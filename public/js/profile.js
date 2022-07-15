@@ -76,7 +76,16 @@ const updateUserInfo = async () => {
   const placeholderImage = "https://via.placeholder.com/80";
   $("#name").text(nickname);
   $("#location").text(location);
-  $("#website").attr("href", `https://${website}`).text(website);
+  if (website) {
+    $("#website-icon").removeClass("invisible");
+    $("#website-icon").show();
+    if (website.includes("http")) {
+      $("#website").attr("href", website).text(website);
+    } else {
+      $("#website").attr("href", `http://${website}`).text(website);
+    }
+  }
+
   $("#followers-count").text(followers.length);
   $("#following-count").text(following.length);
   if (interests.length > 0 && interests[0] !== null) {
@@ -108,7 +117,11 @@ const updateUserInfo = async () => {
   updateProfileIconLink(loggedInUserId);
   const blockStatus = await getBlockStatus(userId);
   updateEditFollowBlockButton(userId, loggedInUserId, followers, blockStatus);
-  renderPosts(userId, profileImage ? profileImage : placeholderImage);
+  renderPosts(
+    userId,
+    loggedInUserId,
+    profileImage ? profileImage : placeholderImage
+  );
 };
 
 const getBlockStatus = async (targetUserId) => {
@@ -279,7 +292,7 @@ const attachBlockButtonEvent = (targetUserId) => {
   });
 };
 
-const renderPosts = async (userId, profileImage) => {
+const renderPosts = async (userId, loggedInUserId, profileImage) => {
   const postsInfo = await getUserPosts(userId);
   for (let i = 0; i < postsInfo.length; i++) {
     const { created_at, images, text, id } = postsInfo[i];
@@ -288,10 +301,12 @@ const renderPosts = async (userId, profileImage) => {
     const month = new Intl.DateTimeFormat("en-US", options).format(date);
     const dateString = `${month} ${date.getDate()}`;
     const post = $(
-      '<div class="border border-light d-flex w-100 py-2 px-2 align-items-center"></div>'
+      '<div class="border border-light d-flex w-100 py-1 px-3 align-items-center"></div>'
     );
     post.attr("id", `post-div-${id}`);
-    const profileImageDiv = $('<div class="col-1 "></div>');
+    const profileImageDiv = $(
+      '<div class="col-1 align-self-start mt-3"></div>'
+    );
     if (profileImage.includes("http")) {
       profileImageDiv.css({
         "background-image": `url('${profileImage}')`,
@@ -314,24 +329,26 @@ const renderPosts = async (userId, profileImage) => {
       '<div class="col-11 d-flex flex-column justify-content-center my-2 px-2"></div>'
     );
     const deleteDropdownCol = $(
-      '<div class="col-auto dropdown d-flex justify-content-center align-self-start"></div>'
+      '<div class="col-1 dropdown d-flex justify-content-center align-self-start"></div>'
     );
-    const dropdownButton = $(
-      '<button class="btn btn-sm dropdown-toggle dropdown-toggle-button" type="button"  data-bs-toggle="dropdown" aria-expanded="false"></button>'
-    );
-    const dropdownMenu = $(
-      '<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton1">'
-    );
-    const dropdownItem = $(
-      ' <li> <button class="btn-danger dropdown-item delete-button" data-bs-toggle="modal" data-bs-target="#confirmDeletePostModal" > Delete </button> </li> '
-    );
-    dropdownItem.children().attr("id", `dropdown-item-post-id-${id}`);
-    dropdownItem.children().click(() => {
-      $("#confirm-delete-post-button").attr("post-id", id);
-    });
-    dropdownMenu.append(dropdownItem);
-    deleteDropdownCol.append(dropdownButton);
-    deleteDropdownCol.append(dropdownMenu);
+    if (loggedInUserId === userId) {
+      const dropdownButton = $(
+        '<button class="btn btn-sm dropdown-toggle dropdown-toggle-button" type="button"  data-bs-toggle="dropdown" aria-expanded="false"></button>'
+      );
+      const dropdownMenu = $(
+        '<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton1">'
+      );
+      const dropdownItem = $(
+        ' <li> <button class="btn-danger dropdown-item delete-button" data-bs-toggle="modal" data-bs-target="#confirmDeletePostModal" > Delete </button> </li> '
+      );
+      dropdownItem.children().attr("id", `dropdown-item-post-id-${id}`);
+      dropdownItem.children().click(() => {
+        $("#confirm-delete-post-button").attr("post-id", id);
+      });
+      dropdownMenu.append(dropdownItem);
+      deleteDropdownCol.append(dropdownButton);
+      deleteDropdownCol.append(dropdownMenu);
+    }
     const dateContent = $('<p class="fs-6 text-secondary my-0 px-2"></p>').text(
       dateString
     );
@@ -363,7 +380,9 @@ const renderPosts = async (userId, profileImage) => {
     }
     post.append(profileImageDiv);
     post.append(namePostCol);
-    post.append(deleteDropdownCol);
+    if (loggedInUserId === userId) {
+      post.append(deleteDropdownCol);
+    }
     $("#posts-section").append(post);
   }
 };
@@ -501,5 +520,6 @@ updateUserInfo();
 
 $(document).ready(() => {
   $("#send-message-link").hide();
+  $("#website-icon").hide();
   attachClickListeners();
 });

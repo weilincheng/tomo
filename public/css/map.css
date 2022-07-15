@@ -6,10 +6,6 @@
   background-color: #dbe4fb;
 }
 
-#filters-button:hover {
-  background-color: #dbe4fb;
-}
-
 img[src$="#custom_marker"] {
   border-radius: 50%;
 }

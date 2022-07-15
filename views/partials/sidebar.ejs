@@ -41,8 +41,9 @@
       title="Post"
       data-bs-toggle="modal"
       data-bs-target="#newPostModal"
+      id="new-post-icon"
     >
-      <a class="nav-link">
+      <a class="nav-link" style="cursor: pointer">
         <i class="fa-regular fa-pen-to-square"></i>
       </a>
     </li>
@@ -113,6 +114,7 @@
             </div>
             <input
               type="file"
+              accept="image/*"
               class="col-auto form-control form-control-sm"
               id="post-images"
               name="post-images"
@@ -127,7 +129,6 @@
             id="post-button"
             type="button"
             class="btn btn-primary w-100 px-5 py-2 fw-bold rounded-pill"
-            data-bs-dismiss="modal"
           >
             Post
           </button>

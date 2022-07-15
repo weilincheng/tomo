@@ -304,7 +304,9 @@ const renderPosts = async (userId, loggedInUserId, profileImage) => {
       '<div class="border border-light d-flex w-100 py-1 px-3 align-items-center"></div>'
     );
     post.attr("id", `post-div-${id}`);
-    const profileImageDiv = $('<div class="col-1 "></div>');
+    const profileImageDiv = $(
+      '<div class="col-1 align-self-start mt-3"></div>'
+    );
     if (profileImage.includes("http")) {
       profileImageDiv.css({
         "background-image": `url('${profileImage}')`,

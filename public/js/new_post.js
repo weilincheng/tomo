@@ -70,9 +70,9 @@ const attachPostEvent = () => {
     $("#newPostModal").modal("hide");
     if (loggedInUserId && currentUserId) {
       if (loggedInUserId === currentUserId) {
-        setTimeout(() => {
+        $("#alertModalUnderstandButton").click(() => {
           window.location.reload();
-        }, 300);
+        });
       }
     }
   });

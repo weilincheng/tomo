@@ -336,9 +336,7 @@ const getCurrentLocaiton = async (map) => {
         });
       }
     );
-    // });
   }
-  // }
 };
 
 const getUsersLocation = async (
@@ -434,7 +432,7 @@ const renderUsersIcon = async (
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
         clusterMarker.addListener("click", () => {
-          if (zoomLevel < 17) {
+          if (zoomLevel < 15) {
             const zoomLevel = map.getZoom();
             map.setCenter(pos);
             map.setZoom(zoomLevel + 3);
@@ -528,7 +526,7 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
         clusterMarker.addListener("click", () => {
-          if (zoomLevel < 17) {
+          if (zoomLevel < 15) {
             const zoomLevel = map.getZoom();
             map.setCenter(pos);
             map.setZoom(zoomLevel + 3);

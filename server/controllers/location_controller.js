@@ -171,7 +171,7 @@ const aggregateUsersLocationByKMeans = async (
   });
   let k = zoomLevel;
   const kmeans = new clustering.KMEANS();
-  if (dataset.length === 1) {
+  if (dataset.length <= 3) {
     return usersLocation;
   }
   k = dataset.length <= k ? dataset.length - 1 : k;

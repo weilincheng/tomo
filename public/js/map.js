@@ -208,12 +208,11 @@ const panToCurrentLocationControl = (controlDiv, map) => {
   controlText.style.lineHeight = "38px";
   controlText.style.paddingLeft = "10px";
   controlText.style.paddingRight = "10px";
-  controlText.innerHTML = "Pan to Current Location";
+  controlText.innerHTML = "Pan to My Location";
   controlUI.appendChild(controlText);
 
   const clickShareLocation = () => {
     getCurrentLocaiton(map);
-    controlUI.removeEventListener("click", clickShareLocation, false);
   };
   controlUI.addEventListener("click", clickShareLocation);
 };
@@ -247,92 +246,99 @@ const userListControl = (controlDiv) => {
 };
 
 const getCurrentLocaiton = async (map) => {
-  if (navigator.geolocation) {
-    if (accessToken) {
-      const verifyResult = await fetch("/api/v1/user/profile", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+  if (accessToken) {
+    const verifyResult = await fetch("/api/v1/user/profile", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const resultJson = await verifyResult.json();
+    if (resultJson.error) {
+      alert(resultJson.error);
+      localStorage.clear();
+      return;
+    }
+    const userInfo = await fetch(`/api/v1/user/${resultJson.id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const userInfoJson = await userInfo.json();
+    const {
+      nickname,
+      website,
+      id,
+      bio,
+      profile_image: profileImage,
+      interests,
+      geo_location_lat: userLat,
+      geo_location_lng: userLng,
+    } = userInfoJson;
+    if (userLat === null || userLng === null) {
+      $("#alertModalToggleLabel").text("Your location is not set yet.");
+      $("#alertModalToggle").modal("show");
+      return;
+    }
+    const pos = { lat: userLat, lng: userLng };
+    let profileUrl;
+    if (profileImage.slice(0, 5) === "https") {
+      profileUrl = profileImage;
+    } else {
+      profileUrl = `${cloudfrontUrl}/${profileImage}`;
+    }
+    if (currentUserIcon !== undefined) {
+      currentUserIcon.setMap(null);
+    }
+    currentUserIcon = createIcon(
+      map,
+      pos,
+      profileUrl,
+      google.maps.Animation.DROP
+    );
+    const currentUserInfowindow = createInfowindow(
+      nickname,
+      id,
+      bio,
+      interests
+    );
+    currentUserIcon.addListener("mouseover", () => {
+      currentUserInfowindow.open({
+        anchor: currentUserIcon,
+        map,
+        shouldFocus: false,
       });
-      const resultJson = await verifyResult.json();
-      if (resultJson.error) {
-        alert(resultJson.error);
-        localStorage.clear();
-        return;
-      }
-      const userInfo = await fetch(`/api/v1/user/${resultJson.id}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const userInfoJson = await userInfo.json();
-      const {
-        nickname,
-        website,
-        id,
-        bio,
-        profile_image: profileImage,
-        interests,
-      } = userInfoJson;
-      navigator.geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        const pos = { lat: latitude, lng: longitude };
-        let profileUrl;
-        if (profileImage.slice(0, 5) === "https") {
-          profileUrl = profileImage;
-        } else {
-          profileUrl = `${cloudfrontUrl}/${profileImage}`;
+    });
+    map.setCenter(pos);
+    map.setZoom(18);
+    currentUserIcon.addListener("mouseout", function () {
+      setTimeout(function () {
+        if (!mouseOverInfoWindow) {
+          currentUserInfowindow.close();
         }
-        const currentUserIcon = createIcon(
-          map,
-          pos,
-          profileUrl,
-          google.maps.Animation.DROP
-        );
-        const currentUserInfowindow = createInfowindow(
-          nickname,
-          id,
-          bio,
-          interests
-        );
-        currentUserIcon.addListener("mouseover", () => {
-          currentUserInfowindow.open({
-            anchor: currentUserIcon,
-            map,
-            shouldFocus: false,
-          });
+      }, 200);
+    });
+    google.maps.event.addListener(
+      currentUserInfowindow,
+      "domready",
+      function () {
+        $(".infowindow-content").mouseover(() => {
+          mouseOverInfoWindow = true;
         });
-        map.setCenter(pos);
-        map.setZoom(19);
-        currentUserIcon.addListener("mouseout", function () {
+        $(".infowindow-content").mouseout(() => {
+          mouseOverInfoWindow = false;
           setTimeout(function () {
             if (!mouseOverInfoWindow) {
               currentUserInfowindow.close();
             }
-          }, 200);
+          }, 50);
         });
-        google.maps.event.addListener(
-          currentUserInfowindow,
-          "domready",
-          function () {
-            $(".infowindow-content").mouseover(() => {
-              mouseOverInfoWindow = true;
-            });
-            $(".infowindow-content").mouseout(() => {
-              mouseOverInfoWindow = false;
-              setTimeout(function () {
-                if (!mouseOverInfoWindow) {
-                  currentUserInfowindow.close();
-                }
-              }, 50);
-            });
-          }
-        );
-      });
-    }
+      }
+    );
+    // });
   }
+  // }
 };
 
 const getUsersLocation = async (
@@ -383,9 +389,6 @@ const renderUsersIcon = async (
     const marker = markers.pop();
     marker.setMap(null);
   }
-  if (userIconClusterer) {
-    userIconClusterer.clearMarkers();
-  }
   $(".user-card").remove();
   const usersLocation = await getUsersLocation(
     accessToken,
@@ -415,7 +418,6 @@ const renderUsersIcon = async (
       clusterBoundsLngLL,
       clusterBoundsLatLL,
     } = user;
-    console.log(user);
     if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
       if (type !== "clusterMarker") {
         renderUserCard(userId, nickname, profileImage, bio);
@@ -510,7 +512,6 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       clusterBoundsLatUR,
       clusterBoundsLngUR,
     } = user;
-    console.log(user);
     if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
       if (type !== "clusterMarker") {
         renderUserCard(userId, nickname, profileImage, bio);
@@ -731,7 +732,6 @@ const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
 const markersList = new Map();
 let map,
   markers = [],
-  userIconClusterer,
   visibleLatLL,
   visibleLngLL,
   visibleLatUR,
@@ -745,3 +745,5 @@ $("#signin").click(() => {
 $("#signup").click(() => {
   window.location.href = "/signup";
 });
+
+let currentUserIcon;

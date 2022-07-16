@@ -171,21 +171,26 @@ const aggregateUsersLocationByKMeans = async (
   });
   let k = zoomLevel;
   const kmeans = new clustering.KMEANS();
-  console.time("run kmeans");
-  console.log("Zoom level:", zoomLevel, "k:", k);
   k = dataset.length < k ? dataset.length : k;
   const clusters = kmeans.run(dataset, k);
-  console.timeEnd("run kmeans");
   const result = [];
   for (const cluster of clusters) {
     if (cluster.length > 1) {
       let clusterMarkerLatSum = 0,
-        clusterMarkerLngSum = 0;
+        clusterMarkerLngSum = 0,
+        largestLat = Number.NEGATIVE_INFINITY,
+        largestLng = Number.NEGATIVE_INFINITY,
+        smallestLat = Number.POSITIVE_INFINITY,
+        smallestLng = Number.POSITIVE_INFINITY;
       for (const userIdx of cluster) {
         const userLat = usersLocation[userIdx].geo_location_lat,
           userLng = usersLocation[userIdx].geo_location_lng;
         clusterMarkerLatSum += userLat;
         clusterMarkerLngSum += userLng;
+        largestLat = userLat > largestLat ? userLat : largestLat;
+        largestLng = userLng > largestLng ? userLng : largestLng;
+        smallestLat = userLat < smallestLat ? userLat : smallestLat;
+        smallestLng = userLng < smallestLng ? userLng : smallestLng;
       }
       const clusterMarkerLat = clusterMarkerLatSum / cluster.length;
       const clusterMarkerLng = clusterMarkerLngSum / cluster.length;
@@ -195,6 +200,10 @@ const aggregateUsersLocationByKMeans = async (
         geo_location_lat: clusterMarkerLat,
         geo_location_lng: clusterMarkerLng,
         clusterSize: cluster.length,
+        clusterBoundsLatLL: smallestLat,
+        clusterBoundsLngLL: smallestLng,
+        clusterBoundsLatUR: largestLat,
+        clusterBoundsLngUR: largestLng,
       });
     } else {
       result.push(usersLocation[cluster[0]]);

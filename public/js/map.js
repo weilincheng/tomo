@@ -410,7 +410,12 @@ const renderUsersIcon = async (
       bio,
       type,
       clusterSize,
+      clusterBoundsLngUR,
+      clusterBoundsLatUR,
+      clusterBoundsLngLL,
+      clusterBoundsLatLL,
     } = user;
+    console.log(user);
     if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
       if (type !== "clusterMarker") {
         renderUserCard(userId, nickname, profileImage, bio);
@@ -427,18 +432,19 @@ const renderUsersIcon = async (
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
         clusterMarker.addListener("click", () => {
-          const zoomLevel = map.getZoom();
-          map.setCenter(pos);
-          // const noAggregationZoomLevel = 20;
-          // if (zoomLevel <= noAggregationZoomLevel - 3) {
-          if (zoomLevel < 16) {
+          if (zoomLevel < 17) {
+            const zoomLevel = map.getZoom();
+            map.setCenter(pos);
             map.setZoom(zoomLevel + 3);
           } else {
-            map.setZoom(zoomLevel + 1);
+            const bounds = {
+              east: clusterBoundsLngUR,
+              north: clusterBoundsLatUR,
+              west: clusterBoundsLngLL,
+              south: clusterBoundsLatLL,
+            };
+            map.fitBounds(bounds);
           }
-          // } else {
-          //   map.setZoom(noAggregationZoomLevel);
-          // }
         });
         markers.push(clusterMarker);
       } else {
@@ -499,7 +505,12 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       bio,
       type,
       clusterSize,
+      clusterBoundsLatLL,
+      clusterBoundsLngLL,
+      clusterBoundsLatUR,
+      clusterBoundsLngUR,
     } = user;
+    console.log(user);
     if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
       if (type !== "clusterMarker") {
         renderUserCard(userId, nickname, profileImage, bio);
@@ -516,13 +527,18 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
         clusterMarker.addListener("click", () => {
-          const zoomLevel = map.getZoom();
-          map.setCenter(pos);
-          const noAggregationZoomLevel = 19;
-          if (zoomLevel <= noAggregationZoomLevel - 2) {
-            map.setZoom(zoomLevel + 2);
+          if (zoomLevel < 17) {
+            const zoomLevel = map.getZoom();
+            map.setCenter(pos);
+            map.setZoom(zoomLevel + 3);
           } else {
-            map.setZoom(noAggregationZoomLevel);
+            const bounds = {
+              east: clusterBoundsLngUR,
+              north: clusterBoundsLatUR,
+              west: clusterBoundsLngLL,
+              south: clusterBoundsLatLL,
+            };
+            map.fitBounds(bounds);
           }
         });
         markers.push(clusterMarker);

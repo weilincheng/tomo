@@ -1,4 +1,4 @@
-const RATE_LIMIT = 10;
+const RATE_LIMIT = 20;
 const WINDOW_TIME = 1;
 const client = require("./redis.js");
 const uuid = require("uuid").v4;

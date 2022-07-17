@@ -371,8 +371,10 @@ const appendMessage = (message, currentDate, sender_user_id) => {
       hour1 === hour2 &&
       minutes1 === minutes2
     ) {
-      lastProfileImage.addClass("invisible");
-      lastProfileImage = profileImage;
+      if (lastProfileImage !== false) {
+        lastProfileImage.addClass("invisible");
+        lastProfileImage = profileImage;
+      }
     } else {
       lastProfileImage = profileImage;
       lastTime = new Date().getTime();

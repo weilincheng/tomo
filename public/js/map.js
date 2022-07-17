@@ -416,7 +416,6 @@ const renderUsersIcon = async (
       clusterBoundsLngLL,
       clusterBoundsLatLL,
     } = user;
-    console.log(user);
     if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
       if (type !== "clusterMarker") {
         renderUserCard(userId, nickname, profileImage, bio);
@@ -511,7 +510,6 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       clusterBoundsLatUR,
       clusterBoundsLngUR,
     } = user;
-    console.log(user);
     if (lat && lng && userId !== parseInt(localStorage.getItem("userId"))) {
       if (type !== "clusterMarker") {
         renderUserCard(userId, nickname, profileImage, bio);

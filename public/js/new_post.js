@@ -95,13 +95,6 @@ const sendPostFormData = async (formData) => {
 };
 
 const accessToken = localStorage.getItem("accessToken");
-if (accessToken) {
-  verifyToken(localStorage.getItem("accessToken"));
-} else {
-  $("#alertModalToggleLabel").text("Please log in first!");
-  $("#alertModalToggle").modal("show");
-  window.location = "/";
-}
 
 $(() => {
   const userId = localStorage.getItem("userId");

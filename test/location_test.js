@@ -13,7 +13,6 @@ describe("Get users' location", function () {
         .query({ latLL: 24, latUR: 26, lngLL: 121, lngUR: 122, zoomLevel: 1 });
       const { type, clusterSize } = res.body[0];
       should.exist(res.body);
-      console.log(res.body);
       res.body.should.have.lengthOf(1);
       clusterSize.should.equal(10);
       type.should.equal("clusterMarker");

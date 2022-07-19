@@ -39,6 +39,20 @@ const getUsersLocation = async (req, res) => {
   return;
 };
 
+const getGeoLocationBounds = async (usersLocationGrids, usersCount) => {
+  let clusterMarkerLatSum = 0,
+    clusterMarkerLngSum = 0;
+  for (const userLocation of usersLocationGrids.get(`(${i}, ${j})`)) {
+    const { geo_location_lat: userLat, geo_location_lng: userLng } =
+      userLocation;
+    clusterMarkerLatSum += userLat;
+    clusterMarkerLngSum += userLng;
+  }
+  const clusterMarkerLat = clusterMarkerLatSum / usersCount;
+  const clusterMarkerLng = clusterMarkerLngSum / usersCount;
+  return [clusterMarkerLat, clusterMarkerLng];
+};
+
 const aggregateUsersLocation = (
   usersLocation,
   latLL,
@@ -77,17 +91,10 @@ const aggregateUsersLocation = (
       if (usersLocationGrids.has(`(${i}, ${j})`)) {
         const usersCount = usersLocationGrids.get(`(${i}, ${j})`).length;
         if (usersCount > 1) {
-          let clusterMarkerLatSum = 0,
-            clusterMarkerLngSum = 0;
-          for (const userLocation of usersLocationGrids.get(`(${i}, ${j})`)) {
-            const { geo_location_lat: userLat, geo_location_lng: userLng } =
-              userLocation;
-            clusterMarkerLatSum += userLat;
-            clusterMarkerLngSum += userLng;
-          }
-          const clusterMarkerLat = clusterMarkerLatSum / usersCount;
-          const clusterMarkerLng = clusterMarkerLngSum / usersCount;
-
+          const [clusterMarkerLat, clusterMarkerLng] = getGeoLocationBounds(
+            usersLocationGrids,
+            usersCount
+          );
           result.push({
             type: "clusterMarker",
             geo_location_lat: clusterMarkerLat,

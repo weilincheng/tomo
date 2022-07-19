@@ -5,7 +5,7 @@ chai.use(chaiHttp);
 const should = chai.should();
 const requester = chai.request(app).keepOpen();
 const { truncateFakeData } = require("./truncate_fake_data");
-const { insertFakeData } = require("./insert_fake_data");
+const { insertFakeData, insertTestAccount } = require("./insert_fake_data");
 const { pool } = require("../server/models/mysql_connection");
 
 const { NODE_ENV } = process.env;
@@ -19,8 +19,11 @@ before(async function () {
   await truncateFakeData();
   console.log("Inserting fake data");
   const usersCount = 10;
-  const coordinate = [25.04, 121.5602];
+  let coordinate = [25.04, 121.5602];
   await insertFakeData(usersCount, coordinate);
+  coordinate = [-25.04, -121.5602];
+  await insertFakeData(usersCount, coordinate);
+  await insertTestAccount();
 });
 
 module.exports = { requester, should };

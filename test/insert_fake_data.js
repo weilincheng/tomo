@@ -9,25 +9,7 @@ const insertUsers = async (sql, sqlBindings) => {
   return result.insertId;
 };
 
-const insertUserInterests = async (startUserId, usersCount, lastInterestId) => {
-  const sql = `INSERT INTO user_interests (user_id, interest_id) VALUES ?`;
-  let sqlBindings = [];
-  for (let i = 0; i < usersCount; i++) {
-    const randomInterestsId = Math.floor(Math.random() * lastInterestId + 1);
-    sqlBindings.push([startUserId + i, randomInterestsId]);
-  }
-  await pool.query(sql, [sqlBindings]);
-};
-
-const insertInterests = async () => {
-  const sql = ` INSERT INTO interests (name, category) 
-  VALUES ('Baking', 'Indoors'), ('Cooking', 'Indoors'), ('Bonsai', 'Indoors'), ('Coding', 'Indoors'), ('Dancing', 'Outdoors'), ('Fishing', 'Outdoors'), ('Gardening', 'Outdoors'), ('Hiking', 'Outdoors'), ('Running', 'Outdoors'), ('Singing', 'Indoors'), ('Traveling', 'Outdoors'), ('Writing', 'Indoors'), ('Yoga', 'Indoors'), ('Pilates', 'Indoors'), ('Weaving', 'Indoors'), ('Photography', 'Outdoors'), ('Sewing', 'Indoors'), ('Badminton', 'Outdoors'), ('Baseball', 'Outdoors'), ('Motorcycling', 'Outdoors'), ('Rugby', 'Outdoors'), ('Tennis', 'Outdoors'), ('Skiing', 'Outdoors')`;
-  const [result] = await pool(sql);
-  return result.insertId;
-};
-
 const insertFakeData = async (usersCount, coordinate) => {
-  // const lastInterestId = await insertInterests();
   const sql = `INSERT INTO users 
   (nickname, email, password, website, profile_image, bio, geo_location_lat, geo_location_lng, gender, birthdate) 
   VALUES 
@@ -62,18 +44,16 @@ const insertFakeData = async (usersCount, coordinate) => {
     ];
     sqlBindings.push(sqlBind);
   }
-  const startUserId = await insertUsers(sql, sqlBindings);
-  const testPassword = await bcrypt.hash("test", saltRounds);
-  await insertUsers(
-    `INSERT INTO users (nickname, email, password) 
-  VALUES ?`,
-    [["test", "test@test.com", testPassword]]
-  );
-  // insertUserInterests(startUserId, usersCount, lastInterestId);
+  insertUsers(sql, sqlBindings);
 };
 
-// const usersCount = 10;
-// const coordinate = [25.04, 121.5602];
-// insertFakeData(usersCount, coordinate);
+const insertTestAccount = async () => {
+  const testPassword = await bcrypt.hash("test", saltRounds);
+  insertUsers(
+    `INSERT INTO users (nickname, email, password) 
+    VALUES ?`,
+    [["test", "test@test.com", testPassword]]
+  );
+};
 
-module.exports = { insertFakeData };
+module.exports = { insertFakeData, insertTestAccount };

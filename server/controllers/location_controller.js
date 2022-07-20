@@ -112,4 +112,4 @@ const aggregateUsersLocationByKMeans = async (
   return result;
 };
 
-module.exports = { getUsersLocation };
+module.exports = { getUsersLocation, getClusterBounds };

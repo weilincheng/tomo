@@ -67,7 +67,7 @@ const renderUserProfile = async () => {
     convertedBirthdate.getFullYear(),
     convertedBirthdate.getMonth() < 9
       ? `0${convertedBirthdate.getMonth() + 1}`
-      : convertedBirthdate.getMonth(),
+      : convertedBirthdate.getMonth() + 1,
     convertedBirthdate.getDate() < 9
       ? `0${convertedBirthdate.getDate()}`
       : convertedBirthdate.getDate(),

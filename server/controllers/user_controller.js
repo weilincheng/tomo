@@ -114,8 +114,11 @@ const updateUserInfo = async (req, res) => {
   if (userId != req.userId) {
     res.status(403).json({ error: "You are not authorized" });
   }
-  const { "profile-image": profileImage, "background-image": backgroundImage } =
-    req.files;
+  let profileImage, backgroundImage;
+  if (req.files) {
+    ({ "profile-image": profileImage, "background-image": backgroundImage } =
+      req.files);
+  }
   let {
     nickname,
     bio,
@@ -139,8 +142,7 @@ const updateUserInfo = async (req, res) => {
   if (website) {
     website = website.replace(/^https?:\/\//, "");
   }
-
-  User.updateUserInfo(
+  await User.updateUserInfo(
     userId,
     nickname,
     bio,

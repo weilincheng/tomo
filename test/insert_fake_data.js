@@ -47,6 +47,13 @@ const insertFakeData = async (usersCount, coordinate) => {
   insertUsers(sql, sqlBindings);
 };
 
+const insertInterests = async () => {
+  const sql = ` INSERT INTO interests (name, category) 
+  VALUES ('Coffee', 'Indoors'), ('Anime', 'Indoors'), ('Baking', 'Indoors'), ('Cooking', 'Indoors'), ('Bonsai', 'Indoors'), ('Coding', 'Indoors'), ('Dancing', 'Outdoors'), ('Fishing', 'Outdoors'), ('Gardening', 'Outdoors'), ('Hiking', 'Outdoors'), ('Running', 'Outdoors'), ('Singing', 'Indoors'), ('Traveling', 'Outdoors'), ('Writing', 'Indoors'), ('Yoga', 'Indoors'), ('Pilates', 'Indoors'), ('Weaving', 'Indoors'), ('Photography', 'Outdoors'), ('Sewing', 'Indoors'), ('Badminton', 'Outdoors'), ('Baseball', 'Outdoors'), ('Motorcycling', 'Outdoors'), ('Rugby', 'Outdoors'), ('Tennis', 'Outdoors'), ('Skiing', 'Outdoors')`;
+  const [result] = await pool.query(sql);
+  return result.insertId;
+};
+
 const insertTestAccount = async () => {
   const testPassword = await bcrypt.hash("test", saltRounds);
   insertUsers(
@@ -56,4 +63,4 @@ const insertTestAccount = async () => {
   );
 };
 
-module.exports = { insertFakeData, insertTestAccount };
+module.exports = { insertFakeData, insertInterests, insertTestAccount };

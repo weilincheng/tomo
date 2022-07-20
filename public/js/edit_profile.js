@@ -41,12 +41,6 @@ const getUserInfo = async (userId) => {
 };
 
 const renderUserProfile = async () => {
-  const accessToken = localStorage.getItem("accessToken");
-  if (!accessToken) {
-    alert("Please sign in first");
-    return (window.location = "/");
-  }
-  await verifyToken(accessToken);
   const userId = localStorage.getItem("userId");
   updateProfileIconLink(userId);
   const {

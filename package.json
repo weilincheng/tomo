@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "NODE_ENV=test mocha --exit",
+    "test": "NODE_ENV=test nyc mocha --exit",
     "insert_fake_data_on_development": "node utilities/insert_fake_data.js",
     "insert_fake_data_on_production": "NODE_ENV=production node utilities/insert_fake_data.js",
     "production_db": "NODE_ENV=production node index.js"
@@ -16,6 +16,7 @@
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^2.3.3",
+    "nyc": "^15.1.0",
     "redis": "^4.2.0",
     "selectivity": "^3.1.0",
     "skmeans": "^0.11.3",

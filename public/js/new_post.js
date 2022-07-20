@@ -1,20 +1,3 @@
-const verifyToken = async (accessToken) => {
-  const result = await fetch("/api/v1/user/profile", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const resultJson = await result.json();
-  if (resultJson.error) {
-    $("#alertModalToggleLabel").text(resultJson.error);
-    $("#alertModalToggle").modal("show");
-    localStorage.clear();
-    window.location = "/";
-  }
-  return resultJson;
-};
-
 const attachTypeEvent = () => {
   $("#post-content").keyup(() => {
     let characterCount = $("#post-content").val().length,
@@ -80,7 +63,6 @@ const attachPostEvent = () => {
 
 const sendPostFormData = async (formData) => {
   $("#newPostModal").modal("hide");
-  const accessToken = localStorage.getItem("accessToken");
   const userId = localStorage.getItem("userId");
   const result = await fetch(`/api/v1/user/${userId}/posts`, {
     method: "POST",
@@ -93,8 +75,6 @@ const sendPostFormData = async (formData) => {
   $("#alertModalToggleLabel").text(resultJson.status);
   $("#alertModalToggle").modal("show");
 };
-
-const accessToken = localStorage.getItem("accessToken");
 
 $(() => {
   const userId = localStorage.getItem("userId");

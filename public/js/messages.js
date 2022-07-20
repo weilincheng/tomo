@@ -53,6 +53,9 @@ const renderMessagesHistory = async (
 };
 
 const renderSenderUser = async (accessToken, currentUserId) => {
+  if (!currentUserId) {
+    return;
+  }
   const result = await fetch(`/api/v1/message/${currentUserId}/all`, {
     method: "GET",
     headers: {
@@ -219,29 +222,6 @@ const emitPrivateMessage = (
     to: receiverSocketId,
     currentDate,
   });
-};
-
-const checkAccessToken = async () => {
-  const accessToken = localStorage.getItem("accessToken");
-  if (accessToken) {
-    const result = await fetch("/api/v1/user/profile", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const resultJson = await result.json();
-    if (resultJson.error) {
-      alert(result.error);
-      return (window.location = "/");
-    }
-    const { nickname, location, website, id } = resultJson;
-    localStorage.setItem("name", nickname);
-    localStorage.setItem("location", location);
-    localStorage.setItem("website", website);
-    localStorage.setItem("userId", id);
-    updateProfileIconLink(id);
-  }
 };
 
 const createMessage = (
@@ -487,14 +467,8 @@ const initializeSenderSocket = async () => {
   );
 };
 
-if (!accessToken) {
-  alert("Please log in first!");
-  window.location.href = "/";
-}
-
-checkAccessToken();
 const currentUserId = parseInt(localStorage.getItem("userId"));
-const currentUserName = localStorage.getItem("name");
+const currentUserName = localStorage.getItem("nickname");
 const sendMessageButton = $("#send-message-button");
 const messageInput = $("#message-content-input");
 sendMessageButton.hide();

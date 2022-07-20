@@ -2,7 +2,6 @@ require("dotenv").config();
 const Message = require("../models/message_model");
 const User = require("../models/user_model");
 const validator = require("validator");
-const { getUserInfo } = require("./user_controller");
 
 const getMessages = async (req, res) => {
   const { currentUserId, targetUserId } = req.params;

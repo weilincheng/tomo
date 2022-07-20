@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "NODE_ENV=test mocha --exit",
+    "test": "NODE_ENV=test nyc mocha --exit",
     "insert_fake_data_on_development": "node utilities/insert_fake_data.js",
     "insert_fake_data_on_production": "NODE_ENV=production node utilities/insert_fake_data.js",
     "production_db": "NODE_ENV=production node index.js"
@@ -29,6 +29,7 @@
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "mocha": "^10.0.0",
+    "nyc": "^15.1.0",
     "prettier": "2.7.1"
   }
 }

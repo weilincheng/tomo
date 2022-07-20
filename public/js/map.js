@@ -79,7 +79,6 @@ const createIcon = (map, pos, profileImage, animation) => {
 
 async function initMap() {
   await renderInterestsSelect();
-  const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   const NANTOU = { lat: 23.961, lng: 120.9719 };
   map = new google.maps.Map($("#map")[0], {
     center: NANTOU,
@@ -141,52 +140,6 @@ async function initMap() {
   attachAgeRangeListener();
   attachApplyFilterListener(map);
 }
-
-const checkAccessToken = async (accessToken) => {
-  if (accessToken) {
-    const verifyResult = await fetch("/api/v1/user/profile", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const resultJson = await verifyResult.json();
-    if (resultJson.error) {
-      alert(resultJson.error);
-      localStorage.clear();
-      window.location = "/signin";
-      return;
-    }
-    const userInfo = await fetch(`/api/v1/user/${resultJson.id}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const userInfoJson = await userInfo.json();
-    const {
-      nickname,
-      location,
-      website,
-      id,
-      bio,
-      profile_image: profileImage,
-    } = userInfoJson;
-    localStorage.setItem("nickname", nickname);
-    localStorage.setItem("location", location);
-    localStorage.setItem("website", website);
-    localStorage.setItem("userId", id);
-    localStorage.setItem("bio", bio);
-    localStorage.setItem("profileImage", profileImage);
-    $(() => {
-      $("#main-content").removeClass("invisible");
-      updateProfileIconLink(id);
-    });
-  } else {
-    alert("Please sign in or sign up first");
-    window.location = "/signin";
-  }
-};
 
 const panToCurrentLocationControl = (controlDiv, map) => {
   const controlUI = document.createElement("div");
@@ -688,6 +641,9 @@ const attachApplyFilterListener = (map) => {
 
 const renderInterestsSelect = async () => {
   const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    return;
+  }
   const result = await fetch(`/api/v1/interests`, {
     method: "GET",
     headers: {
@@ -714,9 +670,6 @@ const renderInterestsSelect = async () => {
     $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
   });
 };
-
-const accessToken = localStorage.getItem("accessToken");
-checkAccessToken(accessToken);
 
 const google_api_key = $("#map-script").attr("google_api_key");
 const script = $("<script></script>", {

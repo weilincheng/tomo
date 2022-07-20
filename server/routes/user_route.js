@@ -20,10 +20,13 @@ const {
   authUser,
   multerUpload,
 } = require("../../utilities/utilities");
+const MAX_PROFILE_IMAGE_COUNT = 1;
+const MAX_BACKGROUND_IMAGE_COUNT = 1;
+const MAX_POST_IMAGES_COUNT = 4;
 const cpUpload = multerUpload.fields([
-  { name: "profile-image", maxCount: 1 },
-  { name: "background-image", maxCount: 1 },
-  { name: "post-images", maxCount: 4 },
+  { name: "profile-image", maxCount: MAX_PROFILE_IMAGE_COUNT },
+  { name: "background-image", maxCount: MAX_BACKGROUND_IMAGE_COUNT },
+  { name: "post-images", maxCount: MAX_POST_IMAGES_COUNT },
 ]);
 
 router.route("/user/signup").post(catchAsyncError(signUp));

@@ -1,12 +1,12 @@
 const { TOKEN_EXPIRATION } = process.env;
 const { pool } = require("./mysql_connection");
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
+const SALT_ROUNDS = 10;
 const { generateToken, verifyToken } = require("../../utilities/utilities");
 
 const signUp = async (name, email, password, profileImage, backgroundImage) => {
   const sql = `INSERT INTO users (nickname, email, password, profile_image, background_image) VALUES (?, ?, ?, ?, ?)`;
-  const hash = await bcrypt.hash(password, saltRounds);
+  const hash = await bcrypt.hash(password, SALT_ROUNDS);
   const sqlBindings = [name, email, hash, profileImage, backgroundImage];
   try {
     const [result] = await pool.query(sql, sqlBindings);

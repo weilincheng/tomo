@@ -2,13 +2,15 @@ const Location = require("../models/location_model");
 const clustering = require("density-clustering");
 const MIN_AGGREGATE_ZOOM_LEVEL = 19;
 const MIN_AGGREGATE_COUNT = 3;
+const MIN_AGE = 20;
+const MAX_AGE = 100;
 
 const getUsersLocation = async (req, res) => {
   const { gender, interests, latLL, lngLL, latUR, lngUR, zoomLevel } =
     req.query;
   let { min_age, max_age } = req.query;
-  min_age = parseInt(min_age) === 20 ? null : parseInt(min_age);
-  max_age = parseInt(max_age) === 100 ? null : parseInt(max_age);
+  min_age = parseInt(min_age) === MIN_AGE ? null : parseInt(min_age);
+  max_age = parseInt(max_age) === MAX_AGE ? null : parseInt(max_age);
   const result = await Location.getUsersLocation(
     min_age,
     max_age,
@@ -31,75 +33,33 @@ const getUsersLocation = async (req, res) => {
   return;
 };
 
-const getGeoLocationBounds = async (usersLocationGrids, usersCount) => {
+const getClusterBounds = (usersLocation, cluster) => {
   let clusterMarkerLatSum = 0,
-    clusterMarkerLngSum = 0;
-  for (const userLocation of usersLocationGrids.get(`(${i}, ${j})`)) {
-    const { geo_location_lat: userLat, geo_location_lng: userLng } =
-      userLocation;
+    clusterMarkerLngSum = 0,
+    largestLat = Number.NEGATIVE_INFINITY,
+    largestLng = Number.NEGATIVE_INFINITY,
+    smallestLat = Number.POSITIVE_INFINITY,
+    smallestLng = Number.POSITIVE_INFINITY;
+  for (const userIdx of cluster) {
+    const userLat = usersLocation[userIdx].geo_location_lat,
+      userLng = usersLocation[userIdx].geo_location_lng;
     clusterMarkerLatSum += userLat;
     clusterMarkerLngSum += userLng;
+    largestLat = userLat > largestLat ? userLat : largestLat;
+    largestLng = userLng > largestLng ? userLng : largestLng;
+    smallestLat = userLat < smallestLat ? userLat : smallestLat;
+    smallestLng = userLng < smallestLng ? userLng : smallestLng;
   }
-  const clusterMarkerLat = clusterMarkerLatSum / usersCount;
-  const clusterMarkerLng = clusterMarkerLngSum / usersCount;
-  return [clusterMarkerLat, clusterMarkerLng];
-};
-
-const aggregateUsersLocation = (
-  usersLocation,
-  latLL,
-  lngLL,
-  latUR,
-  lngUR,
-  zoomLevel
-) => {
-  if (zoomLevel >= 19) {
-    return usersLocation;
-  }
-  const factor = 5;
-  const colNum = zoomLevel > factor ? zoomLevel - factor : 1;
-  const rowNum = zoomLevel > factor ? zoomLevel - factor : 1;
-  if (lngUR < lngLL) {
-    lngUR = lngUR + 360;
-  }
-  const gridHeight = Math.abs(latUR - latLL) / rowNum;
-  const gridWidth = Math.abs(lngUR - lngLL) / colNum;
-
-  const usersLocationGrids = new Map([]);
-  for (const userLocation of usersLocation) {
-    const { geo_location_lat: userLat, geo_location_lng: userLng } =
-      userLocation;
-    const colIndex = Math.floor((userLng - lngLL) / gridWidth);
-    const rowIndex = Math.floor((userLat - latLL) / gridHeight);
-    if (!usersLocationGrids.has(`(${rowIndex}, ${colIndex})`)) {
-      usersLocationGrids.set(`(${rowIndex}, ${colIndex})`, [userLocation]);
-    } else {
-      usersLocationGrids.get(`(${rowIndex}, ${colIndex})`).push(userLocation);
-    }
-  }
-  const result = [];
-  for (let i = 0; i < rowNum; i++) {
-    for (let j = 0; j < colNum; j++) {
-      if (usersLocationGrids.has(`(${i}, ${j})`)) {
-        const usersCount = usersLocationGrids.get(`(${i}, ${j})`).length;
-        if (usersCount > 1) {
-          const [clusterMarkerLat, clusterMarkerLng] = getGeoLocationBounds(
-            usersLocationGrids,
-            usersCount
-          );
-          result.push({
-            type: "clusterMarker",
-            geo_location_lat: clusterMarkerLat,
-            geo_location_lng: clusterMarkerLng,
-            clusterSize: usersCount,
-          });
-        } else {
-          result.push(usersLocationGrids.get(`(${i}, ${j})`)[0]);
-        }
-      }
-    }
-  }
-  return result;
+  const clusterMarkerLat = clusterMarkerLatSum / cluster.length,
+    clusterMarkerLng = clusterMarkerLngSum / cluster.length;
+  return [
+    clusterMarkerLat,
+    clusterMarkerLng,
+    smallestLat,
+    smallestLng,
+    largestLat,
+    largestLng,
+  ];
 };
 
 const aggregateUsersLocationByKMeans = async (
@@ -126,34 +86,24 @@ const aggregateUsersLocationByKMeans = async (
   const result = [];
   for (const cluster of clusters) {
     if (cluster.length > 1) {
-      let clusterMarkerLatSum = 0,
-        clusterMarkerLngSum = 0,
-        largestLat = Number.NEGATIVE_INFINITY,
-        largestLng = Number.NEGATIVE_INFINITY,
-        smallestLat = Number.POSITIVE_INFINITY,
-        smallestLng = Number.POSITIVE_INFINITY;
-      for (const userIdx of cluster) {
-        const userLat = usersLocation[userIdx].geo_location_lat,
-          userLng = usersLocation[userIdx].geo_location_lng;
-        clusterMarkerLatSum += userLat;
-        clusterMarkerLngSum += userLng;
-        largestLat = userLat > largestLat ? userLat : largestLat;
-        largestLng = userLng > largestLng ? userLng : largestLng;
-        smallestLat = userLat < smallestLat ? userLat : smallestLat;
-        smallestLng = userLng < smallestLng ? userLng : smallestLng;
-      }
-      const clusterMarkerLat = clusterMarkerLatSum / cluster.length;
-      const clusterMarkerLng = clusterMarkerLngSum / cluster.length;
+      const [
+        clusterMarkerLat,
+        clusterMarkerLng,
+        clusterBoundsLatLL,
+        clusterBoundsLngLL,
+        clusterBoundsLatUR,
+        clusterBoundsLngUR,
+      ] = getClusterBounds(usersLocation, cluster);
 
       result.push({
         type: "clusterMarker",
         geo_location_lat: clusterMarkerLat,
         geo_location_lng: clusterMarkerLng,
         clusterSize: cluster.length,
-        clusterBoundsLatLL: smallestLat,
-        clusterBoundsLngLL: smallestLng,
-        clusterBoundsLatUR: largestLat,
-        clusterBoundsLngUR: largestLng,
+        clusterBoundsLatLL,
+        clusterBoundsLngLL,
+        clusterBoundsLatUR,
+        clusterBoundsLngUR,
       });
     } else {
       result.push(usersLocation[cluster[0]]);

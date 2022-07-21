@@ -29,20 +29,20 @@ const renderMessagesHistory = async (
   );
   const resultJson = await result.json();
   for (let i = 0; i < resultJson.length; i++) {
-    const { sender_user_id, receiver_user_id, created_at, type, content } =
+    const { senderUserId, receiverUserId, created_at, type, content } =
       resultJson[i];
     if (type === "placeholder") {
       continue;
     }
     const message = createMessage(
-      sender_user_id,
-      receiver_user_id,
+      senderUserId,
+      receiverUserId,
       created_at,
       type,
       content,
       $("#messages-session")
     );
-    prependMessage(message, created_at, sender_user_id);
+    prependMessage(message, created_at, senderUserId);
   }
   const messageSession = $("#messages-session");
   clearTimeout(timeout);
@@ -67,10 +67,10 @@ const renderSenderUser = async (accessToken, currentUserId) => {
   const resultJson = await result.json();
   const { messageUserIdList } = resultJson;
   for (let i = 0; i < messageUserIdList.length; i++) {
-    const senderUserId = messageUserIdList[i].sender_user_id;
-    const receiverUserId = messageUserIdList[i].receiver_user_id;
+    const senderUserId = messageUserIdList[i].senderUserId;
+    const receiverUserId = messageUserIdList[i].receiverUserId;
     const senderUserName = messageUserIdList[i].nickname;
-    const senderUserProfileImage = messageUserIdList[i].profile_image;
+    const senderUserProfileImage = messageUserIdList[i].profileImage;
     const senderUserLastMessage = messageUserIdList[i].content;
     renderSenderUserCard(
       currentUserId,
@@ -270,8 +270,8 @@ const createMessage = (
   return message;
 };
 
-const prependMessage = (message, createdDate, sender_user_id) => {
-  if (sender_user_id === parseInt(currentUserId)) {
+const prependMessage = (message, createdDate, senderUserId) => {
+  if (senderUserId === parseInt(currentUserId)) {
     $("#messages-session").prepend(
       message.addClass("d-flex align-items-end flex-column")
     );
@@ -315,9 +315,9 @@ const prependMessage = (message, createdDate, sender_user_id) => {
   }
 };
 
-const appendMessage = (message, currentDate, sender_user_id) => {
+const appendMessage = (message, currentDate, senderUserId) => {
   const messageSession = $("#messages-session");
-  if (parseInt(sender_user_id) === parseInt(currentUserId)) {
+  if (parseInt(senderUserId) === parseInt(currentUserId)) {
     messageSession.append(
       message.addClass("d-flex align-items-end flex-column")
     );

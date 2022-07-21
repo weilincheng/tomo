@@ -21,7 +21,7 @@ describe("User", function () {
           "geo-location-lng": "123",
           website: "http://awesome.com",
           displayGeoLocation: false,
-          birthdate: "1995-02-17",
+          birthdate: "1995-02-16",
           gender: "male",
           interests: "Coding,Cooking",
         });
@@ -56,13 +56,13 @@ describe("User", function () {
       should.exist(birthdate);
       const convertedBirthdate = new Date(birthdate);
       const [year, month, day] = [
-        convertedBirthdate.getUTCFullYear(),
-        convertedBirthdate.getUTCMonth() < 9
-          ? `0${convertedBirthdate.getUTCMonth() + 1}`
-          : convertedBirthdate.getUTCMonth() + 1,
-        convertedBirthdate.getUTCDate() < 9
-          ? `0${convertedBirthdate.getUTCDate()}`
-          : convertedBirthdate.getUTCDate(),
+        convertedBirthdate.getFullYear(),
+        convertedBirthdate.getMonth() < 9
+          ? `0${convertedBirthdate.getMonth() + 1}`
+          : convertedBirthdate.getMonth() + 1,
+        convertedBirthdate.getDate() < 9
+          ? `0${convertedBirthdate.getDate()}`
+          : convertedBirthdate.getDate(),
       ];
       `${year}-${month}-${day}`.should.equal("1995-02-16");
     });

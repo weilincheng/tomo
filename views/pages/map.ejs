@@ -1,11 +1,11 @@
 <%- include("../partials/header") -%>
 
-<div
-  class="row justify-content-center h-100 w-100 pb-5 pt-3 invisible"
-  id="main-content"
->
+<div class="row justify-content-center h-100 w-100 pb-5 pt-3">
   <div class="col-1 px-0 mx-0"><%- include("../partials/sidebar") -%></div>
-  <div class="col-11 d-flex justify-content-center h-100 mt-3">
+  <div
+    class="col-11 d-flex justify-content-center h-100 mt-3 invisible"
+    id="main-content"
+  >
     <div class="h-100 w-100" id="map"></div>
   </div>
   <div
@@ -25,7 +25,7 @@
         <i
           class="fa-solid fa-filter ms-1"
           data-bs-toggle="offcanvas"
-          data-bs-target="#filters-coffcanvas"
+          data-bs-target="#filters-offcanvas"
           id="filters-button"
           style="color: #0773f4; cursor: pointer"
         ></i>
@@ -44,7 +44,7 @@
   </div>
   <div
     class="offcanvas offcanvas-end py-3 rounded"
-    id="filters-coffcanvas"
+    id="filters-offcanvas"
     tabindex="-1"
     aria-labelledby="filters-coffcanvas"
     aria-hidden="true"
@@ -147,6 +147,7 @@
   rel="stylesheet"
   href="https://d3efyzwqsfoubm.cloudfront.net/css/selectivity-jquery.min.css"
 />
+<script src="../../static/js/authorization.js"></script>
 <script
   id="map-script"
   type="module"

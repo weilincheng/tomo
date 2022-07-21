@@ -2,9 +2,11 @@ require("dotenv").config();
 const {
   DB_HOST,
   DB_HOST_PRODUCTION,
+  DB_HOST_TEST,
   DB_USER,
   DB_PASSWORD,
   DB_PASSWORD_PRODUCTION,
+  DB_PASSWORD_TEST,
   DB_NAME,
   DB_CONNECTION_LIMIT,
   NODE_ENV,
@@ -22,9 +24,9 @@ const config = {
     queueLimit: 0,
   },
   test: {
-    host: DB_HOST,
+    host: DB_HOST_TEST,
     user: DB_USER,
-    password: DB_PASSWORD,
+    password: DB_PASSWORD_TEST,
     database: "tomo_test",
     waitForConnections: true,
     connectionLimit: DB_CONNECTION_LIMIT,

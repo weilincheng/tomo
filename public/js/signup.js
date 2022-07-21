@@ -33,8 +33,8 @@ $("#signup-button").click(async (event) => {
     alert(resultJson.error);
     return;
   }
-  const { access_token } = resultJson;
-  localStorage.setItem("accessToken", access_token);
+  const { accessToken } = resultJson;
+  localStorage.setItem("accessToken", accessToken);
   return (window.location = "/map");
 });
 

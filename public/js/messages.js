@@ -1,3 +1,5 @@
+const EVENT_DELAY = 250;
+const ANIMATE_DURATION = 1000;
 const getBlockStatus = async (accessToken, targetUserId) => {
   const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
     method: "GET",
@@ -27,32 +29,35 @@ const renderMessagesHistory = async (
   );
   const resultJson = await result.json();
   for (let i = 0; i < resultJson.length; i++) {
-    const { sender_user_id, receiver_user_id, created_at, type, content } =
+    const { senderUserId, receiverUserId, created_at, type, content } =
       resultJson[i];
     if (type === "placeholder") {
       continue;
     }
     const message = createMessage(
-      sender_user_id,
-      receiver_user_id,
+      senderUserId,
+      receiverUserId,
       created_at,
       type,
       content,
       $("#messages-session")
     );
-    prependMessage(message, created_at, sender_user_id);
+    prependMessage(message, created_at, senderUserId);
   }
   const messageSession = $("#messages-session");
   clearTimeout(timeout);
   timeout = setTimeout(() => {
     messageSession.animate(
       { scrollTop: messageSession.prop("scrollHeight") },
-      1000
+      ANIMATE_DURATION
     );
-  }, 250);
+  }, EVENT_DELAY);
 };
 
 const renderSenderUser = async (accessToken, currentUserId) => {
+  if (!currentUserId) {
+    return;
+  }
   const result = await fetch(`/api/v1/message/${currentUserId}/all`, {
     method: "GET",
     headers: {
@@ -62,10 +67,10 @@ const renderSenderUser = async (accessToken, currentUserId) => {
   const resultJson = await result.json();
   const { messageUserIdList } = resultJson;
   for (let i = 0; i < messageUserIdList.length; i++) {
-    const senderUserId = messageUserIdList[i].sender_user_id;
-    const receiverUserId = messageUserIdList[i].receiver_user_id;
+    const senderUserId = messageUserIdList[i].senderUserId;
+    const receiverUserId = messageUserIdList[i].receiverUserId;
     const senderUserName = messageUserIdList[i].nickname;
-    const senderUserProfileImage = messageUserIdList[i].profile_image;
+    const senderUserProfileImage = messageUserIdList[i].profileImage;
     const senderUserLastMessage = messageUserIdList[i].content;
     renderSenderUserCard(
       currentUserId,
@@ -170,7 +175,8 @@ const renderSenderUserCard = (
       emitSaveMessages(currentUserId, targetUserId);
     });
     $("#message-content-input").on("keypress", (e) => {
-      if (e.which == 13) {
+      const ENTER_KEY = 13;
+      if (e.which == ENTER_KEY) {
         emitSaveMessages(currentUserId, targetUserId);
       }
     });
@@ -221,29 +227,6 @@ const emitPrivateMessage = (
   });
 };
 
-const checkAccessToken = async () => {
-  const accessToken = localStorage.getItem("accessToken");
-  if (accessToken) {
-    const result = await fetch("/api/v1/user/profile", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const resultJson = await result.json();
-    if (resultJson.error) {
-      alert(result.error);
-      return (window.location = "/");
-    }
-    const { nickname, location, website, id } = resultJson;
-    localStorage.setItem("name", nickname);
-    localStorage.setItem("location", location);
-    localStorage.setItem("website", website);
-    localStorage.setItem("userId", id);
-    updateProfileIconLink(id);
-  }
-};
-
 const createMessage = (
   senderUserId,
   receiverUserId,
@@ -287,8 +270,8 @@ const createMessage = (
   return message;
 };
 
-const prependMessage = (message, createdDate, sender_user_id) => {
-  if (sender_user_id === parseInt(currentUserId)) {
+const prependMessage = (message, createdDate, senderUserId) => {
+  if (senderUserId === parseInt(currentUserId)) {
     $("#messages-session").prepend(
       message.addClass("d-flex align-items-end flex-column")
     );
@@ -332,9 +315,9 @@ const prependMessage = (message, createdDate, sender_user_id) => {
   }
 };
 
-const appendMessage = (message, currentDate, sender_user_id) => {
+const appendMessage = (message, currentDate, senderUserId) => {
   const messageSession = $("#messages-session");
-  if (parseInt(sender_user_id) === parseInt(currentUserId)) {
+  if (parseInt(senderUserId) === parseInt(currentUserId)) {
     messageSession.append(
       message.addClass("d-flex align-items-end flex-column")
     );
@@ -413,7 +396,7 @@ const updateSocketId = (targetUserId, socketId) => {
   userCard.attr("socket-id", socketId);
 };
 
-const updateOnlinStatus = (targetUserId, onlineStatus) => {
+const updateOnlineStatus = (targetUserId, onlineStatus) => {
   const badge = $(`#badge-UserId-${targetUserId}`);
   if (onlineStatus) {
     badge.removeClass("bg-secondary");
@@ -430,7 +413,7 @@ const initializeSenderSocket = async () => {
   socket.connect();
 
   socket.on("user disconnecting", (data) => {
-    updateOnlinStatus(data.disconnectingUserId, false);
+    updateOnlineStatus(data.disconnectingUserId, false);
   });
 
   socket.on("users", (users) => {
@@ -439,7 +422,7 @@ const initializeSenderSocket = async () => {
       updateSocketId(userId, socketId);
       const blockStatus = await getBlockStatus(accessToken, userId);
       if (!blockStatus.targetUserBlockCurrentUser) {
-        updateOnlinStatus(userId, true);
+        updateOnlineStatus(userId, true);
       }
     });
   });
@@ -487,14 +470,8 @@ const initializeSenderSocket = async () => {
   );
 };
 
-if (!accessToken) {
-  alert("Please log in first!");
-  window.location.href = "/";
-}
-
-checkAccessToken();
 const currentUserId = parseInt(localStorage.getItem("userId"));
-const currentUserName = localStorage.getItem("name");
+const currentUserName = localStorage.getItem("nickname");
 const sendMessageButton = $("#send-message-button");
 const messageInput = $("#message-content-input");
 sendMessageButton.hide();

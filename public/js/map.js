@@ -1,3 +1,5 @@
+const INITIAL_ZOOM_LEVEL = 8;
+const MIN_FIT_BOUNDS_ZOOM_LEVEL = 15;
 const createInfowindow = (nickname, userId, bio, interests) => {
   let contentString = `
     <div id="content" class="px-2 py-2 infowindow-content"> 
@@ -79,11 +81,10 @@ const createIcon = (map, pos, profileImage, animation) => {
 
 async function initMap() {
   await renderInterestsSelect();
-  const appWorksSchool = { lat: 25.03843, lng: 121.532488 };
   const NANTOU = { lat: 23.961, lng: 120.9719 };
   map = new google.maps.Map($("#map")[0], {
     center: NANTOU,
-    zoom: 8,
+    zoom: INITIAL_ZOOM_LEVEL,
     mapId: "d91850b214eae5c9",
     fullscreenControl: false,
     streetViewControl: false,
@@ -131,62 +132,16 @@ async function initMap() {
     }
   };
 
-  let timeout = false,
-    delay = 250;
+  let timeout = false;
+  const INFOWINDOW_EVENT_DELAY = 250;
 
   google.maps.event.addListener(map, "idle", () => {
     clearTimeout(timeout);
-    timeout = setTimeout(redrawUsersIcon, delay);
+    timeout = setTimeout(redrawUsersIcon, INFOWINDOW_EVENT_DELAY);
   });
   attachAgeRangeListener();
   attachApplyFilterListener(map);
 }
-
-const checkAccessToken = async (accessToken) => {
-  if (accessToken) {
-    const verifyResult = await fetch("/api/v1/user/profile", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const resultJson = await verifyResult.json();
-    if (resultJson.error) {
-      alert(resultJson.error);
-      localStorage.clear();
-      window.location = "/signin";
-      return;
-    }
-    const userInfo = await fetch(`/api/v1/user/${resultJson.id}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const userInfoJson = await userInfo.json();
-    const {
-      nickname,
-      location,
-      website,
-      id,
-      bio,
-      profile_image: profileImage,
-    } = userInfoJson;
-    localStorage.setItem("nickname", nickname);
-    localStorage.setItem("location", location);
-    localStorage.setItem("website", website);
-    localStorage.setItem("userId", id);
-    localStorage.setItem("bio", bio);
-    localStorage.setItem("profileImage", profileImage);
-    $(() => {
-      $("#main-content").removeClass("invisible");
-      updateProfileIconLink(id);
-    });
-  } else {
-    alert("Please sign in or sign up first");
-    window.location = "/signin";
-  }
-};
 
 const panToCurrentLocationControl = (controlDiv, map) => {
   const controlUI = document.createElement("div");
@@ -212,7 +167,7 @@ const panToCurrentLocationControl = (controlDiv, map) => {
   controlUI.appendChild(controlText);
 
   const clickShareLocation = () => {
-    getCurrentLocaiton(map);
+    getCurrentLocation(map);
   };
   controlUI.addEventListener("click", clickShareLocation);
 };
@@ -245,7 +200,7 @@ const userListControl = (controlDiv) => {
   controlUI.appendChild(controlText);
 };
 
-const getCurrentLocaiton = async (map) => {
+const getCurrentLocation = async (map) => {
   if (accessToken) {
     const verifyResult = await fetch("/api/v1/user/profile", {
       method: "GET",
@@ -351,7 +306,7 @@ const getUsersLocation = async (
   gender,
   interests
 ) => {
-  let targetUrl = `/api/v1/location/?latLL=${visibleLatLL}&lngLL=${visibleLngLL}&latUR=${visibleLatUR}&lngUR=${visibleLngUR}&zoomLevel=${zoomLevel}&min_age=${minAge}&max_age=${maxAge}`;
+  let targetUrl = `/api/v1/location/?latLL=${visibleLatLL}&lngLL=${visibleLngLL}&latUR=${visibleLatUR}&lngUR=${visibleLngUR}&zoomLevel=${zoomLevel}&minAge=${minAge}&maxAge=${maxAge}`;
   if (gender) {
     targetUrl += `&gender=${gender}`;
   }
@@ -432,7 +387,7 @@ const renderUsersIcon = async (
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
         clusterMarker.addListener("click", () => {
-          if (zoomLevel < 15) {
+          if (zoomLevel < MIN_FIT_BOUNDS_ZOOM_LEVEL) {
             const zoomLevel = map.getZoom();
             map.setCenter(pos);
             map.setZoom(zoomLevel + 3);
@@ -526,7 +481,7 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
         clusterMarker.addListener("click", () => {
-          if (zoomLevel < 15) {
+          if (zoomLevel < MIN_FIT_BOUNDS_ZOOM_LEVEL) {
             const zoomLevel = map.getZoom();
             map.setCenter(pos);
             map.setZoom(zoomLevel + 3);
@@ -688,6 +643,9 @@ const attachApplyFilterListener = (map) => {
 
 const renderInterestsSelect = async () => {
   const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    return;
+  }
   const result = await fetch(`/api/v1/interests`, {
     method: "GET",
     headers: {
@@ -710,13 +668,10 @@ const renderInterestsSelect = async () => {
   $("#interests-select").on("selectivity-selected", () => {
     $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
   });
-  $("#interests-select").on("sselectivity-open", () => {
+  $("#interests-select").on("selectivity-open", () => {
     $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
   });
 };
-
-const accessToken = localStorage.getItem("accessToken");
-checkAccessToken(accessToken);
 
 const google_api_key = $("#map-script").attr("google_api_key");
 const script = $("<script></script>", {
@@ -727,7 +682,6 @@ const script = $("<script></script>", {
 });
 script.appendTo("head");
 const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
-const markersList = new Map();
 let map,
   markers = [],
   visibleLatLL,

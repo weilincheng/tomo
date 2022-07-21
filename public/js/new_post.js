@@ -1,20 +1,5 @@
-const verifyToken = async (accessToken) => {
-  const result = await fetch("/api/v1/user/profile", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const resultJson = await result.json();
-  if (resultJson.error) {
-    $("#alertModalToggleLabel").text(resultJson.error);
-    $("#alertModalToggle").modal("show");
-    localStorage.clear();
-    window.location = "/";
-  }
-  return resultJson;
-};
-
+const MAX_FILE_SIZE = 1000000;
+const MAX_FILE_COUNT = 4;
 const attachTypeEvent = () => {
   $("#post-content").keyup(() => {
     let characterCount = $("#post-content").val().length,
@@ -30,7 +15,7 @@ const attachImageEvent = () => {
     $("#post-button").attr("disabled", false);
     const files = evt.target.files;
     for (const file of files) {
-      if (file.size > 1000000) {
+      if (file.size > MAX_FILE_SIZE) {
         $("#alertModalToggleLabel").text(
           "File size is too large. Max size is 1MB."
         );
@@ -39,7 +24,7 @@ const attachImageEvent = () => {
         return;
       }
     }
-    if (files.length > 4) {
+    if (files.length > MAX_FILE_COUNT) {
       $("#alertModalToggleLabel").text(
         "You can only upload a maximum of 4 files"
       );
@@ -80,7 +65,6 @@ const attachPostEvent = () => {
 
 const sendPostFormData = async (formData) => {
   $("#newPostModal").modal("hide");
-  const accessToken = localStorage.getItem("accessToken");
   const userId = localStorage.getItem("userId");
   const result = await fetch(`/api/v1/user/${userId}/posts`, {
     method: "POST",
@@ -93,8 +77,6 @@ const sendPostFormData = async (formData) => {
   $("#alertModalToggleLabel").text(resultJson.status);
   $("#alertModalToggle").modal("show");
 };
-
-const accessToken = localStorage.getItem("accessToken");
 
 $(() => {
   const userId = localStorage.getItem("userId");

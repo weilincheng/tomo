@@ -2,7 +2,7 @@ const { pool } = require("../server/models/mysql_connection");
 const { faker } = require("@faker-js/faker");
 const uuid = require("uuid").v4;
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
+const SALT_ROUNDS = 10;
 const { truncateTable } = require("../test/truncate_fake_data");
 require("dotenv").config();
 const { NODE_ENV } = process.env;
@@ -59,7 +59,7 @@ const insertFakeData = async (lastInterestId, usersCount, coordinate) => {
     const randomWebsite = faker.internet.url();
     const randomProfileImage = faker.internet.avatar();
     const randomBio = faker.name.jobTitle();
-    const hash = await bcrypt.hash(password, saltRounds);
+    const hash = await bcrypt.hash(password, SALT_ROUNDS);
     const sqlBind = [
       randomName,
       `${randomEmail}_${uuid()}`,

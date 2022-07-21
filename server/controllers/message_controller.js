@@ -2,7 +2,6 @@ require("dotenv").config();
 const Message = require("../models/message_model");
 const User = require("../models/user_model");
 const validator = require("validator");
-const { getUserInfo } = require("./user_controller");
 
 const getMessages = async (req, res) => {
   const { currentUserId, targetUserId } = req.params;
@@ -22,29 +21,27 @@ const getMessages = async (req, res) => {
     const messageUserIdList = [];
     for (let i = 0; i < result.length; i++) {
       const {
-        sender_user_id,
-        receiver_user_id,
+        sender_user_id: senderUserId,
+        receiver_user_id: receiverUserId,
         nickname,
-        profile_image,
+        profile_image: profileImage,
         content,
       } = result[i];
       if (
-        messageUserId.has(sender_user_id) ||
-        messageUserId.has(receiver_user_id)
+        messageUserId.has(senderUserId) ||
+        messageUserId.has(receiverUserId)
       ) {
         continue;
       }
       messageUserId.add(
-        sender_user_id === parseInt(currentUserId)
-          ? receiver_user_id
-          : sender_user_id
+        senderUserId === parseInt(currentUserId) ? receiverUserId : senderUserId
       );
 
       messageUserIdList.push({
-        sender_user_id,
-        receiver_user_id,
+        senderUserId,
+        receiverUserId,
         nickname,
-        profile_image,
+        profileImage,
         content,
       });
     }

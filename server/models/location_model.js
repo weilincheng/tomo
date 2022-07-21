@@ -1,8 +1,8 @@
 const { pool } = require("./mysql_connection");
 
 const getUsersLocation = async (
-  min_age,
-  max_age,
+  minAge,
+  maxAge,
   gender,
   interests,
   latLL,
@@ -30,13 +30,13 @@ const getUsersLocation = async (
   const sqlBindings = [];
   const sqlCondition = ` GROUP BY u.id`;
   const ageCalculation = `DATE_FORMAT(FROM_DAYS(DATEDIFF(now(), u.birthdate)), '%Y')+0`;
-  if (min_age) {
+  if (minAge) {
     sql += ` AND (${ageCalculation}) >= ?`;
-    sqlBindings.push(min_age);
+    sqlBindings.push(minAge);
   }
-  if (max_age) {
+  if (maxAge) {
     sql += ` AND (${ageCalculation}) <= ?`;
-    sqlBindings.push(max_age);
+    sqlBindings.push(maxAge);
   }
   if (gender) {
     if (Array.isArray(gender)) {

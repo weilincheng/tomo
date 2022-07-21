@@ -1,19 +1,19 @@
 const { TOKEN_EXPIRATION } = process.env;
 const { pool } = require("./mysql_connection");
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
+const SALT_ROUNDS = 10;
 const { generateToken, verifyToken } = require("../../utilities/utilities");
 
 const signUp = async (name, email, password, profileImage, backgroundImage) => {
   const sql = `INSERT INTO users (nickname, email, password, profile_image, background_image) VALUES (?, ?, ?, ?, ?)`;
-  const hash = await bcrypt.hash(password, saltRounds);
+  const hash = await bcrypt.hash(password, SALT_ROUNDS);
   const sqlBindings = [name, email, hash, profileImage, backgroundImage];
   try {
     const [result] = await pool.query(sql, sqlBindings);
-    const access_token = generateToken(result.insertId, name, email);
+    const accessToken = generateToken(result.insertId, name, email);
     return {
-      access_token,
-      access_expiration: TOKEN_EXPIRATION,
+      accessToken,
+      accessExpiration: TOKEN_EXPIRATION,
       id: result.insertId,
     };
   } catch (error) {
@@ -49,16 +49,16 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
       status: 403,
     };
   } else {
-    const access_token = generateToken(id, nickname, signInEmail, profileImage);
+    const accessToken = generateToken(id, nickname, signInEmail, profileImage);
     return {
-      access_token,
-      access_expiration: TOKEN_EXPIRATION,
+      accessToken: accessToken,
+      accessExpiration: TOKEN_EXPIRATION,
       user: {
         id,
         nickname,
         email,
-        profile_image: profileImage,
-        background_image: backgroundImage,
+        profileImage,
+        backgroundImage,
       },
     };
   }
@@ -219,16 +219,16 @@ const checkMutualStatus = async (followerUserId, followedUserId) => {
   return result.length > 0 && result2.length > 0;
 };
 
-const addRelationship = async (followerUserid, followedUserId) => {
+const addRelationship = async (followerUserId, followedUserId) => {
   const sql = `INSERT INTO relationships (follower_user_id, followed_user_id) VALUES (?, ?)`;
-  const sqlBindings = [followerUserid, followedUserId];
+  const sqlBindings = [followerUserId, followedUserId];
   const [result] = await pool.query(sql, sqlBindings);
   return result;
 };
 
-const removeRelationship = async (followerUserid, followedUserId) => {
+const removeRelationship = async (followerUserId, followedUserId) => {
   const sql = `DELETE FROM relationships WHERE follower_user_id = ? AND followed_user_id = ?`;
-  const sqlBindings = [followerUserid, followedUserId];
+  const sqlBindings = [followerUserId, followedUserId];
   const [result] = await pool.query(sql, sqlBindings);
   return result;
 };
@@ -253,16 +253,16 @@ const getBlockStatus = async (currentUserId, targetUserId) => {
   }
 };
 
-const addBlockStatus = async (blockerUserid, blockedUserId) => {
+const addBlockStatus = async (blockerUserId, blockedUserId) => {
   const sql = `INSERT INTO blocklist (blocker_user_id, blocked_user_id) VALUES (?, ?)`;
-  const sqlBindings = [blockerUserid, blockedUserId];
+  const sqlBindings = [blockerUserId, blockedUserId];
   const [result] = await pool.query(sql, sqlBindings);
   return result;
 };
 
-const removeBlockStatus = async (blockerUserid, blockedUserId) => {
+const removeBlockStatus = async (blockerUserId, blockedUserId) => {
   const sql = `DELETE FROM blocklist WHERE blocker_user_id = ? AND blocked_user_id = ?`;
-  const sqlBindings = [blockerUserid, blockedUserId];
+  const sqlBindings = [blockerUserId, blockedUserId];
   const [result] = await pool.query(sql, sqlBindings);
   return result;
 };

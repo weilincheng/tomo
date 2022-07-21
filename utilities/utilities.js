@@ -2,11 +2,11 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const uuid = require("uuid").v4;
 const multer = require("multer");
 const storage = multer.memoryStorage();
-const maxFileSize = 1000000;
-const maxFileCounts = 4;
+const MAX_FILE_SIZE = 1000000;
+const MAX_FILES_COUNT = 4;
 const multerUpload = multer({
   storage: storage,
-  limits: { fileSize: maxFileSize, files: maxFileCounts },
+  limits: { fileSize: MAX_FILE_SIZE, files: MAX_FILES_COUNT },
 });
 const { TOKEN_SECRET, TOKEN_EXPIRATION, AWS_BUCKET_NAME } = process.env;
 const jwt = require("jsonwebtoken");
@@ -68,7 +68,7 @@ const authUser = () => {
 
 const s3Upload = async (files) => {
   const s3client = new S3Client();
-  const params = files.map((file) => {
+  const fileParams = files.map((file) => {
     return {
       Bucket: AWS_BUCKET_NAME,
       Key: `${uuid()}-${file.originalname}`,
@@ -77,9 +77,9 @@ const s3Upload = async (files) => {
   });
   let filesName = [];
   await Promise.all(
-    params.map((param) => {
-      s3client.send(new PutObjectCommand(param));
-      filesName.push(param.Key);
+    fileParams.map((file) => {
+      s3client.send(new PutObjectCommand(file));
+      filesName.push(file.Key);
     })
   );
   return filesName;

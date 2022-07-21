@@ -173,7 +173,7 @@ const updateEditFollowBlockButton = (
     }
   }
   attachFollowingButtonEvent(profileUserId);
-  attachFolloButtonEvent(profileUserId);
+  attachFollowButtonEvent(profileUserId);
   attachBlockedButtonEvent(profileUserId);
   attachBlockButtonEvent(profileUserId);
 };
@@ -213,7 +213,7 @@ const attachFollowingButtonEvent = (targetUserId) => {
   });
 };
 
-const attachFolloButtonEvent = (targetUserId) => {
+const attachFollowButtonEvent = (targetUserId) => {
   const followButton = $("#follow-button");
   followButton.click(async () => {
     const headers = {
@@ -495,7 +495,7 @@ const attachClickListeners = () => {
   });
 
   deletePostButton.click(async () => {
-    $("#onfirmDeletePostModal").modal("hide");
+    $("#confirmDeletePostModal").modal("hide");
     const postId = $("#confirm-delete-post-button").attr("post-id");
     const accessToken = localStorage.getItem("accessToken");
     const result = await fetch(

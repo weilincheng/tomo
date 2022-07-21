@@ -1,3 +1,5 @@
+const INITIAL_ZOOM_LEVEL = 8;
+const MIN_FIT_BOUNDS_ZOOM_LEVEL = 15;
 const createInfowindow = (nickname, userId, bio, interests) => {
   let contentString = `
     <div id="content" class="px-2 py-2 infowindow-content"> 
@@ -82,7 +84,7 @@ async function initMap() {
   const NANTOU = { lat: 23.961, lng: 120.9719 };
   map = new google.maps.Map($("#map")[0], {
     center: NANTOU,
-    zoom: 8,
+    zoom: INITIAL_ZOOM_LEVEL,
     mapId: "d91850b214eae5c9",
     fullscreenControl: false,
     streetViewControl: false,
@@ -130,12 +132,12 @@ async function initMap() {
     }
   };
 
-  let timeout = false,
-    delay = 250;
+  let timeout = false;
+  const INFOWINDOW_EVENT_DELAY = 250;
 
   google.maps.event.addListener(map, "idle", () => {
     clearTimeout(timeout);
-    timeout = setTimeout(redrawUsersIcon, delay);
+    timeout = setTimeout(redrawUsersIcon, INFOWINDOW_EVENT_DELAY);
   });
   attachAgeRangeListener();
   attachApplyFilterListener(map);
@@ -165,7 +167,7 @@ const panToCurrentLocationControl = (controlDiv, map) => {
   controlUI.appendChild(controlText);
 
   const clickShareLocation = () => {
-    getCurrentLocaiton(map);
+    getCurrentLocation(map);
   };
   controlUI.addEventListener("click", clickShareLocation);
 };
@@ -198,7 +200,7 @@ const userListControl = (controlDiv) => {
   controlUI.appendChild(controlText);
 };
 
-const getCurrentLocaiton = async (map) => {
+const getCurrentLocation = async (map) => {
   if (accessToken) {
     const verifyResult = await fetch("/api/v1/user/profile", {
       method: "GET",
@@ -385,7 +387,7 @@ const renderUsersIcon = async (
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
         clusterMarker.addListener("click", () => {
-          if (zoomLevel < 15) {
+          if (zoomLevel < MIN_FIT_BOUNDS_ZOOM_LEVEL) {
             const zoomLevel = map.getZoom();
             map.setCenter(pos);
             map.setZoom(zoomLevel + 3);
@@ -479,7 +481,7 @@ const renderFilteredUsersIcon = async (map, usersLocation, markers) => {
       if (type === "clusterMarker") {
         const clusterMarker = createClusterIcon(map, pos, clusterSize);
         clusterMarker.addListener("click", () => {
-          if (zoomLevel < 15) {
+          if (zoomLevel < MIN_FIT_BOUNDS_ZOOM_LEVEL) {
             const zoomLevel = map.getZoom();
             map.setCenter(pos);
             map.setZoom(zoomLevel + 3);
@@ -666,7 +668,7 @@ const renderInterestsSelect = async () => {
   $("#interests-select").on("selectivity-selected", () => {
     $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
   });
-  $("#interests-select").on("sselectivity-open", () => {
+  $("#interests-select").on("selectivity-open", () => {
     $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
   });
 };
@@ -680,7 +682,6 @@ const script = $("<script></script>", {
 });
 script.appendTo("head");
 const cloudfrontUrl = "https://d3efyzwqsfoubm.cloudfront.net";
-const markersList = new Map();
 let map,
   markers = [],
   visibleLatLL,

@@ -306,7 +306,7 @@ const getUsersLocation = async (
   gender,
   interests
 ) => {
-  let targetUrl = `/api/v1/location/?latLL=${visibleLatLL}&lngLL=${visibleLngLL}&latUR=${visibleLatUR}&lngUR=${visibleLngUR}&zoomLevel=${zoomLevel}&min_age=${minAge}&max_age=${maxAge}`;
+  let targetUrl = `/api/v1/location/?latLL=${visibleLatLL}&lngLL=${visibleLngLL}&latUR=${visibleLatUR}&lngUR=${visibleLngUR}&zoomLevel=${zoomLevel}&minAge=${minAge}&maxAge=${maxAge}`;
   if (gender) {
     targetUrl += `&gender=${gender}`;
   }

@@ -38,8 +38,8 @@ const signUp = async (req, res) => {
     return;
   }
   res.status(200).json({
-    access_token: result.access_token,
-    access_expiration: result.access_expiration,
+    accessToken: result.accessToken,
+    accessExpiration: result.accessExpiration,
     user: {
       id: result.id,
       nickname: name,

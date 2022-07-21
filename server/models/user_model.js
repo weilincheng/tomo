@@ -10,10 +10,10 @@ const signUp = async (name, email, password, profileImage, backgroundImage) => {
   const sqlBindings = [name, email, hash, profileImage, backgroundImage];
   try {
     const [result] = await pool.query(sql, sqlBindings);
-    const access_token = generateToken(result.insertId, name, email);
+    const accessToken = generateToken(result.insertId, name, email);
     return {
-      access_token,
-      access_expiration: TOKEN_EXPIRATION,
+      accessToken,
+      accessExpiration: TOKEN_EXPIRATION,
       id: result.insertId,
     };
   } catch (error) {
@@ -49,16 +49,16 @@ const nativeSignIn = async (signInEmail, signInPassword) => {
       status: 403,
     };
   } else {
-    const access_token = generateToken(id, nickname, signInEmail, profileImage);
+    const accessToken = generateToken(id, nickname, signInEmail, profileImage);
     return {
-      access_token,
-      access_expiration: TOKEN_EXPIRATION,
+      accessToken: accessToken,
+      accessExpiration: TOKEN_EXPIRATION,
       user: {
         id,
         nickname,
         email,
-        profile_image: profileImage,
-        background_image: backgroundImage,
+        profileImage,
+        backgroundImage,
       },
     };
   }

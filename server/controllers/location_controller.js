@@ -8,12 +8,12 @@ const MAX_AGE = 100;
 const getUsersLocation = async (req, res) => {
   const { gender, interests, latLL, lngLL, latUR, lngUR, zoomLevel } =
     req.query;
-  let { min_age, max_age } = req.query;
-  min_age = parseInt(min_age) === MIN_AGE ? null : parseInt(min_age);
-  max_age = parseInt(max_age) === MAX_AGE ? null : parseInt(max_age);
+  let { minAge, maxAge } = req.query;
+  minAge = parseInt(minAge) === MIN_AGE ? null : parseInt(minAge);
+  maxAge = parseInt(maxAge) === MAX_AGE ? null : parseInt(maxAge);
   const result = await Location.getUsersLocation(
-    min_age,
-    max_age,
+    minAge,
+    maxAge,
     gender,
     interests,
     latLL,

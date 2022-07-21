@@ -1,3 +1,5 @@
+const MAX_FILE_SIZE = 1000000;
+const MAX_FILE_COUNT = 4;
 const attachTypeEvent = () => {
   $("#post-content").keyup(() => {
     let characterCount = $("#post-content").val().length,
@@ -13,7 +15,7 @@ const attachImageEvent = () => {
     $("#post-button").attr("disabled", false);
     const files = evt.target.files;
     for (const file of files) {
-      if (file.size > 1000000) {
+      if (file.size > MAX_FILE_SIZE) {
         $("#alertModalToggleLabel").text(
           "File size is too large. Max size is 1MB."
         );
@@ -22,7 +24,7 @@ const attachImageEvent = () => {
         return;
       }
     }
-    if (files.length > 4) {
+    if (files.length > MAX_FILE_COUNT) {
       $("#alertModalToggleLabel").text(
         "You can only upload a maximum of 4 files"
       );

@@ -1,3 +1,5 @@
+const EVENT_DELAY = 250;
+const ANIMATE_DURATION = 1000;
 const getBlockStatus = async (accessToken, targetUserId) => {
   const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
     method: "GET",
@@ -47,9 +49,9 @@ const renderMessagesHistory = async (
   timeout = setTimeout(() => {
     messageSession.animate(
       { scrollTop: messageSession.prop("scrollHeight") },
-      1000
+      ANIMATE_DURATION
     );
-  }, 250);
+  }, EVENT_DELAY);
 };
 
 const renderSenderUser = async (accessToken, currentUserId) => {
@@ -173,7 +175,8 @@ const renderSenderUserCard = (
       emitSaveMessages(currentUserId, targetUserId);
     });
     $("#message-content-input").on("keypress", (e) => {
-      if (e.which == 13) {
+      const ENTER_KEY = 13;
+      if (e.which == ENTER_KEY) {
         emitSaveMessages(currentUserId, targetUserId);
       }
     });
@@ -393,7 +396,7 @@ const updateSocketId = (targetUserId, socketId) => {
   userCard.attr("socket-id", socketId);
 };
 
-const updateOnlinStatus = (targetUserId, onlineStatus) => {
+const updateOnlineStatus = (targetUserId, onlineStatus) => {
   const badge = $(`#badge-UserId-${targetUserId}`);
   if (onlineStatus) {
     badge.removeClass("bg-secondary");
@@ -410,7 +413,7 @@ const initializeSenderSocket = async () => {
   socket.connect();
 
   socket.on("user disconnecting", (data) => {
-    updateOnlinStatus(data.disconnectingUserId, false);
+    updateOnlineStatus(data.disconnectingUserId, false);
   });
 
   socket.on("users", (users) => {
@@ -419,7 +422,7 @@ const initializeSenderSocket = async () => {
       updateSocketId(userId, socketId);
       const blockStatus = await getBlockStatus(accessToken, userId);
       if (!blockStatus.targetUserBlockCurrentUser) {
-        updateOnlinStatus(userId, true);
+        updateOnlineStatus(userId, true);
       }
     });
   });

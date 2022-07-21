@@ -91,7 +91,7 @@ const renderNotifications = async () => {
         );
       }
     }
-    const notificationDateConetnt = $(
+    const notificationDateContent = $(
       '<p class="text-secondary my-0 px-2"></p>'
     ).text(dateString);
     const notificationSummary = $('<div class="fs-5"></div>');
@@ -117,7 +117,7 @@ const renderNotifications = async () => {
     notificationLeftColumn.append(profileImageDiv);
     notificationMiddleColumn.append(notificationSummary);
     notificationMiddleColumn.append(notificationContent);
-    notificationRightColumn.append(notificationDateConetnt);
+    notificationRightColumn.append(notificationDateContent);
     notificationCard.append(notificationLeftColumn);
     notificationCard.append(notificationMiddleColumn);
     notificationCard.append(notificationRightColumn);

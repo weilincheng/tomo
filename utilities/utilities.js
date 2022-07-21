@@ -68,7 +68,7 @@ const authUser = () => {
 
 const s3Upload = async (files) => {
   const s3client = new S3Client();
-  const params = files.map((file) => {
+  const fileParams = files.map((file) => {
     return {
       Bucket: AWS_BUCKET_NAME,
       Key: `${uuid()}-${file.originalname}`,
@@ -77,9 +77,9 @@ const s3Upload = async (files) => {
   });
   let filesName = [];
   await Promise.all(
-    params.map((param) => {
-      s3client.send(new PutObjectCommand(param));
-      filesName.push(param.Key);
+    fileParams.map((file) => {
+      s3client.send(new PutObjectCommand(file));
+      filesName.push(file.Key);
     })
   );
   return filesName;

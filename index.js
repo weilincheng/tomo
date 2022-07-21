@@ -78,11 +78,11 @@ app.use(`/api/${API_VERSION}`, (req, res) => {
   res.status(404).json({ error: `End point does not exist` });
 });
 
-app.use((req, res, next) => {
+app.use((req, res) => {
   res.status(404).render("pages/404.ejs");
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.log(err);
   res.status(500).json({ error: "Internal Server Error" });
 });

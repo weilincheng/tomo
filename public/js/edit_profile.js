@@ -1,3 +1,8 @@
+const MAX_FILE_SIZE = 1000000;
+const INITIAL_ZOOM_LEVEL = 10;
+const LOCATE_ME_ZOOM_LEVEL = 16;
+const PLACES_SEARCH_RADIUS = 50000;
+
 const getUserInfo = async (userId) => {
   const accessToken = localStorage.getItem("accessToken");
   const headers = {
@@ -118,7 +123,7 @@ const sendPutFormData = async (formData) => {
 const attachClickEventEditPage = () => {
   $("#profile-image").on("change", (evt) => {
     const [file] = evt.target.files;
-    if (file.size > 1000000) {
+    if (file.size > MAX_FILE_SIZE) {
       alert("File size is too large. Max size is 1MB");
       $("#profile-image").prop("value", "");
       return;
@@ -129,7 +134,7 @@ const attachClickEventEditPage = () => {
   });
   $("#background-image").on("change", (evt) => {
     const [file] = evt.target.files;
-    if (file.size > 1000000) {
+    if (file.size > MAX_FILE_SIZE) {
       alert("File size is too large");
       $("#profile-image").prop("value", "");
       return;
@@ -185,7 +190,7 @@ const initMap = () => {
   infowindow = new google.maps.InfoWindow();
   map = new google.maps.Map($("#map")[0], {
     center: appWorksSchool,
-    zoom: 13,
+    zoom: INITIAL_ZOOM_LEVEL,
     mapId: "d91850b214eae5c9",
     fullscreenControl: false,
     streetViewControl: false,
@@ -221,29 +226,29 @@ const locateMeControl = (controlDiv, map) => {
   controlUI.appendChild(controlText);
 
   const clickLocateMe = () => {
-    getCurrentLocaiton(map);
+    getCurrentLocation(map);
     controlUI.removeEventListener("click", clickLocateMe, false);
   };
   controlUI.addEventListener("click", clickLocateMe);
 };
 
-const getCurrentLocaiton = (map) => {
+const getCurrentLocation = (map) => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       const pos = { lat: latitude, lng: longitude };
       createCustomMarker(map, pos);
       map.setCenter(pos);
-      map.setZoom(16);
-      getNearybyPlaces(map, pos, "park");
+      map.setZoom(LOCATE_ME_ZOOM_LEVEL);
+      getNearbyPlaces(map, pos, "cafe");
     });
   }
 };
 
-const getNearybyPlaces = async (map, pos, type) => {
+const getNearbyPlaces = async (map, pos, type) => {
   const request = {
     location: pos,
-    radius: "50000",
+    radius: PLACES_SEARCH_RADIUS,
     type: [type],
   };
   service = new google.maps.places.PlacesService(map);
@@ -278,9 +283,9 @@ const createCustomMarker = (map, pos) => {
   const profileImage = $("#profile-image-source").attr("src");
   const icon = {
     url: `${profileImage}` + "#custom_marker",
-    scaledSize: new google.maps.Size(50, 50), // scaled size
-    origin: new google.maps.Point(0, 0), // origin
-    anchor: new google.maps.Point(0, 0), // anchor
+    scaledSize: new google.maps.Size(50, 50),
+    origin: new google.maps.Point(0, 0),
+    anchor: new google.maps.Point(0, 0),
   };
   new google.maps.Marker({
     position: pos,
@@ -314,7 +319,7 @@ const renderInterestsSelect = async (interests) => {
   $("#interests-select").on("selectivity-selected", () => {
     $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
   });
-  $("#interests-select").on("sselectivity-open", () => {
+  $("#interests-select").on("selectivity-open", () => {
     $(".selectivity-multiple-selected-item").addClass("bg-primary rounded");
   });
   if (interests[0] !== null) {

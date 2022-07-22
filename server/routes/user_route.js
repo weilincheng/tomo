@@ -44,13 +44,13 @@ router
   .delete(authUser(), catchAsyncError(removeRelationship));
 
 router
-  .route("/user/block/:targetUserId")
+  .route("/user/:targetUserId/block")
   .get(authUser(), catchAsyncError(getBlockStatus));
 router
-  .route("/user/block/:targetUserId")
+  .route("/user/:targetUserId/block")
   .post(authUser(), catchAsyncError(addBlockStatus));
 router
-  .route("/user/block/:targetUserId")
+  .route("/user/:targetUserId/block")
   .delete(authUser(), catchAsyncError(removeBlockStatus));
 
 router.route("/user/:userId").get(authUser(), catchAsyncError(getUserInfo));

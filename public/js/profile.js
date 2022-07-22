@@ -3,7 +3,7 @@ const getUserInfo = async (userId) => {
   const headers = {
     Authorization: `Bearer ${accessToken}`,
   };
-  const blockStatusResult = await fetch(`/api/v1/user/block/${userId}`, {
+  const blockStatusResult = await fetch(`/api/v1/user/${userId}/block`, {
     method: "GET",
     headers,
   });
@@ -128,7 +128,7 @@ const getBlockStatus = async (targetUserId) => {
   const headers = {
     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
   };
-  const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+  const result = await fetch(`/api/v1/user/${targetUserId}/block`, {
     method: "GET",
     headers,
   });
@@ -252,7 +252,7 @@ const attachBlockedButtonEvent = (targetUserId) => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
-    const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+    const result = await fetch(`/api/v1/user/${targetUserId}/block`, {
       method: "DELETE",
       headers,
     });
@@ -275,7 +275,7 @@ const attachBlockButtonEvent = (targetUserId) => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
-    const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+    const result = await fetch(`/api/v1/user/${targetUserId}/block`, {
       method: "POST",
       headers,
     });

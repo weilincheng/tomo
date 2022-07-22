@@ -1,7 +1,7 @@
 const EVENT_DELAY = 250;
 const ANIMATE_DURATION = 1000;
 const getBlockStatus = async (accessToken, targetUserId) => {
-  const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+  const result = await fetch(`/api/v1/user/${targetUserId}/block`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,

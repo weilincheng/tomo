@@ -34,13 +34,13 @@ router.route("/user/signin").post(catchAsyncError(signIn));
 router.route("/user/profile").get(catchAsyncError(profile));
 
 router
-  .route("/user/follow/:targetUserId")
+  .route("/user/:targetUserId/follow")
   .get(catchAsyncError(getRelationships));
 router
-  .route("/user/follow/:targetUserId")
+  .route("/user/:targetUserId/follow")
   .post(authUser(), catchAsyncError(addRelationship));
 router
-  .route("/user/follow/:targetUserId")
+  .route("/user/:targetUserId/follow")
   .delete(authUser(), catchAsyncError(removeRelationship));
 
 router

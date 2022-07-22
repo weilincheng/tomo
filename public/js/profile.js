@@ -36,7 +36,7 @@ const getUserInfo = async (userId) => {
     bio,
     interests,
   } = resultJson;
-  const userFollowInfo = await fetch(`/api/v1/user/follow/${userId}`, {
+  const userFollowInfo = await fetch(`/api/v1/user/${userId}/follow`, {
     method: "GET",
   });
   const userFollowInfoJson = await userFollowInfo.json();
@@ -194,7 +194,7 @@ const attachFollowingButtonEvent = (targetUserId) => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
-    const result = await fetch(`/api/v1/user/follow/${targetUserId}`, {
+    const result = await fetch(`/api/v1/user/${targetUserId}/follow`, {
       method: "DELETE",
       headers,
     });
@@ -219,7 +219,7 @@ const attachFollowButtonEvent = (targetUserId) => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
-    const result = await fetch(`/api/v1/user/follow/${targetUserId}`, {
+    const result = await fetch(`/api/v1/user/${targetUserId}/follow`, {
       method: "POST",
       headers,
     });
@@ -396,7 +396,7 @@ const getUserPosts = async (userId) => {
 };
 
 const renderFollowList = async (userId, type) => {
-  const result = await fetch(`/api/v1/user/follow/${userId}`, {
+  const result = await fetch(`/api/v1/user/${userId}/follow`, {
     method: "GET",
   });
   const resultJson = await result.json();

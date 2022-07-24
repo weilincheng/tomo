@@ -1,5 +1,6 @@
 const Location = require("../models/location_model");
 const clustering = require("density-clustering");
+const { kmeans } = require("../../utilities/k_means");
 const MIN_AGGREGATE_ZOOM_LEVEL = 19;
 const MIN_AGGREGATE_COUNT = 3;
 const MIN_AGE = 20;
@@ -77,12 +78,11 @@ const aggregateUsersLocationByKMeans = async (
     return [userLocation.geo_location_lat, userLocation.geo_location_lng];
   });
   let k = zoomLevel;
-  const kmeans = new clustering.KMEANS();
   if (dataset.length <= MIN_AGGREGATE_COUNT) {
     return usersLocation;
   }
   k = dataset.length <= k ? dataset.length - 1 : k;
-  const clusters = kmeans.run(dataset, k);
+  const clusters = kmeans(dataset, k);
   const result = [];
   for (const cluster of clusters) {
     if (cluster.length > 1) {

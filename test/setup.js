@@ -3,6 +3,7 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 chai.use(chaiHttp);
 const should = chai.should();
+const expect = chai.expect;
 const requester = chai.request(app).keepOpen();
 const { truncateFakeData } = require("./truncate_fake_data");
 const {
@@ -31,4 +32,4 @@ before(async function () {
   await insertFakeData(usersCount, coordinate);
 });
 
-module.exports = { requester, should };
+module.exports = { requester, should, expect };

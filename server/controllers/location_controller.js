@@ -1,5 +1,4 @@
 const Location = require("../models/location_model");
-const clustering = require("density-clustering");
 const { kmeans } = require("../../utilities/k_means");
 const MIN_AGGREGATE_ZOOM_LEVEL = 19;
 const MIN_AGGREGATE_COUNT = 3;

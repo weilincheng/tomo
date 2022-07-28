@@ -8,13 +8,13 @@
 
 # 📖 Table of Contents
 
-- [What is Tomo?](#what-is-tomo)
-- [Tech Stack](#tech-stack)
-- [System Structure](#system-structure)
-- [Database Schema](#database-schema)
-- [Features](#features)
+- [What is Tomo?](#🙋🏻‍♂️-what-is-tomo)
+- [Tech Stack](#🛠-tech-stack)
+- [System Structure](#🏛-system-structure)
+- [Database Schema](#🗄-database-schema)
+- [Features](#⚙-features)
 - [API Docs](#api-docs)
-- [Authors](#authors)
+- [Authors](#👨🏻‍💻-authors)
 
 # 🛠 Tech Stack
 
@@ -28,15 +28,34 @@
 
 **Testing:** Mocha, Chai
 
-**Others:** Socket.IO
+**Others:** Socket.IO, Google Map API
 
 # 🏛 System Structure
 
 ![System Structure](./public/images/tomo_system_structure.png?raw=true "System Structure")
 
-# Database Schema
+# 🗄 Database Schema
 
-<iframe width="100%" height="500px" style="box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); border-radius:15px;" allowtransparency="true" allowfullscreen="true" scrolling="no" title="Embedded DrawSQL IFrame" frameborder="0" src="https://drawsql.app/tomo-1/diagrams/tomo/embed"></iframe>
+![Database Schema](./public/images/tomo_db_schema.png?raw=true "Database Schema")
+
+# ⚙ Features
+
+## Map
+
+- Displaying user icons on Google Map
+  ![Map](./public/images/map.gif?raw=true "Map")
+
+- Users filtering based on gender, age, and interests
+  ![Users filtering](./public/images/users_filtering.gif?raw=true "Users filtering")
+
+## Micro-Blog
+
+- New post
+  ![New post](./public/images/users_filtering.gif?raw=true "New post")
+
+## Instant Message
+
+- Displays online/offline status
 
 ---
 

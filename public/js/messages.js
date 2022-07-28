@@ -11,7 +11,7 @@ const getBlockStatus = async (accessToken, targetUserId) => {
   return resultJson;
 };
 let timeout = false;
-let lastTime = new Date();
+let lastTime = new Date("1995-12-17T03:24:00");
 let lastProfileImage = false;
 const renderMessagesHistory = async (
   accessToken,
@@ -29,8 +29,13 @@ const renderMessagesHistory = async (
   );
   const resultJson = await result.json();
   for (let i = 0; i < resultJson.length; i++) {
-    const { senderUserId, receiverUserId, created_at, type, content } =
-      resultJson[i];
+    const {
+      sender_user_id: senderUserId,
+      receiver_user_id: receiverUserId,
+      created_at,
+      type,
+      content,
+    } = resultJson[i];
     if (type === "placeholder") {
       continue;
     }
@@ -67,8 +72,8 @@ const renderSenderUser = async (accessToken, currentUserId) => {
   const resultJson = await result.json();
   const { messageUserIdList } = resultJson;
   for (let i = 0; i < messageUserIdList.length; i++) {
-    const senderUserId = messageUserIdList[i].senderUserId;
-    const receiverUserId = messageUserIdList[i].receiverUserId;
+    const senderUserId = messageUserIdList[i].sender_user_id;
+    const receiverUserId = messageUserIdList[i].receiver_user_id;
     const senderUserName = messageUserIdList[i].nickname;
     const senderUserProfileImage = messageUserIdList[i].profileImage;
     const senderUserLastMessage = messageUserIdList[i].content;
@@ -138,7 +143,6 @@ const renderSenderUserCard = (
   card.append(nameMessageCol);
   $("#user-messages-session").append(card);
   card.click(async () => {
-    lastTime = new Date();
     $("[id^=senderUserCard-UserId]").removeClass("selected-user-card");
     card.addClass("selected-user-card");
     const targetUserId = card.attr("id").split("-")[2];

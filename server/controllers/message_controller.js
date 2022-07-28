@@ -21,25 +21,27 @@ const getMessages = async (req, res) => {
     const messageUserIdList = [];
     for (let i = 0; i < result.length; i++) {
       const {
-        sender_user_id: senderUserId,
-        receiver_user_id: receiverUserId,
+        sender_user_id,
+        receiver_user_id,
         nickname,
         profile_image: profileImage,
         content,
       } = result[i];
       if (
-        messageUserId.has(senderUserId) ||
-        messageUserId.has(receiverUserId)
+        messageUserId.has(sender_user_id) ||
+        messageUserId.has(receiver_user_id)
       ) {
         continue;
       }
       messageUserId.add(
-        senderUserId === parseInt(currentUserId) ? receiverUserId : senderUserId
+        sender_user_id === parseInt(currentUserId)
+          ? receiver_user_id
+          : sender_user_id
       );
 
       messageUserIdList.push({
-        senderUserId,
-        receiverUserId,
+        sender_user_id,
+        receiver_user_id,
         nickname,
         profileImage,
         content,

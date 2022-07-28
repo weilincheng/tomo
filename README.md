@@ -1,19 +1,21 @@
 ![Tomo Map](./public/images/tomo_map_screen_shot.png?raw=true "Tomo Map")
 
-# 🙋🏻‍♂️ What is Tomo?
+# 🙋🏻‍♂️ What is it?
 
 **Tomo** is a location-based social web app where you can find new friends who share common interests.
 
-[Demo](https://tomomap.me)
+[Website](https://tomomap.me) | [Demo Video (in Chinese)](https://drive.google.com/file/d/1bZ81Uq8DnKeegX70wve6eDtnPS21dgKy/view)
+
+---
 
 # 📖 Table of Contents
 
-- [What is Tomo?](#🙋🏻‍♂️-what-is-tomo)
+- [What is it?](#🙋🏻‍♂️-what-is-it)
 - [Tech Stack](#🛠-tech-stack)
 - [System Structure](#🏛-system-structure)
 - [Database Schema](#🗄-database-schema)
 - [Features](#⚙-features)
-- [API Docs](#api-docs)
+- [How to use it?](#how-to-use-it)
 - [Authors](#👨🏻‍💻-authors)
 
 # 🛠 Tech Stack
@@ -57,6 +59,20 @@
 
 - Sends private message, and displays online/offline status
   ![Instant Message](./public/images/instant_message.gif?raw=true "Instant Message")
+
+# How to use it?
+
+1. Clone the project
+
+   ```
+   git clone git@github.com:weilincheng/tomo.git
+   ```
+
+2. Change to the project directory and install NPM dependencies
+
+   ```
+   npm install
+   ```
 
 # 👨🏻‍💻 Authors
 

@@ -3,7 +3,7 @@ const getUserInfo = async (userId) => {
   const headers = {
     Authorization: `Bearer ${accessToken}`,
   };
-  const blockStatusResult = await fetch(`/api/v1/user/block/${userId}`, {
+  const blockStatusResult = await fetch(`/api/v1/user/${userId}/block`, {
     method: "GET",
     headers,
   });
@@ -36,7 +36,7 @@ const getUserInfo = async (userId) => {
     bio,
     interests,
   } = resultJson;
-  const userFollowInfo = await fetch(`/api/v1/user/follow/${userId}`, {
+  const userFollowInfo = await fetch(`/api/v1/user/${userId}/follow`, {
     method: "GET",
   });
   const userFollowInfoJson = await userFollowInfo.json();
@@ -128,7 +128,7 @@ const getBlockStatus = async (targetUserId) => {
   const headers = {
     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
   };
-  const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+  const result = await fetch(`/api/v1/user/${targetUserId}/block`, {
     method: "GET",
     headers,
   });
@@ -194,7 +194,7 @@ const attachFollowingButtonEvent = (targetUserId) => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
-    const result = await fetch(`/api/v1/user/follow/${targetUserId}`, {
+    const result = await fetch(`/api/v1/user/${targetUserId}/follow`, {
       method: "DELETE",
       headers,
     });
@@ -219,7 +219,7 @@ const attachFollowButtonEvent = (targetUserId) => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
-    const result = await fetch(`/api/v1/user/follow/${targetUserId}`, {
+    const result = await fetch(`/api/v1/user/${targetUserId}/follow`, {
       method: "POST",
       headers,
     });
@@ -252,7 +252,7 @@ const attachBlockedButtonEvent = (targetUserId) => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
-    const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+    const result = await fetch(`/api/v1/user/${targetUserId}/block`, {
       method: "DELETE",
       headers,
     });
@@ -275,7 +275,7 @@ const attachBlockButtonEvent = (targetUserId) => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     };
-    const result = await fetch(`/api/v1/user/block/${targetUserId}`, {
+    const result = await fetch(`/api/v1/user/${targetUserId}/block`, {
       method: "POST",
       headers,
     });
@@ -396,7 +396,7 @@ const getUserPosts = async (userId) => {
 };
 
 const renderFollowList = async (userId, type) => {
-  const result = await fetch(`/api/v1/user/follow/${userId}`, {
+  const result = await fetch(`/api/v1/user/${userId}/follow`, {
     method: "GET",
   });
   const resultJson = await result.json();

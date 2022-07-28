@@ -92,7 +92,6 @@ const main = async () => {
   await truncateTable("interests");
   const lastInterestId = (await insertInterests()) + 24;
   for (let city in coordinates) {
-    console.log("Inserting ", city);
     insertFakeData(lastInterestId, usersCount, coordinates[city]);
   }
 };

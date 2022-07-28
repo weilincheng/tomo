@@ -1,12 +1,46 @@
-# tomo
+![Tomo Map](./public/images/tomo_map_screen_shot.png?raw=true "Tomo Map")
 
-## Table of Contents
+# 🙋🏻‍♂️ What is Tomo?
 
+**Tomo** is a location-based social web app where you can find new friends who share common interests.
+
+[Demo](https://tomomap.me)
+
+# 📖 Table of Contents
+
+- [What is Tomo?](#what-is-tomo)
+- [Tech Stack](#tech-stack)
+- [System Structure](#system-structure)
+- [Database Schema](#database-schema)
+- [Features](#features)
 - [API Docs](#api-docs)
+- [Authors](#authors)
+
+# 🛠 Tech Stack
+
+**Client:** JavaScript, jQuery, Bootstrap
+
+**Server:** Node.js, Express, MySQL, Redis
+
+**Cloud Services:** AWS EC2, RDS, ElastiCache, S3, CloudFront
+
+**CI/CD:** AWS CodePipeline, CodeBuild, CodeDeploy
+
+**Testing:** Mocha, Chai
+
+**Others:** Socket.IO
+
+# 🏛 System Structure
+
+![System Structure](./public/images/tomo_system_structure.png?raw=true "System Structure")
+
+# Database Schema
+
+<iframe width="100%" height="500px" style="box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); border-radius:15px;" allowtransparency="true" allowfullscreen="true" scrolling="no" title="Embedded DrawSQL IFrame" frameborder="0" src="https://drawsql.app/tomo-1/diagrams/tomo/embed"></iframe>
 
 ---
 
-## API Docs
+# API Docs
 
 ### API Version
 
@@ -334,3 +368,7 @@ v1
   "content": "Hello!!"
 }
 ```
+
+# 👨🏻‍💻 Authors
+
+- [@weilincheng](https://www.github.com/weilincheng)

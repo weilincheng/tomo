@@ -47,31 +47,26 @@
 
 ### Map
 
-- You can click the clustering marker to zoom in.
-  ![Map](./public/images/map.gif?raw=true "Map")
+- Clicks the clustering marker to zoom in.
+  ![Map](./public/images/map_zoom_in.gif?raw=true "Map")
 
-- You can filter users based on gender, age, and interests
+- Filters users based on gender, age, and interests.
   ![Users filtering](./public/images/users_filtering.gif?raw=true "Users filtering")
 
 ### Micro-Blog
 
-- You can add new posts with photos or delete old posts.
-  ![Micro Blog](./public/images/micro_blog.gif?raw=true "Micro Blog")
+- Adds new posts with photos or deletes old posts.
 
 ### Follow/Block
 
-- You can follow users you find interesting to receive new post notifications
-  ![Follow](./public/images/new_post_notification.gif?raw=true "Follow")
+- Follows users you find interesting to receive new post notifications.
 
-- You can block any users if you do not want them to see your micro-blog or send messages to you.
-  ![Block](./public/images/block.gif?raw=true "Block")
+- Blocks any users if you do not want them to see your micro-blog or send messages to you.
 
 ### Instant Message
 
-- You can send private messages to mutual followers.
-- The rounded badge on the upper right corner of the user profile image indicates the user's online/offline status.
-
-  ![Instant Message](./public/images/instant_message.gif?raw=true "Instant Message")
+- Sends private messages.
+- The circle badge on the upper right corner of the user profile image indicates the user's online/offline status.
 
 ## 📍 How to render tens of thousands of markers in milliseconds?
 
@@ -115,7 +110,7 @@ Without any optimization, it might take minutes to render 10k markers on Google 
    node index.js
    ```
 
-5. Use browser to open the localhost path `http://localhost:8080`
+5. Use browser to open the localhost path `http://localhost:8080` (You can set the port number in `.env`)
 
 ## Inspiration
 

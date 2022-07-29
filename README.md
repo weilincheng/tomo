@@ -6,7 +6,7 @@
 
 **Tomo** is a location-based social web app where you can find new friends with common interests.
 
-[Website](https://tomomap.me) | [Demo Video (in Chinese)](https://drive.google.com/file/d/1bZ81Uq8DnKeegX70wve6eDtnPS21dgKy/view)
+[View Website](https://tomomap.me) | [Demo Video (in Chinese)](https://drive.google.com/file/d/1bZ81Uq8DnKeegX70wve6eDtnPS21dgKy/view)
 
 ---
 
@@ -18,8 +18,8 @@
 - [Database Schema](#🗄-database-schema)
 - [Features](#⚙-features)
 - [How to render tens of thousands of markers in milliseconds?](#📍-how-to-render-tens-of-thousands-of-markers-in-milliseconds)
-- [Installation](installation)
-- [Authors](#👨🏻‍💻-authors)
+- [How to use it?](#📚-how-to-use-it)
+- [Author](#👨🏻‍💻-author)
 
 ## 🛠 Tech Stack
 
@@ -49,7 +49,7 @@
 
 ### Map
 
-- Click the clustering marker to zoom in.
+- You can click the clustering marker to zoom in.
   ![Map](./public/images/map.gif?raw=true "Map")
 
 - You can filter users based on gender, age, and interests
@@ -60,6 +60,14 @@
 - You can add new posts with photos or delete old posts.
   ![Micro Blog](./public/images/micro_blog.gif?raw=true "Micro Blog")
 
+### Follow/Block
+
+- You can follow users you find interesting to receive new post notifications
+  ![Follow](./public/images/new_post_notification.gif?raw=true "Follow")
+
+- You can block any users if you do not want them to see your micro-blog or send messages to you.
+  ![Block](./public/images/block.gif?raw=true "Block")
+
 ### Instant Message
 
 - You can send private messages to mutual followers.
@@ -69,15 +77,25 @@
 
 ## 📍 How to render tens of thousands of markers in milliseconds?
 
-Without any optimization, it might take minutes to just render 10k markers on Google Maps. Below are the two optimizations used in Tomo to improve the rendering time.
+Without any optimization, it might take minutes to render 10k markers on Google Maps. Below are the two optimizations used in Tomo to improve the rendering time.
 
 ### Optimization 1: Only renders markers within the visible range
 
-- We only need to renders
+- Since the visible range of maps is limited, it is enough to just render markers that are within the visible range.
+- But what if the currently visible range is large that we still need to render many markers? That’s why we need the second optimization.
 
-### Optimization 2: Aggregates markers into clusters by k-means clustering algorithm
+### Optimization 2: Aggregates markers into clusters by the k-means clustering algorithm
 
-## How to use it?
+- When there are numerous markers on the map, instead of rendering each marker individually, we can render a clustering marker to represent a group of markers. There are two advantages:
+  - Keep the information on the map simple and easy to understand
+  - Reduce the number of markers we need to render
+- After the aggregation on the server side, the client side only receives aggregated clustering markers that carry a number to indicate the number of markers. Assuming we aggregate 10k markers into 10 groups, the number of markers we need to render is 1000 times less.
+
+### Flow
+
+![Marker Rendering](./public/images/marker_rendering.png?raw=true "Instant Message")
+
+## 📚 How to use it?
 
 1. Clone the project
 
@@ -91,6 +109,20 @@ Without any optimization, it might take minutes to just render 10k markers on Go
    npm install
    ```
 
-# 👨🏻‍💻 Authors
+3. Refer to `.env.template` to create a `.env` file under root directory
+
+4. Run the below command to start the server
+
+   ```
+   node index.js
+   ```
+
+5. Use browser to open the localhost path `http://localhost:8080`
+
+## Inspiration
+
+The project was inspired by [Twitter](https://twitter.com) and [Snapchat](https://www.snapchat.com).
+
+## 👨🏻‍💻 Author
 
 - [@weilincheng](https://www.github.com/weilincheng)

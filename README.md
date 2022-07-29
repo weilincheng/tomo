@@ -1,6 +1,6 @@
 [![Tomo Map](./public/images/tomo_landing_page.png?raw=true "Tomo Map")](https://tomomap.me)
 
-## 🙋🏻‍♂️ What is it?
+## :raising_hand_man: What is it?
 
 **Tomo** is a location-based social web app where you can find new friends with common interests.
 
@@ -8,18 +8,18 @@
 
 ---
 
-## 📖 Table of Contents
+## :book: Table of Contents
 
-- [What is it?](#🙋🏻‍♂️-what-is-it)
-- [Tech Stack](#🛠-tech-stack)
-- [System Structure](#🏛-system-structure)
-- [Database Schema](#🗄-database-schema)
-- [Features](#⚙-features)
-- [How to render tens of thousands of markers in milliseconds?](#📍-how-to-render-tens-of-thousands-of-markers-in-milliseconds)
-- [How to use it?](#📚-how-to-use-it)
-- [Author](#👨🏻‍💻-author)
+- [What is it?](#raising_hand_man-what-is-it)
+- [Tech Stack](#hammer_and_pick-tech-stack)
+- [System Structure](#classical_building-system-structure)
+- [Database Schema](#file_cabinet-database-schema)
+- [Features](#gear-features)
+- [How to render tens of thousands of markers in milliseconds?](#round_pushpin-how-to-render-tens-of-thousands-of-markers-in-milliseconds)
+- [How to use it?](#books-how-to-use-it)
+- [Author](#technologist-author)
 
-## 🛠 Tech Stack
+## :hammer_and_pick: Tech Stack
 
 **Client:** JavaScript, jQuery, Bootstrap
 
@@ -31,19 +31,19 @@
 
 **Testing:** Mocha, Chai
 
-**Others:** Socket.IO, Google Map API
+**Others:** Socket.IO, Google Maps API
 
-## 🏛 System Structure
+## :classical_building: System Structure
 
 - Orchestrated CI/CD flow using AWS CodePipeline, CodeBuild, and CodeDeploy.
 - Kept server stateless by reorganizing MySQL, Redis, and static assets to AWS RDS, ElastiCache, and S3.
   ![System Structure](./public/images/tomo_system_structure.png?raw=true "System Structure")
 
-## 🗄 Database Schema
+## :file_cabinet: Database Schema
 
 [![Database Schema](./public/images/tomo_db_schema.png?raw=true "Database Schema")](https://drawsql.app/tomo-1/diagrams/tomo)
 
-## ⚙ Features
+## :gear: Features
 
 ### Map
 
@@ -68,7 +68,7 @@
 - Sends private messages.
 - The circle badge on the upper right corner of the user profile image indicates the user's online/offline status.
 
-## 📍 How to render tens of thousands of markers in milliseconds?
+## :round_pushpin: How to render tens of thousands of markers in milliseconds?
 
 Without any optimization, it might take minutes to render 10k markers on Google Maps. Below are the two optimizations used in Tomo to improve the rendering time.
 
@@ -88,7 +88,7 @@ Without any optimization, it might take minutes to render 10k markers on Google 
 
 ![Marker Rendering](./public/images/marker_rendering.png?raw=true "Instant Message")
 
-## 📚 How to use it?
+## :books: How to use it?
 
 1. Clone the project
 
@@ -116,6 +116,6 @@ Without any optimization, it might take minutes to render 10k markers on Google 
 
 The project was inspired by [Twitter](https://twitter.com) and [Snapchat](https://www.snapchat.com).
 
-## 👨🏻‍💻 Author
+## :technologist: Author
 
 - [@weilincheng](https://www.github.com/weilincheng)

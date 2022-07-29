@@ -1,6 +1,4 @@
-# Tomo
-
-![Tomo Map](./public/images/tomo_map_screen_shot.png?raw=true "Tomo Map")
+[![Tomo Map](./public/images/tomo_landing_page.png?raw=true "Tomo Map")](https://tomomap.me)
 
 ## 🙋🏻‍♂️ What is it?
 

@@ -1,336 +1,121 @@
-# tomo
+[![Tomo Map](./public/images/tomo_landing_page.png?raw=true "Tomo Map")](https://tomomap.me)
 
-## Table of Contents
+## :raising_hand_man: What is it?
 
-- [API Docs](#api-docs)
+**Tomo** is a location-based social web app where you can find new friends with common interests.
 
----
-
-## API Docs
-
-### API Version
-
-v1
+[View Website](https://tomomap.me) | [Demo Video (in Chinese)](https://drive.google.com/file/d/1bZ81Uq8DnKeegX70wve6eDtnPS21dgKy/view)
 
 ---
 
-### User Sign Up API
-
-- **End point**: `/user/signup`
-
-- **Method**: `POST`
-
-- **Request Headers:**
-  | Field | Type | Description |
-  | :---: | :---: | :---: |
-  | Content-Type | String | Only accept `application/json`. |
-
-* **Request Body**
-
-  |  Field   |  Type  | Description |
-  | :------: | :----: | :---------: |
-  |   name   | String |  Required   |
-  |  email   | String |  Required   |
-  | password | String |  Required   |
-  | location | String |  Optional   |
-  | website  | String |  Optional   |
-
-- **Request Body Example:**
-
-```
-{
-  "name":"test",
-  "email":"test@test.com",
-  "password":"test",
-  "location":"Taiwan",
-  "website":"weilin.com"
-}
-```
-
-- **Success Response: 200**
-
-|       Field       |  Type  | Description                           |
-| :---------------: | :----: | :------------------------------------ |
-|   access_token    | String | Access token from server.             |
-| access_expiration | Number | Access token expired time in seconds. |
-
-```
-{
-  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6joiYXJ0aHVIjoxNjEzNTY3MzA0fQ.6EPCOfBGynidAfpVqlvbHGWHCJ5LZLtKvPaQ",
-  "access_expiration": "1d",
-  "user": {
-    "id": 1,
-    "name": "test",
-    "email": "test@test.com",
-    "location":"Taiwan",
-    "website":"weilin.com",
-  }
-}
-```
+## :book: Table of Contents
 
-- **Email Already Exists: 403**
+- [What is it?](#raising_hand_man-what-is-it)
+- [Tech Stack](#hammer_and_pick-tech-stack)
+- [System Structure](#classical_building-system-structure)
+- [Database Schema](#file_cabinet-database-schema)
+- [Features](#gear-features)
+- [How to render tens of thousands of markers in milliseconds?](#round_pushpin-how-to-render-tens-of-thousands-of-markers-in-milliseconds)
+- [How to use it?](#books-how-to-use-it)
+- [Author](#technologist-author)
 
-| Field |  Type  | Description    |
-| :---: | :----: | :------------- |
-| error | String | Error message. |
+## :hammer_and_pick: Tech Stack
 
-- **Client Error Response: 400**
+**Client:** JavaScript, jQuery, Bootstrap
 
-| Field |  Type  | Description    |
-| :---: | :----: | :------------- |
-| error | String | Error message. |
+**Server:** Node.js, Express, MySQL, Redis
 
-- **Server Error Response: 500**
+**Cloud Services:** AWS EC2, RDS, ElastiCache, S3, CloudFront
 
-| Field |  Type  | Description    |
-| :---: | :----: | :------------- |
-| error | String | Error message. |
+**CI/CD:** AWS CodePipeline, CodeBuild, CodeDeploy
 
----
+**Testing:** Mocha, Chai
 
-### User Sign In API
+**Others:** Socket.IO, Google Maps API
 
-- **End point**: `/user/signin`
+## :classical_building: System Structure
 
-- **Method**: `POST`
+- Orchestrated CI/CD flow using AWS CodePipeline, CodeBuild, and CodeDeploy.
+- Kept server stateless by reorganizing MySQL, Redis, and static assets to AWS RDS, ElastiCache, and S3.
+  ![System Structure](./public/images/tomo_system_structure.png?raw=true "System Structure")
 
-- **Request Headers:**
-  | Field | Type | Description |
-  | :---: | :---: | :---: |
-  | Content-Type | String | Only accept `application/json`. |
+## :file_cabinet: Database Schema
 
-* **Request Body**
+[![Database Schema](./public/images/tomo_db_schema.png?raw=true "Database Schema")](https://drawsql.app/tomo-1/diagrams/tomo)
 
-  |  Field   |  Type  |             Description              |
-  | :------: | :----: | :----------------------------------: |
-  | provider | String | Required. Only accepts `native` now. |
-  |  email   | String |               Required               |
-  | password | String |               Required               |
+## :gear: Features
 
-- **Request Body Example:**
+### Map
 
-```
-{
-  "name":"test",
-  "email":"test@test.com",
-  "password":"test",
-  "location":"Taiwan",
-  "website":"weilin.com"
-}
-```
+- Clicks the clustering marker to zoom in.
+  ![Map](./public/images/map_zoom_in.gif?raw=true "Map")
 
-- **Success Response: 200**
+- Filters users based on gender, age, and interests.
+  ![Users filtering](./public/images/users_filtering.gif?raw=true "Users filtering")
 
-|     Field      |     Type      | Description                           |
-| :------------: | :-----------: | :------------------------------------ |
-|  access_token  |    String     | Access token from server.             |
-| access_expired |    Number     | Access token expired time in seconds. |
-|      user      | `User Object` | User information                      |
+### Micro-Blog
 
-- **Success Response Example:**
+- Adds new posts with photos or deletes old posts.
 
-```
-{
-  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6joiYXJ0aHVIjoxNjEzNTY3MzA0fQ.6EPCOfBGynidAfpVqlvbHGWHCJ5LZLtKvPaQ",
-  "access_expired": 3600,
-  "user": {
-    "id": 11245642,
-    "name": "test",
-    "email": "test@test.com",
-  }
-}
-```
+### Follow/Block
 
-- **Sign In Failed: 403**
+- Follows users you find interesting to receive new post notifications.
 
-| Field |  Type  | Description    |
-| :---: | :----: | :------------- |
-| error | String | Error message. |
+- Blocks any users if you do not want them to see your micro-blog or send messages to you.
 
-- **Client Error Response: 400**
+### Instant Message
 
-| Field |  Type  | Description    |
-| :---: | :----: | :------------- |
-| error | String | Error message. |
+- Sends private messages.
+- The circle badge on the upper right corner of the user profile image indicates the user's online/offline status.
 
-- **Server Error Response: 500**
+## :round_pushpin: How to render tens of thousands of markers in milliseconds?
 
-| Field |  Type  | Description    |
-| :---: | :----: | :------------- |
-| error | String | Error message. |
+Without any optimization, it might take minutes to render 10k markers on Google Maps. Below are the two optimizations used in Tomo to improve the rendering time.
 
----
+### Optimization 1: Only renders markers within the visible range
 
-### User Profile API
+- Since the visible range of maps is limited, it is enough to just render markers that are within the visible range.
+- But what if the currently visible range is large that we still need to render many markers? That’s why we need the second optimization.
 
-- **End Point:** `/user/profile`
+### Optimization 2: Aggregates markers into clusters by the k-means clustering algorithm
 
-- **Method:** `GET`
+- When there are numerous markers on the map, instead of rendering each marker individually, we can render a clustering marker to represent a group of markers. There are two advantages:
+  - Keep the information on the map simple and easy to understand
+  - Reduce the number of markers we need to render
+- After the aggregation on the server side, the client side only receives aggregated clustering markers that carry a number to indicate the number of markers. Assuming we aggregate 10k markers into 10 groups, the number of markers we need to render is 1000 times less.
 
-- **Request Headers:**
+### Flow
 
-|     Field     |  Type  |                                      Description                                       |
-| :-----------: | :----: | :------------------------------------------------------------------------------------: |
-| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
+![Marker Rendering](./public/images/marker_rendering.png?raw=true "Instant Message")
 
-- **Success Response: 200**
+## :books: How to use it?
 
-| Field |     Type      | Description |
-| :---: | :-----------: | :---------- |
-| data  | `User Object` | User info.  |
+1. Clone the project
 
-- **Success Response Example:**
+   ```
+   git clone git@github.com:weilincheng/tomo.git
+   ```
 
-```
-{
-  "id": 11245642,
-  "name": "test",
-  "email": "test@test.com",
-}
-```
+2. Change to the project directory and install NPM dependencies
 
-- **Client Error (No token) Response: 401**
+   ```
+   npm install
+   ```
 
-| Field |  Type  | Description    |
-| :---: | :----: | :------------- |
-| error | String | Error message. |
+3. Refer to `.env.template` to create a `.env` file under root directory
 
-- **Client Error (Wrong token) Response: 403**
+4. Run the below command to start the server
 
-| Field |  Type  | Description    |
-| :---: | :----: | :------------- |
-| error | String | Error message. |
+   ```
+   node index.js
+   ```
 
-- **Server Error Response: 500**
+5. Use browser to open the localhost path `http://localhost:8080` (You can set the port number in `.env`)
 
-| Field |  Type  | Description    |
-| :---: | :----: | :------------- |
-| error | String | Error message. |
+## Inspiration
 
-### User Id API
+The project was inspired by [Twitter](https://twitter.com) and [Snapchat](https://www.snapchat.com).
 
-- **End Point:** `/user/:userId`
+## :technologist: Author
 
-- **Method:** `GET`
-
-- **Query Parameters:** `userId`
-
-- **Success Response Example:**
-
-```
-{
-  "id": 11245642,
-  "name": "test",
-  "email": "test@test.com",
-}
-```
-
-### Add User Posts API
-
-- **End Point:** `/user/:userId/posts`
-
-- **Method:** `POST`
-
-- **Request Headers:**
-
-|     Field     |  Type  |                                      Description                                       |
-| :-----------: | :----: | :------------------------------------------------------------------------------------: |
-| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
-
-- **Request Body Example:**
-
-```
-{
-  "content": "Hello!"
-}
-```
-
-### Get User Posts API
-
-- **End Point:** `/user/:userId/posts`
-
-- **Method:** `GET`
-
-- **Success Response Example:**
-
-```
-{
-  "id": 11245642,
-  "user_id": 12,
-  "text": "A hard day's night",
-  "created_at": "2022-06-21T07:03:37.000Z",
-  "post_images" : ["image1.jpg", "image2.jpg"]
-}
-```
-
-### Add User Follower API
-
-- **End Point:** `/user/follow/:targetUserId`
-
-- **Method:** `POST`
-
-- **Request Headers:**
-
-|     Field     |  Type  |                                      Description                                       |
-| :-----------: | :----: | :------------------------------------------------------------------------------------: |
-| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
-
-### Remove User Follower API
-
-- **End Point:** `/user/follow/:targetUserId`
-
-- **Method:** `DELETE`
-
-- **Request Headers:**
-
-|     Field     |  Type  |                                      Description                                       |
-| :-----------: | :----: | :------------------------------------------------------------------------------------: |
-| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
-
-### Get User Follower / Following API
-
-- **End Point:** `/user/follow/:targetUserId`
-
-- **Method:** `GET`
-
-### Get Message API
-
-- **End Point:** `/message/:currentUserId/:targetUserId`
-
-- **Method:** `GET`
-
-- **Query Parameters :** `currentUserId`, `targetUserId`
-
-  - currentUserId can only be an int
-  - targetUserId can be an int or `all`
-  - This end point returns all the user id that sends message to current user id when targetUserId is set to `all`
-  - This end point returns all the messages between current user id and target user id when targetUserId is set to an int
-
-- **Request Headers:**
-
-|     Field     |  Type  |                                      Description                                       |
-| :-----------: | :----: | :------------------------------------------------------------------------------------: |
-| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
-
-### Save Message API
-
-- **End Point:** `/message/:currentUserId/:targetUserId`
-
-- **Method:** `POST`
-
-- **Query Parameters :** `currentUserId`, `targetUserId`
-
-- **Request Headers:**
-
-|     Field     |  Type  |                                      Description                                       |
-| :-----------: | :----: | :------------------------------------------------------------------------------------: |
-| Authorization | String | Access token preceding `Bearer `. For example: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ik` |
-
-- **Request Body Example:**
-
-```
-{
-  "type": "text",
-  "content": "Hello!!"
-}
-```
+- [@weilincheng](https://www.github.com/weilincheng)

@@ -82,7 +82,7 @@ app.use((req, res) => {
   res.status(404).render("pages/404.ejs");
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   console.log(err);
   res.status(500).json({ error: "Internal Server Error" });
 });

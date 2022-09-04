@@ -4,7 +4,7 @@
 
 **Tomo** is a location-based social web app where you can find new friends with common interests.
 
-[View Website](https://tomomap.me) | [Demo Video (in Chinese)](https://drive.google.com/file/d/1bZ81Uq8DnKeegX70wve6eDtnPS21dgKy/view)
+[View Website](https://tomomap.me) | [Demo Video (with English subtitle)](https://youtu.be/sKDD1trxSMs)
 
 ---
 
